@@ -30,7 +30,7 @@
 #include "fileeventqueue_.h"
 #include "bellsocketpair_.h"
 #include "timescale_.h"
-#include "macros_.h"
+#include "ert/macros.h"
 
 #include "gtest/gtest.h"
 

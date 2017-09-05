@@ -29,7 +29,7 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-#include "macros_.h"
+#include "ert/macros.h"
 
 /* -------------------------------------------------------------------------- */
 /* Scoping in C++

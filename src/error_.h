@@ -33,7 +33,7 @@
 #include "options_.h"
 #include "printf_.h"
 #include "test_.h"
-#include "macros_.h"
+#include "ert/macros.h"
 
 #include <errno.h>
 #include <setjmp.h>

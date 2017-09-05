@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "lambda_.h"
-#include "macros_.h"
+#include "ert/macros.h"
 
 BEGIN_C_SCOPE;
 
