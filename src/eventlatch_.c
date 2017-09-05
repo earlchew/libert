@@ -28,7 +28,7 @@
 */
 
 #include "ert/eventlatch.h"
-#include "eventpipe_.h"
+#include "ert/eventpipe.h"
 #include "ert/error.h"
 
 #include <stdlib.h>

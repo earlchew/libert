@@ -28,7 +28,7 @@
 */
 
 #include "ert/eventlatch.h"
-#include "eventpipe_.h"
+#include "ert/eventpipe.h"
 #include "timekeeping_.h"
 
 #include "gtest/gtest.h"

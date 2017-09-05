@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "eventpipe_.h"
+#include "ert/eventpipe.h"
 #include "timekeeping_.h"
 
 #include "gtest/gtest.h"
