@@ -31,7 +31,7 @@
 
 #include "process_.h"
 #include "system_.h"
-#include "file_.h"
+#include "ert/file.h"
 
 #include <stdlib.h>
 #include <string.h>

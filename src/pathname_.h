@@ -30,7 +30,7 @@
 #define PATHNAME_H
 
 #include "ert/compiler.h"
-#include "file_.h"
+#include "ert/file.h"
 
 BEGIN_C_SCOPE;
 

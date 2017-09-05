@@ -30,7 +30,7 @@
 #define FILEEVENTQUEUE_H
 
 #include "ert/compiler.h"
-#include "file_.h"
+#include "ert/file.h"
 #include "method_.h"
 
 /* -------------------------------------------------------------------------- */

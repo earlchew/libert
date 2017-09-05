@@ -28,7 +28,7 @@
 */
 
 #include "ert/fdset.h"
-#include "file_.h"
+#include "ert/file.h"
 #include "ert/error.h"
 
 #include <stdlib.h>
