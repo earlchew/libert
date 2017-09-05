@@ -28,7 +28,7 @@
 */
 
 #include "fileeventqueue_.h"
-#include "bellsocketpair_.h"
+#include "ert/bellsocketpair.h"
 #include "timescale_.h"
 #include "ert/macros.h"
 

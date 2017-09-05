@@ -30,7 +30,7 @@
 #include "process_.h"
 #include "pipe_.h"
 #include "stdfdfiller_.h"
-#include "bellsocketpair_.h"
+#include "ert/bellsocketpair.h"
 #include "timekeeping_.h"
 #include "thread_.h"
 #include "fdset_.h"
