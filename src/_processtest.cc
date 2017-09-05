@@ -30,7 +30,7 @@
 #include "process_.h"
 #include "timekeeping_.h"
 #include "ert/bellsocketpair.h"
-#include "fdset_.h"
+#include "ert/fdset.h"
 #include "thread_.h"
 #include "ert/macros.h"
 

@@ -29,7 +29,7 @@
 
 #include "ert/fd.h"
 #include "pipe_.h"
-#include "fdset_.h"
+#include "ert/fdset.h"
 
 #include "gtest/gtest.h"
 

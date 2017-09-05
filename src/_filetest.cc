@@ -29,7 +29,7 @@
 
 #include "file_.h"
 #include "process_.h"
-#include "fdset_.h"
+#include "ert/fdset.h"
 
 #include "gtest/gtest.h"
 

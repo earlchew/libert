@@ -33,7 +33,7 @@
 #include "ert/bellsocketpair.h"
 #include "timekeeping_.h"
 #include "thread_.h"
-#include "fdset_.h"
+#include "ert/fdset.h"
 #include "random_.h"
 
 #include <stdlib.h>

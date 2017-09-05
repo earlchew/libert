@@ -29,7 +29,7 @@
 
 #include "ert/fd.h"
 #include "ert/deadline.h"
-#include "fdset_.h"
+#include "ert/fdset.h"
 #include "system_.h"
 #include "eintr_.h"
 

@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "fdset_.h"
+#include "ert/fdset.h"
 #include "file_.h"
 #include "ert/error.h"
 
