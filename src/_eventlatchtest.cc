@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "eventlatch_.h"
+#include "ert/eventlatch.h"
 #include "eventpipe_.h"
 #include "timekeeping_.h"
 

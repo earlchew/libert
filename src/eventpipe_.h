@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "pipe_.h"
 #include "thread_.h"
-#include "eventlatch_.h"
+#include "ert/eventlatch.h"
 #include "queue_.h"
 
 #include <stdbool.h>
