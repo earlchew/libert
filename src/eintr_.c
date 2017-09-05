@@ -29,7 +29,7 @@
 
 #define EINTR_MODULE_DEFN_
 #include "eintr_.h"
-#include "dl_.h"
+#include "ert/dl.h"
 #include "error_.h"
 #include "random_.h"
 

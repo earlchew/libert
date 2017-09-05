@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "dl_.h"
+#include "ert/dl.h"
 #include "thread_.h"
 #include "error_.h"
 
