@@ -46,15 +46,12 @@ COMMON_CFLAGS     += -Wmissing-prototypes -Wmissing-declarations
 COMMON_CXXFLAGS    = $(COMMON_FLAGS) -std=gnu++0x
 COMMON_CXXFLAGS   += -Wno-variadic-macros -Wno-long-long
 COMMON_LINKFLAGS   = -Wl,--gc-sections
-TEST_LIBS          = libpidsentry_.la libgoogletest.la -ldl -lpthread -lrt
+TEST_LIBS          = libert.a libgoogletest.la -ldl -lpthread -lrt
 TEST_FLAGS         = -DUNITTEST -I ../googletest/include
 TEST_CFLAGS        = $(TEST_FLAGS) $(COMMON_CFLAGS)
 TEST_CXXFLAGS      = $(TEST_FLAGS) $(COMMON_CXXFLAGS)
 TESTS              = $(check_PROGRAMS) $(check_SCRIPTS)
 
-pidsentrydir        = $(bindir)
-pidsentry_PROGRAMS  = pidsentry
-check_SCRIPTS       = test.sh
 check_PROGRAMS      = _splicetest
 check_PROGRAMS     += _isblockingtest
 check_PROGRAMS     += _deadlinetest
@@ -79,22 +76,8 @@ check_PROGRAMS     += _printftest
 check_PROGRAMS     += _threadtest
 noinst_PROGRAMS     =
 noinst_SCRIPTS      = $(check_SCRIPTS)
-noinst_LTLIBRARIES  = libgoogletest.la libpidsentry_.la
-lib_LTLIBRARIES     =
-
-pidsentry_CFLAGS    = $(COMMON_CFLAGS)
-pidsentry_LDFLAGS   = $(COMMON_LINKFLAGS) -Wl,-Map,pidsentry.map -Wl,-cref
-pidsentry_LDADD     = libpidsentry_.la -ldl -lrt -lpthread
-pidsentry_SOURCES   = _pidsentry.c
-pidsentry_SOURCES  += agent.c
-pidsentry_SOURCES  += childprocess.c
-pidsentry_SOURCES  += command.c
-pidsentry_SOURCES  += parentprocess.c
-pidsentry_SOURCES  += pidserver.c
-pidsentry_SOURCES  += sentry.c
-pidsentry_SOURCES  += shellcommand.c
-pidsentry_SOURCES  += tether.c
-pidsentry_SOURCES  += umbilical.c
+noinst_LTLIBRARIES  = libgoogletest.la
+lib_LIBRARIES       = libert.a
 
 _splicetest_SOURCES = _splicetest.c
 
@@ -161,9 +144,9 @@ _unixsockettest_LDADD   = $(TEST_LIBS)
 _isblockingtest_SOURCES = _isblockingtest.c
 _isblockingtest_LDADD   = $(TEST_LIBS)
 
-include libpidsentry__la.am
-$(call WILDCARD,libpidsentry__la,libpidsentry__la_SOURCES,[a-z]*_.[ch])
-libpidsentry__la_CFLAGS = $(COMMON_CFLAGS)
+include libert_a.am
+$(call WILDCARD,libert_a,libert_a_SOURCES,[a-z]*_.[ch])
+libert_a_CFLAGS = $(COMMON_CFLAGS)
 
 libgoogletest_la_SOURCES  = gtest-all.cc
 libgoogletest_la_CPPFLAGS = -I ../googletest

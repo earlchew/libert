@@ -26,56 +26,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef LIBERT_H
+#define LIBERT_H
 
 #include "compiler_.h"
-#include "unixsocket_.h"
-#include "pid_.h"
+
+#include <sys/types.h>
 
 BEGIN_C_SCOPE;
 
-struct ExitCode;
-
-enum CommandStatus
-{
-    CommandStatusError = -1,
-    CommandStatusOk    = 0,
-    CommandStatusUnreachablePidFile  = 1,
-    CommandStatusNonexistentPidFile  = 2,
-    CommandStatusInaccessiblePidFile = 3,
-    CommandStatusZombiePidFile       = 4,
-    CommandStatusMalformedPidFile    = 5,
-};
-
-/* -------------------------------------------------------------------------- */
-struct Command
-{
-    struct Pid mChildPid;
-    struct Pid mPid;
-
-    struct UnixSocket  mKeeperTether_;
-    struct UnixSocket *mKeeperTether;
-};
-
-/* -------------------------------------------------------------------------- */
-enum CommandStatus
-createCommand(struct Command *self,
-              const char     *aPidFileName);
-
-CHECKED int
-runCommand(struct Command     *self,
-           const char * const *aCmd);
-
-CHECKED int
-reapCommand(struct Command  *self,
-            struct ExitCode *aExitCode);
-
-struct Command *
-closeCommand(struct Command *self);
-
-/* -------------------------------------------------------------------------- */
-
 END_C_SCOPE;
 
-#endif /* COMMAND_H */
+#endif /* LIBERT_H */
