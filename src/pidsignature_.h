@@ -29,7 +29,7 @@
 #ifndef PIDSIGNATURE_H
 #define PIDSIGNATURE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include "pid_.h"
 

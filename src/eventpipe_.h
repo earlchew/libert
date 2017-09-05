@@ -29,7 +29,7 @@
 #ifndef EVENTPIPE_H
 #define EVENTPIPE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "pipe_.h"
 #include "thread_.h"
 #include "eventlatch_.h"

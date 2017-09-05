@@ -33,7 +33,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 /*
  * This file defines four types of data structures: singly-linked lists,

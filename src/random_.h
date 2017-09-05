@@ -29,7 +29,7 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 /* -------------------------------------------------------------------------- */
 BEGIN_C_SCOPE;

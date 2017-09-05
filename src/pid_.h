@@ -29,7 +29,7 @@
 #ifndef PID_H
 #define PID_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include <sys/types.h>
 

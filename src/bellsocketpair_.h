@@ -29,7 +29,7 @@
 #ifndef BELLSOCKETPAIR_H
 #define BELLSOCKETPAIR_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "socketpair_.h"
 
 BEGIN_C_SCOPE;

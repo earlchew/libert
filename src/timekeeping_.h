@@ -29,7 +29,7 @@
 #ifndef TIMEKEEPING_H
 #define TIMEKEEPING_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "timescale_.h"
 
 #include <stdbool.h>

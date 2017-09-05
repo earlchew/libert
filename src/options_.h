@@ -29,7 +29,7 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "pid_.h"
 
 #include <sys/types.h>

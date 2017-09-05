@@ -29,7 +29,7 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "file_.h"
 
 #include <sys/socket.h>

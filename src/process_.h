@@ -29,7 +29,7 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "timescale_.h"
 #include "method_.h"
 #include "pid_.h"

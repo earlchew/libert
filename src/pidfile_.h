@@ -29,7 +29,7 @@
 #ifndef PIDFILE_H
 #define PIDFILE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "pathname_.h"
 #include "pid_.h"
 

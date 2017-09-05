@@ -29,7 +29,7 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 BEGIN_C_SCOPE;
 

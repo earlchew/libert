@@ -30,7 +30,7 @@
 #ifndef	TREE_H
 #define	TREE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 /*
  * This file defines data structures for different types of trees:

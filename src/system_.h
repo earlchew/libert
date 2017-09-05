@@ -29,7 +29,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include <stddef.h>
 

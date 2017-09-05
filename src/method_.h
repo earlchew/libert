@@ -29,7 +29,7 @@
 #ifndef METHOD_H
 #define METHOD_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "lambda_.h"
 #include "macros_.h"
 

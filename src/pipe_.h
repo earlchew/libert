@@ -29,7 +29,7 @@
 #ifndef PIPE_H
 #define PIPE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "file_.h"
 
 BEGIN_C_SCOPE;

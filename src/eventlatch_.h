@@ -29,7 +29,7 @@
 #ifndef EVENTLATCH_H
 #define EVENTLATCH_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "thread_.h"
 #include "method_.h"
 #include "queue_.h"

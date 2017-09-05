@@ -29,7 +29,7 @@
 #ifndef FDSET_H
 #define FDSET_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include "tree_.h"
 

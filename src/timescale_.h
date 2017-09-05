@@ -29,7 +29,7 @@
 #ifndef TIMESCALE_H
 #define TIMESCALE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include <inttypes.h>
 #include <stddef.h>

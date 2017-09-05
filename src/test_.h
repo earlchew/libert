@@ -29,7 +29,7 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include <inttypes.h>
 #include <stdbool.h>

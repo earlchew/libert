@@ -29,7 +29,7 @@
 #ifndef SOCKETPAIR_H
 #define SOCKETPAIR_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "unixsocket_.h"
 
 BEGIN_C_SCOPE;

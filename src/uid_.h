@@ -29,7 +29,7 @@
 #ifndef UID_H
 #define UID_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include <sys/types.h>
 

@@ -29,7 +29,7 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "method_.h"
 
 #include <stdbool.h>

@@ -29,7 +29,7 @@
 #ifndef JOBCONTROL_H
 #define JOBCONTROL_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "process_.h"
 #include "thread_.h"
 

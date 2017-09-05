@@ -29,7 +29,7 @@
 #ifndef EINTR_H
 #define EINTR_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #ifdef EINTR_MODULE_DEFN_
 

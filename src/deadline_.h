@@ -29,7 +29,7 @@
 #ifndef DEADLINE_H
 #define DEADLINE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "timekeeping_.h"
 #include "process_.h"
 #include "method_.h"

@@ -29,7 +29,7 @@
 #ifndef FD_H
 #define FD_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include <stdbool.h>
 

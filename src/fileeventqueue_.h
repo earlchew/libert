@@ -29,7 +29,7 @@
 #ifndef FILEEVENTQUEUE_H
 #define FILEEVENTQUEUE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "file_.h"
 #include "method_.h"
 

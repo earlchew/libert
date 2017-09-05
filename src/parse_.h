@@ -29,7 +29,7 @@
 #ifndef PARSE_H
 #define PARSE_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 
 #include <inttypes.h>
 

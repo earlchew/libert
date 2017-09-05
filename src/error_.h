@@ -29,7 +29,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#include "compiler_.h"
+#include "ert/compiler.h"
 #include "options_.h"
 #include "printf_.h"
 #include "test_.h"
