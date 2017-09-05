@@ -29,7 +29,7 @@
 
 #include "timekeeping_.h"
 #include "fd_.h"
-#include "error_.h"
+#include "ert/error.h"
 
 #include <time.h>
 #include <fcntl.h>

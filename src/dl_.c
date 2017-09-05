@@ -29,7 +29,7 @@
 
 #include "ert/dl.h"
 #include "thread_.h"
-#include "error_.h"
+#include "ert/error.h"
 
 #include <string.h>
 #include <link.h>

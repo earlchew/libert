@@ -28,7 +28,7 @@
 */
 
 #include "ert/bellsocketpair.h"
-#include "error_.h"
+#include "ert/error.h"
 
 /* -------------------------------------------------------------------------- */
 int

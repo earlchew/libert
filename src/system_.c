@@ -29,7 +29,7 @@
 
 #include "system_.h"
 #include "fd_.h"
-#include "error_.h"
+#include "ert/error.h"
 
 #include <pthread.h>
 #include <string.h>

@@ -34,7 +34,7 @@
 #include "method_.h"
 #include "pid_.h"
 #include "uid_.h"
-#include "error_.h"
+#include "ert/error.h"
 #include "method_.h"
 
 #include <limits.h>

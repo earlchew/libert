@@ -28,7 +28,7 @@
 */
 
 #include "pipe_.h"
-#include "error_.h"
+#include "ert/error.h"
 
 #include <unistd.h>
 #include <fcntl.h>

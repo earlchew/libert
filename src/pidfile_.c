@@ -28,7 +28,7 @@
 */
 
 #include "pidfile_.h"
-#include "error_.h"
+#include "ert/error.h"
 #include "parse_.h"
 #include "pidsignature_.h"
 

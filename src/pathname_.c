@@ -28,7 +28,7 @@
 */
 
 #include "pathname_.h"
-#include "error_.h"
+#include "ert/error.h"
 
 #include <string.h>
 #include <stdlib.h>

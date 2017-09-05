@@ -28,7 +28,7 @@
 */
 
 #include "fileeventqueue_.h"
-#include "error_.h"
+#include "ert/error.h"
 #include "malloc_.h"
 #include "timescale_.h"
 

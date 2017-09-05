@@ -30,7 +30,7 @@
 #define EINTR_MODULE_DEFN_
 #include "eintr_.h"
 #include "ert/dl.h"
-#include "error_.h"
+#include "ert/error.h"
 #include "random_.h"
 
 #include <stdlib.h>

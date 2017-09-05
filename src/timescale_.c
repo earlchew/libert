@@ -28,7 +28,7 @@
 */
 
 #include "timescale_.h"
-#include "error_.h"
+#include "ert/error.h"
 
 #include <sys/time.h>
 

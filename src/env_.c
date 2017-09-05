@@ -29,7 +29,7 @@
 
 #include "ert/env.h"
 #include "parse_.h"
-#include "error_.h"
+#include "ert/error.h"
 
 #include <stdlib.h>
 #include <limits.h>
