@@ -28,7 +28,7 @@
 */
 
 #include "fd_.h"
-#include "deadline_.h"
+#include "ert/deadline.h"
 #include "fdset_.h"
 #include "system_.h"
 #include "eintr_.h"

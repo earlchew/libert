@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "deadline_.h"
+#include "ert/deadline.h"
 
 #include <memory>
 
