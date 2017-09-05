@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "fileeventqueue_.h"
+#include "ert/fileeventqueue.h"
 #include "ert/error.h"
 #include "malloc_.h"
 #include "timescale_.h"

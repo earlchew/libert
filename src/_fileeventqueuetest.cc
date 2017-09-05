@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "fileeventqueue_.h"
+#include "ert/fileeventqueue.h"
 #include "ert/bellsocketpair.h"
 #include "timescale_.h"
 #include "ert/macros.h"
