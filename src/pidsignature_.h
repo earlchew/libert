@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 
-#include "pid_.h"
+#include "ert/pid.h"
 
 #include <stdio.h>
 

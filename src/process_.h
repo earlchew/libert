@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "timescale_.h"
 #include "ert/method.h"
-#include "pid_.h"
+#include "ert/pid.h"
 #include "uid_.h"
 #include "ert/error.h"
 #include "ert/method.h"

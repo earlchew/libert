@@ -30,7 +30,7 @@
 #define ENV_H
 
 #include "ert/compiler.h"
-#include "pid_.h"
+#include "ert/pid.h"
 
 #include <inttypes.h>
 

@@ -30,7 +30,7 @@
 #define OPTIONS_H
 
 #include "ert/compiler.h"
-#include "pid_.h"
+#include "ert/pid.h"
 
 #include <sys/types.h>
 #include <stdbool.h>

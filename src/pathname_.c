@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "pathname_.h"
+#include "ert/pathname.h"
 #include "ert/error.h"
 
 #include <string.h>
