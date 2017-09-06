@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/fd.h"
 #include "ert/method.h"
-#include "queue_.h"
+#include "ert/queue.h"
 
 #include <stdbool.h>
 

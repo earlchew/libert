@@ -33,7 +33,7 @@
 #include "ert/pipe.h"
 #include "thread_.h"
 #include "ert/eventlatch.h"
-#include "queue_.h"
+#include "ert/queue.h"
 
 #include <stdbool.h>
 

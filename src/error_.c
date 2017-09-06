@@ -31,7 +31,7 @@
 #include "ert/fd.h"
 #include "thread_.h"
 #include "ert/process.h"
-#include "queue_.h"
+#include "ert/queue.h"
 
 #include <stdlib.h>
 #include <unistd.h>
