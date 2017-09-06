@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "socketpair_.h"
+#include "ert/socketpair.h"
 #include "ert/error.h"
 
 

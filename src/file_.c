@@ -32,7 +32,7 @@
 #include "ert/process.h"
 #include "thread_.h"
 #include "timekeeping_.h"
-#include "socketpair_.h"
+#include "ert/socketpair.h"
 
 #include <stdlib.h>
 #include <unistd.h>

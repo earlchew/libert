@@ -30,7 +30,7 @@
 #define BELLSOCKETPAIR_H
 
 #include "ert/compiler.h"
-#include "socketpair_.h"
+#include "ert/socketpair.h"
 
 BEGIN_C_SCOPE;
 
