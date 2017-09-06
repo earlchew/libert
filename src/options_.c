@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "options_.h"
+#include "ert/options.h"
 #include "parse_.h"
 #include "process_.h"
 

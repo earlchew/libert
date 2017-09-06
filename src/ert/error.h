@@ -30,7 +30,7 @@
 #define ERROR_H
 
 #include "ert/compiler.h"
-#include "options_.h"
+#include "ert/options.h"
 #include "printf_.h"
 #include "test_.h"
 #include "ert/macros.h"
