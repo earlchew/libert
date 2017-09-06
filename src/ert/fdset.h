@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 
-#include "tree_.h"
+#include "ert/tree.h"
 
 #include <stdio.h>
 
