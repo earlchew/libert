@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "ert/options.h"
-#include "printf_.h"
+#include "ert/printf.h"
 #include "test_.h"
 #include "ert/macros.h"
 

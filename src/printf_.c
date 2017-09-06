@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "printf_.h"
+#include "ert/printf.h"
 
 #include "ert/error.h"
 #include "type_.h"

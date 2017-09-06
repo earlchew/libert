@@ -29,7 +29,7 @@
 
 #include "ert/error.h"
 
-#include "printf_.h"
+#include "ert/printf.h"
 
 #include <unistd.h>
 
