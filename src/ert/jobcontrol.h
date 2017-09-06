@@ -30,7 +30,7 @@
 #define JOBCONTROL_H
 
 #include "ert/compiler.h"
-#include "process_.h"
+#include "ert/process.h"
 #include "thread_.h"
 
 BEGIN_C_SCOPE;

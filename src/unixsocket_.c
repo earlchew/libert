@@ -29,7 +29,7 @@
 
 #include "unixsocket_.h"
 #include "timekeeping_.h"
-#include "process_.h"
+#include "ert/process.h"
 
 
 #include <sys/file.h>

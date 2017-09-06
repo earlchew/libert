@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "timekeeping_.h"
-#include "process_.h"
+#include "ert/process.h"
 #include "ert/method.h"
 
 #include <stdbool.h>

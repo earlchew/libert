@@ -29,7 +29,7 @@
 
 #include "timekeeping_.h"
 #include "ert/pipe.h"
-#include "process_.h"
+#include "ert/process.h"
 
 #include "gtest/gtest.h"
 

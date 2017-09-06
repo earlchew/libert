@@ -28,7 +28,7 @@
 */
 
 #include "ert/file.h"
-#include "process_.h"
+#include "ert/process.h"
 #include "ert/fdset.h"
 
 #include "gtest/gtest.h"

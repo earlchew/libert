@@ -29,7 +29,7 @@
 
 #include "ert/file.h"
 #include "ert/fdset.h"
-#include "process_.h"
+#include "ert/process.h"
 #include "thread_.h"
 #include "timekeeping_.h"
 #include "socketpair_.h"

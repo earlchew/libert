@@ -29,7 +29,7 @@
 
 #include "thread_.h"
 #include "timekeeping_.h"
-#include "process_.h"
+#include "ert/process.h"
 
 #include <unistd.h>
 #include <stdlib.h>

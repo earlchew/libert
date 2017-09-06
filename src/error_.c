@@ -30,7 +30,7 @@
 #include "ert/error.h"
 #include "ert/fd.h"
 #include "thread_.h"
-#include "process_.h"
+#include "ert/process.h"
 #include "queue_.h"
 
 #include <stdlib.h>

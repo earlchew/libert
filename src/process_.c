@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "process_.h"
+#include "ert/process.h"
 #include "ert/pipe.h"
 #include "stdfdfiller_.h"
 #include "ert/bellsocketpair.h"

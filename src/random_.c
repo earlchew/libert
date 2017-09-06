@@ -28,7 +28,7 @@
 */
 
 #include "random_.h"
-#include "process_.h"
+#include "ert/process.h"
 
 #include <unistd.h>
 #include <pthread.h>

@@ -28,7 +28,7 @@
 */
 
 #include "pidsignature_.h"
-#include "process_.h"
+#include "ert/process.h"
 
 #include "gtest/gtest.h"
 
