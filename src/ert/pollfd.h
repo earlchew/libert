@@ -30,7 +30,7 @@
 #define POLLFD_H
 
 #include "ert/compiler.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/method.h"
 
 #include <stdbool.h>

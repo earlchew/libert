@@ -31,7 +31,7 @@
 #include "ert/pipe.h"
 #include "ert/stdfdfiller.h"
 #include "ert/bellsocketpair.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/thread.h"
 #include "ert/fdset.h"
 #include "ert/random.h"

@@ -30,7 +30,7 @@
 #include "unixsocket_.h"
 #include "ert/pipe.h"
 #include "ert/fd.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 
 #include <fcntl.h>
 #include <sys/un.h>

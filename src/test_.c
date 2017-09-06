@@ -29,7 +29,7 @@
 
 #include "ert/test.h"
 #include "ert/error.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/env.h"
 #include "ert/random.h"
 

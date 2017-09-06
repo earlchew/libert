@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/fd.h"
 #include "ert/error.h"
 

@@ -28,7 +28,7 @@
 */
 
 #include "ert/thread.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/process.h"
 
 #include <unistd.h>

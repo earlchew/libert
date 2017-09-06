@@ -30,7 +30,7 @@
 #define DEADLINE_H
 
 #include "ert/compiler.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/process.h"
 #include "ert/method.h"
 

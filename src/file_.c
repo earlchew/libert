@@ -31,7 +31,7 @@
 #include "ert/fdset.h"
 #include "ert/process.h"
 #include "ert/thread.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/socketpair.h"
 
 #include <stdlib.h>

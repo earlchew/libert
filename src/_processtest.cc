@@ -28,7 +28,7 @@
 */
 
 #include "ert/process.h"
-#include "timekeeping_.h"
+#include "ert/timekeeping.h"
 #include "ert/bellsocketpair.h"
 #include "ert/fdset.h"
 #include "ert/thread.h"
