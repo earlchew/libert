@@ -30,7 +30,7 @@
 #define SOCKETPAIR_H
 
 #include "ert/compiler.h"
-#include "unixsocket_.h"
+#include "ert/unixsocket.h"
 
 BEGIN_C_SCOPE;
 
