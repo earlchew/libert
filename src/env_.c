@@ -28,7 +28,7 @@
 */
 
 #include "ert/env.h"
-#include "parse_.h"
+#include "ert/parse.h"
 #include "ert/error.h"
 
 #include <stdlib.h>
