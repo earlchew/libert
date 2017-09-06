@@ -31,7 +31,7 @@
 #include "ert/error.h"
 #include "timekeeping_.h"
 #include "ert/env.h"
-#include "random_.h"
+#include "ert/random.h"
 
 
 #include <sys/mman.h>

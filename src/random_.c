@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "random_.h"
+#include "ert/random.h"
 #include "ert/process.h"
 
 #include <unistd.h>

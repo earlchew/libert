@@ -34,7 +34,7 @@
 #include "timekeeping_.h"
 #include "thread_.h"
 #include "ert/fdset.h"
-#include "random_.h"
+#include "ert/random.h"
 
 #include <stdlib.h>
 #include <unistd.h>

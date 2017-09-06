@@ -31,7 +31,7 @@
 #include "eintr_.h"
 #include "ert/dl.h"
 #include "ert/error.h"
-#include "random_.h"
+#include "ert/random.h"
 
 #include <stdlib.h>
 
