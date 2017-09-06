@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/options.h"
 #include "ert/printf.h"
-#include "test_.h"
+#include "ert/test.h"
 #include "ert/macros.h"
 
 #include <errno.h>

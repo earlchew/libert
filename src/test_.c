@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "test_.h"
+#include "ert/test.h"
 #include "ert/error.h"
 #include "timekeeping_.h"
 #include "ert/env.h"
