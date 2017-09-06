@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "lambda_.h"
+#include "ert/lambda.h"
 
 #include "gtest/gtest.h"
 

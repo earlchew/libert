@@ -30,7 +30,7 @@
 #define METHOD_H
 
 #include "ert/compiler.h"
-#include "lambda_.h"
+#include "ert/lambda.h"
 #include "ert/macros.h"
 
 BEGIN_C_SCOPE;
