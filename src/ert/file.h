@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "ert/fd.h"
-#include "method_.h"
+#include "ert/method.h"
 #include "queue_.h"
 
 #include <stdbool.h>
@@ -52,7 +52,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_FileVisitor
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_FileVisitor
 #define METHOD_CALL_LIST METHOD_CALL_LIST_FileVisitor
-#include "method_.h"
+#include "ert/method.h"
 
 #define FileVisitor(Object_, Method_)          \
     METHOD_TRAMPOLINE(                         \

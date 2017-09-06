@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "method_.h"
+#include "ert/method.h"
 #include "ert/error.h"
 
 /* -------------------------------------------------------------------------- */

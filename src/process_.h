@@ -31,11 +31,11 @@
 
 #include "ert/compiler.h"
 #include "timescale_.h"
-#include "method_.h"
+#include "ert/method.h"
 #include "pid_.h"
 #include "uid_.h"
 #include "ert/error.h"
-#include "method_.h"
+#include "ert/method.h"
 
 #include <limits.h>
 
@@ -67,7 +67,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_PreForkProcessMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_PreForkProcessMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_PreForkProcessMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define PreForkProcessMethod(Object_, Method_)     \
     METHOD_TRAMPOLINE(                             \
@@ -90,7 +90,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_PostForkParentProcessMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_PostForkParentProcessMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_PostForkParentProcessMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define PostForkParentProcessMethod(Object_, Method_)     \
     METHOD_TRAMPOLINE(                                    \
@@ -113,7 +113,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_PostForkChildProcessMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_PostForkChildProcessMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_PostForkChildProcessMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define PostForkChildProcessMethod(Object_, Method_)     \
     METHOD_TRAMPOLINE(                                   \
@@ -136,7 +136,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_ForkProcessMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_ForkProcessMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_ForkProcessMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define ForkProcessMethod(Object_, Method_)     \
     METHOD_TRAMPOLINE(                          \
@@ -159,7 +159,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_WatchProcessMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_WatchProcessMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_WatchProcessMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define WatchProcessMethod(Object_, Method_)    \
     METHOD_TRAMPOLINE(                          \
@@ -184,7 +184,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_WatchProcessSignalMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_WatchProcessSignalMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_WatchProcessSignalMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define WatchProcessSignalMethod(Object_, Method_)      \
     METHOD_TRAMPOLINE(                                  \

@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "timekeeping_.h"
 #include "process_.h"
-#include "method_.h"
+#include "ert/method.h"
 
 #include <stdbool.h>
 
@@ -52,7 +52,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_DeadlinePollMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_DeadlinePollMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_DeadlinePollMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define DeadlinePollMethod(Object_, Method_) \
     METHOD_TRAMPOLINE(                       \
@@ -75,7 +75,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_DeadlineWaitMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_DeadlineWaitMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_DeadlineWaitMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define DeadlineWaitMethod(Object_, Method_) \
     METHOD_TRAMPOLINE(                       \

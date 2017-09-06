@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "method_.h"
+#include "ert/method.h"
 
 #include "gtest/gtest.h"
 
@@ -46,7 +46,7 @@ struct Test { };
 #define METHOD_CONST     METHOD_CONST_TestMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_TestMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_TestMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define TestMethod(Method_, Object_)         \
     METHOD_TRAMPOLINE(                       \
@@ -69,7 +69,7 @@ struct Test { };
 #define METHOD_CONST     METHOD_CONST_ConstTestMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_ConstTestMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_ConstTestMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define ConstTestMethod(Method_, Object_)    \
     METHOD_TRAMPOLINE(                       \

@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "timekeeping_.h"
-#include "method_.h"
+#include "ert/method.h"
 
 #include <stdbool.h>
 #include <limits.h>
@@ -48,7 +48,7 @@
 #define METHOD_CONST     METHOD_CONST_PollFdCompletionMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_PollFdCompletionMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_PollFdCompletionMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define PollFdCompletionMethod(Object_, Method_)  \
     METHOD_TRAMPOLINE(                            \
@@ -74,7 +74,7 @@
 #define METHOD_CONST     METHOD_CONST_PollFdCallbackMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_PollFdCallbackMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_PollFdCallbackMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define PollFdCallbackMethod(Object_, Method_)  \
     METHOD_TRAMPOLINE(                          \

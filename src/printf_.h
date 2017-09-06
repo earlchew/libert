@@ -30,7 +30,7 @@
 #define PRINTF_H
 
 #include "ert/compiler.h"
-#include "method_.h"
+#include "ert/method.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -47,7 +47,7 @@
 #define METHOD_CONST     METHOD_CONST_PrintfMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_PrintfMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_PrintfMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define PrintfMethod_(Object_, Method_)         \
     METHOD_TRAMPOLINE(                          \

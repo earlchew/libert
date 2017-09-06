@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "thread_.h"
-#include "method_.h"
+#include "ert/method.h"
 #include "queue_.h"
 
 #include <stdio.h>
@@ -54,7 +54,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_EventLatchMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_EventLatchMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_EventLatchMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define EventLatchMethod(Object_, Method_)     \
     METHOD_TRAMPOLINE(                         \

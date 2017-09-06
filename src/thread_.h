@@ -30,7 +30,7 @@
 #define THREAD_H
 
 #include "ert/compiler.h"
-#include "method_.h"
+#include "ert/method.h"
 
 #include <stdbool.h>
 #include <pthread.h>
@@ -48,7 +48,7 @@
 #define METHOD_CONST     METHOD_CONST_ThreadMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_ThreadMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_ThreadMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define ThreadMethod(Object_, Method_)          \
     METHOD_TRAMPOLINE(                          \
@@ -71,7 +71,7 @@
 #define METHOD_CONST     METHOD_CONST_MutexRepairMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_MutexRepairMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_MutexRepairMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define MutexRepairMethod(Object_, Method_)          \
     METHOD_TRAMPOLINE(                               \

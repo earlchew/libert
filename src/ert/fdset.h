@@ -69,7 +69,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_FdSetVisitor
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_FdSetVisitor
 #define METHOD_CALL_LIST METHOD_CALL_LIST_FdSetVisitor
-#include "method_.h"
+#include "ert/method.h"
 
 #define FdSetVisitor(Object_, Method_)          \
     METHOD_TRAMPOLINE(                          \

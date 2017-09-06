@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "ert/file.h"
-#include "method_.h"
+#include "ert/method.h"
 
 /* -------------------------------------------------------------------------- */
 BEGIN_C_SCOPE;
@@ -49,7 +49,7 @@ END_C_SCOPE;
 #define METHOD_CONST     METHOD_CONST_FileEventQueueActivityMethod
 #define METHOD_ARG_LIST  METHOD_ARG_LIST_FileEventQueueActivityMethod
 #define METHOD_CALL_LIST METHOD_CALL_LIST_FileEventQueueActivityMethod
-#include "method_.h"
+#include "ert/method.h"
 
 #define FileEventQueueActivityMethod(Object_, Method_)  \
     METHOD_TRAMPOLINE(                                  \
