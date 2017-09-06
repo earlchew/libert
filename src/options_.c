@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "ert/options_.h"
+#include "ert/options.h"
 
 struct Options gErtOptions_;
 

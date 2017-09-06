@@ -979,7 +979,7 @@ errorTerminate(
 
         va_list args;
 
-        if (gOptions.mDebug)
+        if (gErtOptions_.mDebug)
         {
             va_start(args, aFmt);
             print_(aErrCode, aFunction, aFile, aLine, aFmt, args);

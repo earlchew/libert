@@ -28,12 +28,17 @@
 */
 
 #include "ert/error.h"
+#include "ert/options.h"
 
 #include <stdlib.h>
 
 int main(int argc, char **argv)
 {
-    gOptions.mTest = TestLevelRace;
+    initOptions(
+        &(struct Options)
+        {
+        .mTest = TestLevelRace,
+        });
 
     errorEnsure(__func__, __FILE__, __LINE__, 0);
 

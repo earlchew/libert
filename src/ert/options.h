@@ -44,7 +44,7 @@ struct Options
     unsigned mTest;
 };
 
-extern struct Options gOptions;
+extern struct Options gErtOptions_;
 
 /* -------------------------------------------------------------------------- */
 void

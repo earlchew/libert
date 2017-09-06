@@ -277,7 +277,7 @@ logErrorFrameSequence(void);
 
 #define Error_debug_(aLevel, ...)                                       \
     do                                                                  \
-        if ((aLevel) < gOptions.mDebug)                                 \
+        if ((aLevel) < gErtOptions_.mDebug)                             \
             errorDebug(__func__, __FILE__, __LINE__, ## __VA_ARGS__);   \
     while (0)
 

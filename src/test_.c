@@ -52,7 +52,7 @@ static unsigned          moduleInit_;
 bool
 testMode(enum TestLevel aLevel)
 {
-    return aLevel <= gOptions.mTest;
+    return aLevel <= gErtOptions_.mTest;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -62,7 +62,7 @@ testAction(enum TestLevel aLevel)
     /* If test mode has been enabled, choose to activate a test action
      * a small percentage of the time. */
 
-    return aLevel <= gOptions.mTest && 3 > fetchRandomRange(10);
+    return aLevel <= gErtOptions_.mTest && 3 > fetchRandomRange(10);
 }
 
 /* -------------------------------------------------------------------------- */

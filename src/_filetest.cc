@@ -119,14 +119,14 @@ TEST(FileTest, LockFileRegion)
     struct File *file = 0;
 
     {
-        unsigned optTest = gOptions.mTest;
+        unsigned optTest = gErtOptions_.mTest;
 
-        gOptions.mTest = TestLevelRace;
+        gErtOptions_.mTest = TestLevelRace;
 
         ASSERT_EQ(0, temporaryFile(&file_));
         file = &file_;
 
-        gOptions.mTest = optTest;
+        gErtOptions_.mTest = optTest;
     }
 
     // If a process holds a region lock, querying the lock state from
