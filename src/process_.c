@@ -29,7 +29,7 @@
 
 #include "ert/process.h"
 #include "ert/pipe.h"
-#include "stdfdfiller_.h"
+#include "ert/stdfdfiller.h"
 #include "ert/bellsocketpair.h"
 #include "timekeeping_.h"
 #include "thread_.h"

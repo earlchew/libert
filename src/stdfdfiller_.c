@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "stdfdfiller_.h"
+#include "ert/stdfdfiller.h"
 #include "ert/error.h"
 
 #include <unistd.h>
