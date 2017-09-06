@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "jobcontrol_.h"
+#include "ert/jobcontrol.h"
 
 
 
