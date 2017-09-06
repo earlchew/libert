@@ -28,7 +28,7 @@
 */
 
 #include "malloc_.h"
-#include "thread_.h"
+#include "ert/thread.h"
 #include "ert/error.h"
 
 

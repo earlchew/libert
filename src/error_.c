@@ -29,7 +29,7 @@
 
 #include "ert/error.h"
 #include "ert/fd.h"
-#include "thread_.h"
+#include "ert/thread.h"
 #include "ert/process.h"
 #include "ert/queue.h"
 

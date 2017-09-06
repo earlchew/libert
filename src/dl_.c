@@ -28,7 +28,7 @@
 */
 
 #include "ert/dl.h"
-#include "thread_.h"
+#include "ert/thread.h"
 #include "ert/error.h"
 
 #include <string.h>

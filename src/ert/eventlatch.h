@@ -30,7 +30,7 @@
 #define EVENTLATCH_H
 
 #include "ert/compiler.h"
-#include "thread_.h"
+#include "ert/thread.h"
 #include "ert/method.h"
 #include "ert/queue.h"
 

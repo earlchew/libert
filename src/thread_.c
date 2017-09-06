@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "thread_.h"
+#include "ert/thread.h"
 #include "timekeeping_.h"
 #include "ert/process.h"
 

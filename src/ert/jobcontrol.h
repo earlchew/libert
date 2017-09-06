@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 #include "ert/process.h"
-#include "thread_.h"
+#include "ert/thread.h"
 
 BEGIN_C_SCOPE;
 

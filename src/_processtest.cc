@@ -31,7 +31,7 @@
 #include "timekeeping_.h"
 #include "ert/bellsocketpair.h"
 #include "ert/fdset.h"
-#include "thread_.h"
+#include "ert/thread.h"
 #include "ert/macros.h"
 
 #include <string>

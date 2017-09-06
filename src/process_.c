@@ -32,7 +32,7 @@
 #include "ert/stdfdfiller.h"
 #include "ert/bellsocketpair.h"
 #include "timekeeping_.h"
-#include "thread_.h"
+#include "ert/thread.h"
 #include "ert/fdset.h"
 #include "ert/random.h"
 
