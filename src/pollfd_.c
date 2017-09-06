@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "pollfd_.h"
+#include "ert/pollfd.h"
 #include "ert/error.h"
 
 #include <string.h>
