@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "socket_.h"
+#include "ert/socket.h"
 #include "ert/process.h"
 
 #include <fcntl.h>
