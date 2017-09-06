@@ -30,7 +30,7 @@
 #include "ert/printf.h"
 
 #include "ert/error.h"
-#include "type_.h"
+#include "ert/type.h"
 
 #include <printf.h>
 #include <string.h>
