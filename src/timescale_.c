@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "timescale_.h"
+#include "ert/timescale.h"
 #include "ert/error.h"
 
 #include <sys/time.h>

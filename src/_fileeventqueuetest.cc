@@ -29,7 +29,7 @@
 
 #include "ert/fileeventqueue.h"
 #include "ert/bellsocketpair.h"
-#include "timescale_.h"
+#include "ert/timescale.h"
 #include "ert/macros.h"
 
 #include "gtest/gtest.h"

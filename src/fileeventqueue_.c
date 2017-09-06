@@ -30,7 +30,7 @@
 #include "ert/fileeventqueue.h"
 #include "ert/error.h"
 #include "malloc_.h"
-#include "timescale_.h"
+#include "ert/timescale.h"
 
 #include <limits.h>
 #include <sys/epoll.h>

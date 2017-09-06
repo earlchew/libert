@@ -30,7 +30,7 @@
 #define TIMEKEEPING_H
 
 #include "ert/compiler.h"
-#include "timescale_.h"
+#include "ert/timescale.h"
 
 #include <stdbool.h>
 #include <signal.h>
