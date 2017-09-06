@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "uid_.h"
+#include "ert/uid.h"
 
 /* -------------------------------------------------------------------------- */
 struct Uid

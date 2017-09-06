@@ -33,7 +33,7 @@
 #include "ert/timescale.h"
 #include "ert/method.h"
 #include "ert/pid.h"
-#include "uid_.h"
+#include "ert/uid.h"
 #include "ert/error.h"
 #include "ert/method.h"
 
