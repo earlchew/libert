@@ -26,16 +26,18 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef OPTIONS_H_
+#define OPTIONS_H_
 
-#include "ert/options_.h"
+#include "ert/options.h"
 
-struct Options gErtOptions_;
-
-/* -------------------------------------------------------------------------- */
-void
-initOptions(const struct Options *aOpts)
-{
-    gErtOptions_ = *aOpts;
-}
+BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
+extern struct Options gErtOptions_;
+
+/* -------------------------------------------------------------------------- */
+
+END_C_SCOPE;
+
+#endif /* OPTIONS_H_ */

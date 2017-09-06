@@ -42,47 +42,13 @@ struct Options
 {
     unsigned mDebug;
     unsigned mTest;
-
-    struct
-    {
-        bool        mActive;
-        bool        mRelaxed;
-        const char *mPidFile;
-
-    } mClient;
-
-    struct
-    {
-        bool        mActive;
-        const char *mName;
-        const char *mPidFile;
-        int         mTetherFd;
-        const int  *mTether;
-        bool        mIdentify;
-        bool        mQuiet;
-        bool        mOrphaned;
-        bool        mAnnounce;
-
-        struct
-        {
-            unsigned mTether_s;
-            unsigned mUmbilical_s;
-            unsigned mSignal_s;
-            unsigned mDrain_s;
-        } mTimeout;
-
-    } mServer;
-
 };
 
 extern struct Options gOptions;
 
 /* -------------------------------------------------------------------------- */
 void
-initOptions(void);
-
-CHECKED int
-processOptions(int argc, char **argv, const char * const **args);
+initOptions(const struct Options *aOpts);
 
 /* -------------------------------------------------------------------------- */
 
