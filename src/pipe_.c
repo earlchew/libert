@@ -27,7 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "pipe_.h"
+#include "ert/pipe.h"
 #include "ert/error.h"
 
 #include <unistd.h>

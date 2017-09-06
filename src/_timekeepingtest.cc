@@ -28,7 +28,7 @@
 */
 
 #include "timekeeping_.h"
-#include "pipe_.h"
+#include "ert/pipe.h"
 #include "process_.h"
 
 #include "gtest/gtest.h"

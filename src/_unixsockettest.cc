@@ -28,7 +28,7 @@
 */
 
 #include "unixsocket_.h"
-#include "pipe_.h"
+#include "ert/pipe.h"
 #include "ert/fd.h"
 #include "timekeeping_.h"
 

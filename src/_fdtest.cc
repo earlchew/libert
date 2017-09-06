@@ -28,7 +28,7 @@
 */
 
 #include "ert/fd.h"
-#include "pipe_.h"
+#include "ert/pipe.h"
 #include "ert/fdset.h"
 
 #include "gtest/gtest.h"

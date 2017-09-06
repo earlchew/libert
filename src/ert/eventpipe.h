@@ -30,7 +30,7 @@
 #define EVENTPIPE_H
 
 #include "ert/compiler.h"
-#include "pipe_.h"
+#include "ert/pipe.h"
 #include "thread_.h"
 #include "ert/eventlatch.h"
 #include "queue_.h"
