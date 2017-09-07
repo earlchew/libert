@@ -58,27 +58,27 @@ struct FdRange
 ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_FdSetVisitor    int
-#define METHOD_CONST_FdSetVisitor
-#define METHOD_ARG_LIST_FdSetVisitor  (struct FdRange aFdRange_)
-#define METHOD_CALL_LIST_FdSetVisitor (aFdRange_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_FdSetVisitor    int
+#define ERT_METHOD_CONST_FdSetVisitor
+#define ERT_METHOD_ARG_LIST_FdSetVisitor  (struct FdRange aFdRange_)
+#define ERT_METHOD_CALL_LIST_FdSetVisitor (aFdRange_)
 
-#define METHOD_NAME      FdSetVisitor
-#define METHOD_RETURN    METHOD_RETURN_FdSetVisitor
-#define METHOD_CONST     METHOD_CONST_FdSetVisitor
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_FdSetVisitor
-#define METHOD_CALL_LIST METHOD_CALL_LIST_FdSetVisitor
+#define ERT_METHOD_NAME      FdSetVisitor
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_FdSetVisitor
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_FdSetVisitor
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_FdSetVisitor
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_FdSetVisitor
 #include "ert/method.h"
 
 #define FdSetVisitor(Object_, Method_)          \
-    METHOD_TRAMPOLINE(                          \
+    ERT_METHOD_TRAMPOLINE(                      \
         Object_, Method_,                       \
         FdSetVisitor_,                          \
-        METHOD_RETURN_FdSetVisitor,             \
-        METHOD_CONST_FdSetVisitor,              \
-        METHOD_ARG_LIST_FdSetVisitor,           \
-        METHOD_CALL_LIST_FdSetVisitor)
+        ERT_METHOD_RETURN_FdSetVisitor,         \
+        ERT_METHOD_CONST_FdSetVisitor,          \
+        ERT_METHOD_ARG_LIST_FdSetVisitor,       \
+        ERT_METHOD_CALL_LIST_FdSetVisitor)
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;

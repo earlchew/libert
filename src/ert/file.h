@@ -41,27 +41,27 @@ ERT_BEGIN_C_SCOPE;
 struct File;
 ERT_END_C_SCOPE;
 
-#define METHOD_DEFINITION
-#define METHOD_RETURN_FileVisitor    int
-#define METHOD_CONST_FileVisitor
-#define METHOD_ARG_LIST_FileVisitor  (const struct File *aFile_)
-#define METHOD_CALL_LIST_FileVisitor (aFile_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_FileVisitor    int
+#define ERT_METHOD_CONST_FileVisitor
+#define ERT_METHOD_ARG_LIST_FileVisitor  (const struct File *aFile_)
+#define ERT_METHOD_CALL_LIST_FileVisitor (aFile_)
 
-#define METHOD_NAME      FileVisitor
-#define METHOD_RETURN    METHOD_RETURN_FileVisitor
-#define METHOD_CONST     METHOD_CONST_FileVisitor
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_FileVisitor
-#define METHOD_CALL_LIST METHOD_CALL_LIST_FileVisitor
+#define ERT_METHOD_NAME      FileVisitor
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_FileVisitor
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_FileVisitor
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_FileVisitor
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_FileVisitor
 #include "ert/method.h"
 
 #define FileVisitor(Object_, Method_)          \
-    METHOD_TRAMPOLINE(                         \
+    ERT_METHOD_TRAMPOLINE(                         \
         Object_, Method_,                      \
         FileVisitor_,                          \
-        METHOD_RETURN_FileVisitor,             \
-        METHOD_CONST_FileVisitor,              \
-        METHOD_ARG_LIST_FileVisitor,           \
-        METHOD_CALL_LIST_FileVisitor)
+        ERT_METHOD_RETURN_FileVisitor,             \
+        ERT_METHOD_CONST_FileVisitor,              \
+        ERT_METHOD_ARG_LIST_FileVisitor,           \
+        ERT_METHOD_CALL_LIST_FileVisitor)
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
@@ -136,11 +136,13 @@ readFile(struct File *self,
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
 writeFileDeadline(struct File *self,
-                  const char *aBuf, size_t aLen, struct Deadline *aDeadline);
+                  const char *aBuf, size_t aLen,
+                  struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED ssize_t
 readFileDeadline(struct File *self,
-                 char *aBuf, size_t aLen, struct Deadline *aDeadline);
+                 char *aBuf, size_t aLen,
+                 struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int

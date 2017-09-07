@@ -688,7 +688,8 @@ readFile(struct File *self,
 /* -------------------------------------------------------------------------- */
 ssize_t
 writeFileDeadline(struct File *self,
-                  const char *aBuf, size_t aLen, struct Deadline *aDeadline)
+                  const char *aBuf, size_t aLen,
+                  struct Ert_Deadline *aDeadline)
 {
     return writeFdDeadline(self->mFd, aBuf, aLen, aDeadline);
 }
@@ -696,7 +697,7 @@ writeFileDeadline(struct File *self,
 /* -------------------------------------------------------------------------- */
 ssize_t
 readFileDeadline(struct File *self,
-                 char *aBuf, size_t aLen, struct Deadline *aDeadline)
+                 char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return readFdDeadline(self->mFd, aBuf, aLen, aDeadline);
 }

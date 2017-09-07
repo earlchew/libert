@@ -38,27 +38,27 @@ ERT_BEGIN_C_SCOPE;
 struct FileEventQueue;
 ERT_END_C_SCOPE;
 
-#define METHOD_DEFINITION
-#define METHOD_RETURN_FileEventQueueActivityMethod    int
-#define METHOD_CONST_FileEventQueueActivityMethod
-#define METHOD_ARG_LIST_FileEventQueueActivityMethod  ()
-#define METHOD_CALL_LIST_FileEventQueueActivityMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_FileEventQueueActivityMethod    int
+#define ERT_METHOD_CONST_FileEventQueueActivityMethod
+#define ERT_METHOD_ARG_LIST_FileEventQueueActivityMethod  ()
+#define ERT_METHOD_CALL_LIST_FileEventQueueActivityMethod ()
 
-#define METHOD_NAME      FileEventQueueActivityMethod
-#define METHOD_RETURN    METHOD_RETURN_FileEventQueueActivityMethod
-#define METHOD_CONST     METHOD_CONST_FileEventQueueActivityMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_FileEventQueueActivityMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_FileEventQueueActivityMethod
+#define ERT_METHOD_NAME      FileEventQueueActivityMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_FileEventQueueActivityMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_FileEventQueueActivityMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_FileEventQueueActivityMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_FileEventQueueActivityMethod
 #include "ert/method.h"
 
-#define FileEventQueueActivityMethod(Object_, Method_)  \
-    METHOD_TRAMPOLINE(                                  \
-        Object_, Method_,                               \
-        FileEventQueueActivityMethod_,                  \
-        METHOD_RETURN_FileEventQueueActivityMethod,     \
-        METHOD_CONST_FileEventQueueActivityMethod,      \
-        METHOD_ARG_LIST_FileEventQueueActivityMethod,   \
-        METHOD_CALL_LIST_FileEventQueueActivityMethod)
+#define FileEventQueueActivityMethod(Object_, Method_)      \
+    ERT_METHOD_TRAMPOLINE(                                  \
+        Object_, Method_,                                   \
+        FileEventQueueActivityMethod_,                      \
+        ERT_METHOD_RETURN_FileEventQueueActivityMethod,     \
+        ERT_METHOD_CONST_FileEventQueueActivityMethod,      \
+        ERT_METHOD_ARG_LIST_FileEventQueueActivityMethod,   \
+        ERT_METHOD_CALL_LIST_FileEventQueueActivityMethod)
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;

@@ -37,53 +37,53 @@
 #include <limits.h>
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_PollFdCompletionMethod    bool
-#define METHOD_CONST_PollFdCompletionMethod
-#define METHOD_ARG_LIST_PollFdCompletionMethod  ()
-#define METHOD_CALL_LIST_PollFdCompletionMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_PollFdCompletionMethod    bool
+#define ERT_METHOD_CONST_PollFdCompletionMethod
+#define ERT_METHOD_ARG_LIST_PollFdCompletionMethod  ()
+#define ERT_METHOD_CALL_LIST_PollFdCompletionMethod ()
 
-#define METHOD_NAME      PollFdCompletionMethod
-#define METHOD_RETURN    METHOD_RETURN_PollFdCompletionMethod
-#define METHOD_CONST     METHOD_CONST_PollFdCompletionMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_PollFdCompletionMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_PollFdCompletionMethod
+#define ERT_METHOD_NAME      PollFdCompletionMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PollFdCompletionMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_PollFdCompletionMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_PollFdCompletionMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PollFdCompletionMethod
 #include "ert/method.h"
 
 #define PollFdCompletionMethod(Object_, Method_)  \
-    METHOD_TRAMPOLINE(                            \
+    ERT_METHOD_TRAMPOLINE(                            \
         Object_, Method_,                         \
         PollFdCompletionMethod_,                  \
-        METHOD_RETURN_PollFdCompletionMethod,     \
-        METHOD_CONST_PollFdCompletionMethod,      \
-        METHOD_ARG_LIST_PollFdCompletionMethod,   \
-        METHOD_CALL_LIST_PollFdCompletionMethod)
+        ERT_METHOD_RETURN_PollFdCompletionMethod,     \
+        ERT_METHOD_CONST_PollFdCompletionMethod,      \
+        ERT_METHOD_ARG_LIST_PollFdCompletionMethod,   \
+        ERT_METHOD_CALL_LIST_PollFdCompletionMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_PollFdCallbackMethod \
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_PollFdCallbackMethod \
     int
-#define METHOD_CONST_PollFdCallbackMethod
-#define METHOD_ARG_LIST_PollFdCallbackMethod \
+#define ERT_METHOD_CONST_PollFdCallbackMethod
+#define ERT_METHOD_ARG_LIST_PollFdCallbackMethod \
     (const struct EventClockTime *aPollTime_)
-#define METHOD_CALL_LIST_PollFdCallbackMethod \
+#define ERT_METHOD_CALL_LIST_PollFdCallbackMethod \
     (aPollTime_)
 
-#define METHOD_NAME      PollFdCallbackMethod
-#define METHOD_RETURN    METHOD_RETURN_PollFdCallbackMethod
-#define METHOD_CONST     METHOD_CONST_PollFdCallbackMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_PollFdCallbackMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_PollFdCallbackMethod
+#define ERT_METHOD_NAME      PollFdCallbackMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PollFdCallbackMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_PollFdCallbackMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_PollFdCallbackMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PollFdCallbackMethod
 #include "ert/method.h"
 
-#define PollFdCallbackMethod(Object_, Method_)  \
-    METHOD_TRAMPOLINE(                          \
-        Object_, Method_,                       \
-        PollFdCallbackMethod_,                  \
-        METHOD_RETURN_PollFdCallbackMethod,     \
-        METHOD_CONST_PollFdCallbackMethod,      \
-        METHOD_ARG_LIST_PollFdCallbackMethod,   \
-        METHOD_CALL_LIST_PollFdCallbackMethod)
+#define PollFdCallbackMethod(Object_, Method_)      \
+    ERT_METHOD_TRAMPOLINE(                          \
+        Object_, Method_,                           \
+        PollFdCallbackMethod_,                      \
+        ERT_METHOD_RETURN_PollFdCallbackMethod,     \
+        ERT_METHOD_CONST_PollFdCallbackMethod,      \
+        ERT_METHOD_ARG_LIST_PollFdCallbackMethod,   \
+        ERT_METHOD_CALL_LIST_PollFdCallbackMethod)
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;

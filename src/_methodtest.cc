@@ -35,50 +35,50 @@
 struct Test { };
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_TestMethod    int
-#define METHOD_CONST_TestMethod
-#define METHOD_ARG_LIST_TestMethod  (int *aValue_)
-#define METHOD_CALL_LIST_TestMethod (aValue_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_TestMethod    int
+#define ERT_METHOD_CONST_TestMethod
+#define ERT_METHOD_ARG_LIST_TestMethod  (int *aValue_)
+#define ERT_METHOD_CALL_LIST_TestMethod (aValue_)
 
-#define METHOD_NAME      TestMethod
-#define METHOD_RETURN    METHOD_RETURN_TestMethod
-#define METHOD_CONST     METHOD_CONST_TestMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_TestMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_TestMethod
+#define ERT_METHOD_NAME      TestMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_TestMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_TestMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_TestMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_TestMethod
 #include "ert/method.h"
 
 #define TestMethod(Method_, Object_)         \
-    METHOD_TRAMPOLINE(                       \
+    ERT_METHOD_TRAMPOLINE(                       \
         Method_, Object_,                    \
         TestMethod_,                         \
-        METHOD_RETURN_TestMethod,            \
-        METHOD_CONST_TestMethod,             \
-        METHOD_ARG_LIST_TestMethod,          \
-        METHOD_CALL_LIST_TestMethod)
+        ERT_METHOD_RETURN_TestMethod,            \
+        ERT_METHOD_CONST_TestMethod,             \
+        ERT_METHOD_ARG_LIST_TestMethod,          \
+        ERT_METHOD_CALL_LIST_TestMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_ConstTestMethod    int
-#define METHOD_CONST_ConstTestMethod     const
-#define METHOD_ARG_LIST_ConstTestMethod  (const int *aValue_)
-#define METHOD_CALL_LIST_ConstTestMethod (aValue_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_ConstTestMethod    int
+#define ERT_METHOD_CONST_ConstTestMethod     const
+#define ERT_METHOD_ARG_LIST_ConstTestMethod  (const int *aValue_)
+#define ERT_METHOD_CALL_LIST_ConstTestMethod (aValue_)
 
-#define METHOD_NAME      ConstTestMethod
-#define METHOD_RETURN    METHOD_RETURN_ConstTestMethod
-#define METHOD_CONST     METHOD_CONST_ConstTestMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_ConstTestMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_ConstTestMethod
+#define ERT_METHOD_NAME      ConstTestMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_ConstTestMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_ConstTestMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_ConstTestMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_ConstTestMethod
 #include "ert/method.h"
 
 #define ConstTestMethod(Method_, Object_)    \
-    METHOD_TRAMPOLINE(                       \
+    ERT_METHOD_TRAMPOLINE(                   \
         Method_, Object_,                    \
         ConstTestMethod_,                    \
-        METHOD_RETURN_ConstTestMethod,       \
-        METHOD_CONST_ConstTestMethod,        \
-        METHOD_ARG_LIST_ConstTestMethod,     \
-        METHOD_CALL_LIST_ConstTestMethod)
+        ERT_METHOD_RETURN_ConstTestMethod,   \
+        ERT_METHOD_CONST_ConstTestMethod,    \
+        ERT_METHOD_ARG_LIST_ConstTestMethod, \
+        ERT_METHOD_CALL_LIST_ConstTestMethod)
 
 /* -------------------------------------------------------------------------- */
 struct TestMethodContext

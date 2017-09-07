@@ -90,7 +90,8 @@ readSocket(struct Socket *self,
 /* -------------------------------------------------------------------------- */
 ssize_t
 writeSocketDeadline(struct Socket *self,
-                    const char *aBuf, size_t aLen, struct Deadline *aDeadline)
+                    const char *aBuf, size_t aLen,
+                    struct Ert_Deadline *aDeadline)
 {
     return writeFileDeadline(self->mFile, aBuf, aLen, aDeadline);
 }
@@ -98,7 +99,7 @@ writeSocketDeadline(struct Socket *self,
 /* -------------------------------------------------------------------------- */
 ssize_t
 readSocketDeadline(struct Socket *self,
-                   char *aBuf, size_t aLen, struct Deadline *aDeadline)
+                   char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return readFileDeadline(self->mFile, aBuf, aLen, aDeadline);
 }

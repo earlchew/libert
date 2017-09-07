@@ -37,50 +37,50 @@
 #include <signal.h>
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_ThreadMethod    int
-#define METHOD_CONST_ThreadMethod
-#define METHOD_ARG_LIST_ThreadMethod  ()
-#define METHOD_CALL_LIST_ThreadMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_ThreadMethod    int
+#define ERT_METHOD_CONST_ThreadMethod
+#define ERT_METHOD_ARG_LIST_ThreadMethod  ()
+#define ERT_METHOD_CALL_LIST_ThreadMethod ()
 
-#define METHOD_NAME      ThreadMethod
-#define METHOD_RETURN    METHOD_RETURN_ThreadMethod
-#define METHOD_CONST     METHOD_CONST_ThreadMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_ThreadMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_ThreadMethod
+#define ERT_METHOD_NAME      ThreadMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_ThreadMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_ThreadMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_ThreadMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_ThreadMethod
 #include "ert/method.h"
 
 #define ThreadMethod(Object_, Method_)          \
-    METHOD_TRAMPOLINE(                          \
+    ERT_METHOD_TRAMPOLINE(                      \
         Object_, Method_,                       \
         ThreadMethod_,                          \
-        METHOD_RETURN_ThreadMethod,             \
-        METHOD_CONST_ThreadMethod,              \
-        METHOD_ARG_LIST_ThreadMethod,           \
-        METHOD_CALL_LIST_ThreadMethod)
+        ERT_METHOD_RETURN_ThreadMethod,         \
+        ERT_METHOD_CONST_ThreadMethod,          \
+        ERT_METHOD_ARG_LIST_ThreadMethod,       \
+        ERT_METHOD_CALL_LIST_ThreadMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_MutexRepairMethod    int
-#define METHOD_CONST_MutexRepairMethod
-#define METHOD_ARG_LIST_MutexRepairMethod  ()
-#define METHOD_CALL_LIST_MutexRepairMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_MutexRepairMethod    int
+#define ERT_METHOD_CONST_MutexRepairMethod
+#define ERT_METHOD_ARG_LIST_MutexRepairMethod  ()
+#define ERT_METHOD_CALL_LIST_MutexRepairMethod ()
 
-#define METHOD_NAME      MutexRepairMethod
-#define METHOD_RETURN    METHOD_RETURN_MutexRepairMethod
-#define METHOD_CONST     METHOD_CONST_MutexRepairMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_MutexRepairMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_MutexRepairMethod
+#define ERT_METHOD_NAME      MutexRepairMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_MutexRepairMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_MutexRepairMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_MutexRepairMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_MutexRepairMethod
 #include "ert/method.h"
 
 #define MutexRepairMethod(Object_, Method_)          \
-    METHOD_TRAMPOLINE(                               \
+    ERT_METHOD_TRAMPOLINE(                           \
         Object_, Method_,                            \
         MutexRepairMethod_,                          \
-        METHOD_RETURN_MutexRepairMethod,             \
-        METHOD_CONST_MutexRepairMethod,              \
-        METHOD_ARG_LIST_MutexRepairMethod,           \
-        METHOD_CALL_LIST_MutexRepairMethod)
+        ERT_METHOD_RETURN_MutexRepairMethod,         \
+        ERT_METHOD_CONST_MutexRepairMethod,          \
+        ERT_METHOD_ARG_LIST_MutexRepairMethod,       \
+        ERT_METHOD_CALL_LIST_MutexRepairMethod)
 
 /* -------------------------------------------------------------------------- */
 /* Reference Counting Shared Objects

@@ -52,18 +52,18 @@ TEST_F(DeadlineTest, ErrorReturn)
 {
     class DeadlineTest *fixture = this;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
-    EXPECT_EQ(0, createDeadline(&deadline_, 0));
+    EXPECT_EQ(0, ert_createDeadline(&deadline_, 0));
     deadline = &deadline_;
 
     // Verify that an error return from the poll method returns immediately.
 
     EXPECT_EQ(-1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
@@ -71,7 +71,7 @@ TEST_F(DeadlineTest, ErrorReturn)
                               errno = EPERM;
                               return -1;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -85,16 +85,16 @@ TEST_F(DeadlineTest, ErrorReturn)
     // Verify that an error return from the wait method returns.
 
     EXPECT_EQ(-1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -106,25 +106,25 @@ TEST_F(DeadlineTest, ErrorReturn)
                           }))));
     EXPECT_EQ(EINVAL, errno);
 
-    deadline = closeDeadline(deadline);
+    deadline = ert_closeDeadline(deadline);
 }
 
 TEST_F(DeadlineTest, SuccessReturn)
 {
     class DeadlineTest *fixture = this;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
-    EXPECT_EQ(0, createDeadline(&deadline_, 0));
+    EXPECT_EQ(0, ert_createDeadline(&deadline_, 0));
     deadline = &deadline_;
 
     // Verify a successful return from the poll method.
 
     EXPECT_EQ(1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *self),
@@ -132,7 +132,7 @@ TEST_F(DeadlineTest, SuccessReturn)
                               self->mResult = 1;
                               return 1;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *self,
@@ -143,21 +143,21 @@ TEST_F(DeadlineTest, SuccessReturn)
                               return 0;
                           }))));
     EXPECT_EQ(1, mResult);
-    EXPECT_FALSE(ownDeadlineExpired(deadline));
+    EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
 
     // Verify a successful return from the wait method.
 
     EXPECT_EQ(1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *self),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *self,
@@ -167,19 +167,19 @@ TEST_F(DeadlineTest, SuccessReturn)
                               return 1;
                           }))));
     EXPECT_EQ(2, mResult);
-    EXPECT_FALSE(ownDeadlineExpired(deadline));
+    EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
 
-    deadline = closeDeadline(deadline);
+    deadline = ert_closeDeadline(deadline);
 }
 
 TEST_F(DeadlineTest, InfiniteTimeout)
 {
     class DeadlineTest *fixture = this;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
-    EXPECT_EQ(0, createDeadline(&deadline_, 0));
+    EXPECT_EQ(0, ert_createDeadline(&deadline_, 0));
     deadline = &deadline_;
 
     // Verify that an infinite timeout does not expire.
@@ -187,16 +187,16 @@ TEST_F(DeadlineTest, InfiniteTimeout)
     for (unsigned ix = 0; 100 > ix; ++ix)
     {
         EXPECT_EQ(0,
-                  checkDeadlineExpired(
+                  ert_checkDeadlineExpired(
                       deadline,
-                      DeadlinePollMethod(
+                      Ert_DeadlinePollMethod(
                           fixture,
                           LAMBDA(
                               int, (class DeadlineTest *),
                               {
                                   return 0;
                               })),
-                      DeadlineWaitMethod(
+                      Ert_DeadlineWaitMethod(
                           fixture,
                           LAMBDA(
                               int, (class DeadlineTest *,
@@ -205,35 +205,35 @@ TEST_F(DeadlineTest, InfiniteTimeout)
                                   EXPECT_FALSE(aTimeout);
                                   return 0;
                               }))));
-        EXPECT_FALSE(ownDeadlineExpired(deadline));
+        EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
     }
 
-    deadline = closeDeadline(deadline);
+    deadline = ert_closeDeadline(deadline);
 }
 
 TEST_F(DeadlineTest, ZeroTimeout)
 {
     class DeadlineTest *fixture = this;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
-    EXPECT_EQ(0, createDeadline(&deadline_, &ZeroDuration));
+    EXPECT_EQ(0, ert_createDeadline(&deadline_, &ZeroDuration));
     deadline = &deadline_;
 
     // Verify that a zero timeout is not expired on the first iteration.
 
     EXPECT_EQ(0,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -242,19 +242,19 @@ TEST_F(DeadlineTest, ZeroTimeout)
                               EXPECT_FALSE(aTimeout->duration.ns);
                               return 0;
                           }))));
-    EXPECT_FALSE(ownDeadlineExpired(deadline));
+    EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
 
     EXPECT_EQ(-1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -264,21 +264,21 @@ TEST_F(DeadlineTest, ZeroTimeout)
                               return 0;
                           }))));
     EXPECT_EQ(ETIMEDOUT, errno);
-    EXPECT_TRUE(ownDeadlineExpired(deadline));
+    EXPECT_TRUE(ert_ownDeadlineExpired(deadline));
 
     // Verify that once expired, the deadline remains expired.
 
     EXPECT_EQ(-1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -288,36 +288,36 @@ TEST_F(DeadlineTest, ZeroTimeout)
                               return 0;
                           }))));
     EXPECT_EQ(ETIMEDOUT, errno);
-    EXPECT_TRUE(ownDeadlineExpired(deadline));
+    EXPECT_TRUE(ert_ownDeadlineExpired(deadline));
 
-    deadline = closeDeadline(deadline);
+    deadline = ert_closeDeadline(deadline);
 }
 
 TEST_F(DeadlineTest, NonZeroTimeout)
 {
     class DeadlineTest *fixture = this;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
     struct Duration oneSecond = Duration(NSECS(Seconds(1)));
 
-    EXPECT_EQ(0, createDeadline(&deadline_, &oneSecond));
+    EXPECT_EQ(0, ert_createDeadline(&deadline_, &oneSecond));
     deadline = &deadline_;
 
     // Verify that the deadline is never expired on the first iteration.
 
     EXPECT_EQ(0,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -326,21 +326,21 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                               EXPECT_TRUE(aTimeout);
                               return 0;
                           }))));
-    EXPECT_FALSE(ownDeadlineExpired(deadline));
+    EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
 
     // Verify that the deadline is not expired on the second iteration.
 
     EXPECT_EQ(0,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -350,21 +350,21 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                               monotonicSleep(*aTimeout);
                               return 0;
                           }))));
-    EXPECT_FALSE(ownDeadlineExpired(deadline));
+    EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
 
     // Verify that the deadline is expired on the third iteration.
 
     EXPECT_EQ(-1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -374,36 +374,36 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                               return 0;
                           }))));
     EXPECT_EQ(ETIMEDOUT, errno);
-    EXPECT_TRUE(ownDeadlineExpired(deadline));
+    EXPECT_TRUE(ert_ownDeadlineExpired(deadline));
 
-    deadline = closeDeadline(deadline);
+    deadline = ert_closeDeadline(deadline);
 }
 
 TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
 {
     class DeadlineTest *fixture = this;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
     struct Duration oneNanosecond = Duration(NanoSeconds(1));
 
-    EXPECT_EQ(0, createDeadline(&deadline_, &oneNanosecond));
+    EXPECT_EQ(0, ert_createDeadline(&deadline_, &oneNanosecond));
     deadline = &deadline_;
 
     // Verify that the first iteration always succeeds.
 
     EXPECT_EQ(1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 1;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -413,23 +413,23 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
                               EXPECT_TRUE(false);
                               return 0;
                           }))));
-    EXPECT_FALSE(ownDeadlineExpired(deadline));
+    EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
 
     // Verify that the second iteration expires.
 
     monotonicSleep(Duration(NSECS(Seconds(1))));
 
     EXPECT_EQ(-1,
-              checkDeadlineExpired(
+              ert_checkDeadlineExpired(
                   deadline,
-                  DeadlinePollMethod(
+                  Ert_DeadlinePollMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 1;
                           })),
-                  DeadlineWaitMethod(
+                  Ert_DeadlineWaitMethod(
                       fixture,
                       LAMBDA(
                           int, (class DeadlineTest *,
@@ -440,9 +440,9 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
                               return 0;
                           }))));
     EXPECT_EQ(ETIMEDOUT, errno);
-    EXPECT_TRUE(ownDeadlineExpired(deadline));
+    EXPECT_TRUE(ert_ownDeadlineExpired(deadline));
 
-    deadline = closeDeadline(deadline);
+    deadline = ert_closeDeadline(deadline);
 }
 
 #include "../googletest/src/gtest_main.cc"

@@ -55,145 +55,145 @@ struct PreForkProcess
 ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_PreForkProcessMethod    int
-#define METHOD_CONST_PreForkProcessMethod
-#define METHOD_ARG_LIST_PreForkProcessMethod  (const \
-                                               struct PreForkProcess *aPreFork_)
-#define METHOD_CALL_LIST_PreForkProcessMethod (aPreFork_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_PreForkProcessMethod    int
+#define ERT_METHOD_CONST_PreForkProcessMethod
+#define ERT_METHOD_ARG_LIST_PreForkProcessMethod  \
+    (const struct PreForkProcess *aPreFork_)
+#define ERT_METHOD_CALL_LIST_PreForkProcessMethod (aPreFork_)
 
-#define METHOD_NAME      PreForkProcessMethod
-#define METHOD_RETURN    METHOD_RETURN_PreForkProcessMethod
-#define METHOD_CONST     METHOD_CONST_PreForkProcessMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_PreForkProcessMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_PreForkProcessMethod
+#define ERT_METHOD_NAME      PreForkProcessMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PreForkProcessMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_PreForkProcessMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_PreForkProcessMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PreForkProcessMethod
 #include "ert/method.h"
 
 #define PreForkProcessMethod(Object_, Method_)     \
-    METHOD_TRAMPOLINE(                             \
+    ERT_METHOD_TRAMPOLINE(                         \
         Object_, Method_,                          \
         PreForkProcessMethod_,                     \
-        METHOD_RETURN_PreForkProcessMethod,        \
-        METHOD_CONST_PreForkProcessMethod,         \
-        METHOD_ARG_LIST_PreForkProcessMethod,      \
-        METHOD_CALL_LIST_PreForkProcessMethod)
+        ERT_METHOD_RETURN_PreForkProcessMethod,    \
+        ERT_METHOD_CONST_PreForkProcessMethod,     \
+        ERT_METHOD_ARG_LIST_PreForkProcessMethod,  \
+        ERT_METHOD_CALL_LIST_PreForkProcessMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_PostForkParentProcessMethod    int
-#define METHOD_CONST_PostForkParentProcessMethod
-#define METHOD_ARG_LIST_PostForkParentProcessMethod  (struct Pid aChildPid_)
-#define METHOD_CALL_LIST_PostForkParentProcessMethod (aChildPid_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_PostForkParentProcessMethod    int
+#define ERT_METHOD_CONST_PostForkParentProcessMethod
+#define ERT_METHOD_ARG_LIST_PostForkParentProcessMethod  (struct Pid aChildPid_)
+#define ERT_METHOD_CALL_LIST_PostForkParentProcessMethod (aChildPid_)
 
-#define METHOD_NAME      PostForkParentProcessMethod
-#define METHOD_RETURN    METHOD_RETURN_PostForkParentProcessMethod
-#define METHOD_CONST     METHOD_CONST_PostForkParentProcessMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_PostForkParentProcessMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_PostForkParentProcessMethod
+#define ERT_METHOD_NAME      PostForkParentProcessMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PostForkParentProcessMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_PostForkParentProcessMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_PostForkParentProcessMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PostForkParentProcessMethod
 #include "ert/method.h"
 
 #define PostForkParentProcessMethod(Object_, Method_)     \
-    METHOD_TRAMPOLINE(                                    \
+    ERT_METHOD_TRAMPOLINE(                                \
         Object_, Method_,                                 \
         PostForkParentProcessMethod_,                     \
-        METHOD_RETURN_PostForkParentProcessMethod,        \
-        METHOD_CONST_PostForkParentProcessMethod,         \
-        METHOD_ARG_LIST_PostForkParentProcessMethod,      \
-        METHOD_CALL_LIST_PostForkParentProcessMethod)
+        ERT_METHOD_RETURN_PostForkParentProcessMethod,    \
+        ERT_METHOD_CONST_PostForkParentProcessMethod,     \
+        ERT_METHOD_ARG_LIST_PostForkParentProcessMethod,  \
+        ERT_METHOD_CALL_LIST_PostForkParentProcessMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_PostForkChildProcessMethod    int
-#define METHOD_CONST_PostForkChildProcessMethod
-#define METHOD_ARG_LIST_PostForkChildProcessMethod  ()
-#define METHOD_CALL_LIST_PostForkChildProcessMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_PostForkChildProcessMethod    int
+#define ERT_METHOD_CONST_PostForkChildProcessMethod
+#define ERT_METHOD_ARG_LIST_PostForkChildProcessMethod  ()
+#define ERT_METHOD_CALL_LIST_PostForkChildProcessMethod ()
 
-#define METHOD_NAME      PostForkChildProcessMethod
-#define METHOD_RETURN    METHOD_RETURN_PostForkChildProcessMethod
-#define METHOD_CONST     METHOD_CONST_PostForkChildProcessMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_PostForkChildProcessMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_PostForkChildProcessMethod
+#define ERT_METHOD_NAME      PostForkChildProcessMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PostForkChildProcessMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_PostForkChildProcessMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_PostForkChildProcessMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PostForkChildProcessMethod
 #include "ert/method.h"
 
 #define PostForkChildProcessMethod(Object_, Method_)     \
-    METHOD_TRAMPOLINE(                                   \
+    ERT_METHOD_TRAMPOLINE(                               \
         Object_, Method_,                                \
         PostForkChildProcessMethod_,                     \
-        METHOD_RETURN_PostForkChildProcessMethod,        \
-        METHOD_CONST_PostForkChildProcessMethod,         \
-        METHOD_ARG_LIST_PostForkChildProcessMethod,      \
-        METHOD_CALL_LIST_PostForkChildProcessMethod)
+        ERT_METHOD_RETURN_PostForkChildProcessMethod,    \
+        ERT_METHOD_CONST_PostForkChildProcessMethod,     \
+        ERT_METHOD_ARG_LIST_PostForkChildProcessMethod,  \
+        ERT_METHOD_CALL_LIST_PostForkChildProcessMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_ForkProcessMethod    int
-#define METHOD_CONST_ForkProcessMethod
-#define METHOD_ARG_LIST_ForkProcessMethod  ()
-#define METHOD_CALL_LIST_ForkProcessMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_ForkProcessMethod    int
+#define ERT_METHOD_CONST_ForkProcessMethod
+#define ERT_METHOD_ARG_LIST_ForkProcessMethod  ()
+#define ERT_METHOD_CALL_LIST_ForkProcessMethod ()
 
-#define METHOD_NAME      ForkProcessMethod
-#define METHOD_RETURN    METHOD_RETURN_ForkProcessMethod
-#define METHOD_CONST     METHOD_CONST_ForkProcessMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_ForkProcessMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_ForkProcessMethod
+#define ERT_METHOD_NAME      ForkProcessMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_ForkProcessMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_ForkProcessMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_ForkProcessMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_ForkProcessMethod
 #include "ert/method.h"
 
 #define ForkProcessMethod(Object_, Method_)     \
-    METHOD_TRAMPOLINE(                          \
+    ERT_METHOD_TRAMPOLINE(                      \
         Object_, Method_,                       \
         ForkProcessMethod_,                     \
-        METHOD_RETURN_ForkProcessMethod,        \
-        METHOD_CONST_ForkProcessMethod,         \
-        METHOD_ARG_LIST_ForkProcessMethod,      \
-        METHOD_CALL_LIST_ForkProcessMethod)
+        ERT_METHOD_RETURN_ForkProcessMethod,    \
+        ERT_METHOD_CONST_ForkProcessMethod,     \
+        ERT_METHOD_ARG_LIST_ForkProcessMethod,  \
+        ERT_METHOD_CALL_LIST_ForkProcessMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_WatchProcessMethod    int
-#define METHOD_CONST_WatchProcessMethod
-#define METHOD_ARG_LIST_WatchProcessMethod  ()
-#define METHOD_CALL_LIST_WatchProcessMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_WatchProcessMethod    int
+#define ERT_METHOD_CONST_WatchProcessMethod
+#define ERT_METHOD_ARG_LIST_WatchProcessMethod  ()
+#define ERT_METHOD_CALL_LIST_WatchProcessMethod ()
 
-#define METHOD_NAME      WatchProcessMethod
-#define METHOD_RETURN    METHOD_RETURN_WatchProcessMethod
-#define METHOD_CONST     METHOD_CONST_WatchProcessMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_WatchProcessMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_WatchProcessMethod
+#define ERT_METHOD_NAME      WatchProcessMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_WatchProcessMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_WatchProcessMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_WatchProcessMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_WatchProcessMethod
 #include "ert/method.h"
 
 #define WatchProcessMethod(Object_, Method_)    \
-    METHOD_TRAMPOLINE(                          \
+    ERT_METHOD_TRAMPOLINE(                      \
         Object_, Method_,                       \
         WatchProcessMethod_,                    \
-        METHOD_RETURN_WatchProcessMethod,       \
-        METHOD_CONST_WatchProcessMethod,        \
-        METHOD_ARG_LIST_WatchProcessMethod,     \
-        METHOD_CALL_LIST_WatchProcessMethod)
+        ERT_METHOD_RETURN_WatchProcessMethod,   \
+        ERT_METHOD_CONST_WatchProcessMethod,    \
+        ERT_METHOD_ARG_LIST_WatchProcessMethod, \
+        ERT_METHOD_CALL_LIST_WatchProcessMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_WatchProcessSignalMethod    int
-#define METHOD_CONST_WatchProcessSignalMethod
-#define METHOD_ARG_LIST_WatchProcessSignalMethod  (int aSigNum_,     \
-                                                   struct Pid aPid_, \
-                                                   struct Uid aUid_)
-#define METHOD_CALL_LIST_WatchProcessSignalMethod (aSigNum_, aPid_, aUid_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_WatchProcessSignalMethod    int
+#define ERT_METHOD_CONST_WatchProcessSignalMethod
+#define ERT_METHOD_ARG_LIST_WatchProcessSignalMethod  (int aSigNum_,     \
+                                                       struct Pid aPid_, \
+                                                       struct Uid aUid_)
+#define ERT_METHOD_CALL_LIST_WatchProcessSignalMethod (aSigNum_, aPid_, aUid_)
 
-#define METHOD_NAME      WatchProcessSignalMethod
-#define METHOD_RETURN    METHOD_RETURN_WatchProcessSignalMethod
-#define METHOD_CONST     METHOD_CONST_WatchProcessSignalMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_WatchProcessSignalMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_WatchProcessSignalMethod
+#define ERT_METHOD_NAME      WatchProcessSignalMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_WatchProcessSignalMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_WatchProcessSignalMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_WatchProcessSignalMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_WatchProcessSignalMethod
 #include "ert/method.h"
 
 #define WatchProcessSignalMethod(Object_, Method_)      \
-    METHOD_TRAMPOLINE(                                  \
+    ERT_METHOD_TRAMPOLINE(                              \
         Object_, Method_,                               \
         WatchProcessSignalMethod_,                      \
-        METHOD_RETURN_WatchProcessSignalMethod,         \
-        METHOD_CONST_WatchProcessSignalMethod,          \
-        METHOD_ARG_LIST_WatchProcessSignalMethod,       \
-        METHOD_CALL_LIST_WatchProcessSignalMethod)
+        ERT_METHOD_RETURN_WatchProcessSignalMethod,     \
+        ERT_METHOD_CONST_WatchProcessSignalMethod,      \
+        ERT_METHOD_ARG_LIST_WatchProcessSignalMethod,   \
+        ERT_METHOD_CALL_LIST_WatchProcessSignalMethod)
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;

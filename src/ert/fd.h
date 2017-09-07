@@ -37,7 +37,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct Deadline;
+struct Ert_Deadline;
 struct Duration;
 struct FdSet;
 
@@ -164,11 +164,11 @@ readFdRaw(int aFd,
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
 writeFdDeadline(int aFd,
-                const char *aBuf, size_t aLen, struct Deadline *aDeadline);
+                const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED ssize_t
 readFdDeadline(int aFd,
-               char *aBuf, size_t aLen, struct Deadline *aDeadline);
+               char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
@@ -196,10 +196,10 @@ waitFdReadReady(int aFd, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-waitFdWriteReadyDeadline(int aFd, struct Deadline *aDeadline);
+waitFdWriteReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED int
-waitFdReadReadyDeadline(int aFd, struct Deadline *aDeadline);
+waitFdReadReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 

@@ -41,29 +41,29 @@ ERT_BEGIN_C_SCOPE;
 struct EventClockTime;
 ERT_END_C_SCOPE;
 
-#define METHOD_DEFINITION
-#define METHOD_RETURN_EventLatchMethod    int
-#define METHOD_CONST_EventLatchMethod
-#define METHOD_ARG_LIST_EventLatchMethod  (     \
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_EventLatchMethod    int
+#define ERT_METHOD_CONST_EventLatchMethod
+#define ERT_METHOD_ARG_LIST_EventLatchMethod  ( \
     bool                         aEnabled_,     \
     const struct EventClockTime *aPollTime_)
-#define METHOD_CALL_LIST_EventLatchMethod (aEnabled_, aPollTime_)
+#define ERT_METHOD_CALL_LIST_EventLatchMethod (aEnabled_, aPollTime_)
 
-#define METHOD_NAME      EventLatchMethod
-#define METHOD_RETURN    METHOD_RETURN_EventLatchMethod
-#define METHOD_CONST     METHOD_CONST_EventLatchMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_EventLatchMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_EventLatchMethod
+#define ERT_METHOD_NAME      EventLatchMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_EventLatchMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_EventLatchMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_EventLatchMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_EventLatchMethod
 #include "ert/method.h"
 
 #define EventLatchMethod(Object_, Method_)     \
-    METHOD_TRAMPOLINE(                         \
+    ERT_METHOD_TRAMPOLINE(                     \
         Object_, Method_,                      \
         EventLatchMethod_,                     \
-        METHOD_RETURN_EventLatchMethod,        \
-        METHOD_CONST_EventLatchMethod,         \
-        METHOD_ARG_LIST_EventLatchMethod,      \
-        METHOD_CALL_LIST_EventLatchMethod)
+        ERT_METHOD_RETURN_EventLatchMethod,    \
+        ERT_METHOD_CONST_EventLatchMethod,     \
+        ERT_METHOD_ARG_LIST_EventLatchMethod,  \
+        ERT_METHOD_CALL_LIST_EventLatchMethod)
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;

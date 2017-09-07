@@ -911,7 +911,7 @@ waitFdReadReady(int aFd, const struct Duration *aTimeout)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-waitFdReadyDeadline_(int aFd, unsigned aPollMask, struct Deadline *aDeadline)
+waitFdReadyDeadline_(int aFd, unsigned aPollMask, struct Ert_Deadline *aDeadline)
 {
     int rc = -1;
 
@@ -932,9 +932,9 @@ waitFdReadyDeadline_(int aFd, unsigned aPollMask, struct Deadline *aDeadline)
         };
 
         ERROR_IF(
-            (ready = checkDeadlineExpired(
+            (ready = ert_checkDeadlineExpired(
                 aDeadline,
-                DeadlinePollMethod(
+                Ert_DeadlinePollMethod(
                     &readyDeadline,
                     LAMBDA(
                         int, (struct FdReadyDeadline *self_),
@@ -944,7 +944,7 @@ waitFdReadyDeadline_(int aFd, unsigned aPollMask, struct Deadline *aDeadline)
                                 self_->mPollMask,
                                 &ZeroDuration);
                         })),
-                DeadlineWaitMethod(
+                Ert_DeadlineWaitMethod(
                     &readyDeadline,
                     LAMBDA(
                         int, (struct FdReadyDeadline *self_,
@@ -968,13 +968,13 @@ Finally:
 }
 
 int
-waitFdWriteReadyDeadline(int aFd, struct Deadline *aDeadline)
+waitFdWriteReadyDeadline(int aFd, struct Ert_Deadline *aDeadline)
 {
     return waitFdReadyDeadline_(aFd, POLLOUT, aDeadline);
 }
 
 int
-waitFdReadReadyDeadline(int aFd, struct Deadline *aDeadline)
+waitFdReadReadyDeadline(int aFd, struct Ert_Deadline *aDeadline)
 {
     return waitFdReadyDeadline_(aFd, POLLPRI | POLLIN, aDeadline);
 }
@@ -982,7 +982,7 @@ waitFdReadReadyDeadline(int aFd, struct Deadline *aDeadline)
 /* -------------------------------------------------------------------------- */
 static ssize_t
 readFdDeadline_(int aFd,
-                char *aBuf, size_t aLen, struct Deadline *aDeadline,
+                char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline,
                 ssize_t aReader(int, void *, size_t))
 {
     ssize_t rc = -1;
@@ -997,16 +997,16 @@ readFdDeadline_(int aFd,
             int ready = -1;
 
             ERROR_IF(
-                (ready = checkDeadlineExpired(
+                (ready = ert_checkDeadlineExpired(
                     aDeadline,
-                    DeadlinePollMethod(
+                    Ert_DeadlinePollMethod(
                         &aFd,
                         LAMBDA(
                             int, (int *fd),
                             {
                                 return waitFdReadReady(*fd, &ZeroDuration);
                             })),
-                    DeadlineWaitMethod(
+                    Ert_DeadlineWaitMethod(
                         &aFd,
                         LAMBDA(
                             int, (int *fd,
@@ -1067,7 +1067,7 @@ Finally:
 
 ssize_t
 readFdDeadline(int aFd,
-               char *aBuf, size_t aLen, struct Deadline *aDeadline)
+               char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return readFdDeadline_(aFd, aBuf, aLen, aDeadline, read);
 }
@@ -1075,7 +1075,7 @@ readFdDeadline(int aFd,
 /* -------------------------------------------------------------------------- */
 static ssize_t
 writeFdDeadline_(int aFd,
-                 const char *aBuf, size_t aLen, struct Deadline *aDeadline,
+                 const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline,
                  ssize_t aWriter(int, const void *, size_t))
 {
     ssize_t rc = -1;
@@ -1090,16 +1090,16 @@ writeFdDeadline_(int aFd,
             int ready = -1;
 
             ERROR_IF(
-                (ready = checkDeadlineExpired(
+                (ready = ert_checkDeadlineExpired(
                     aDeadline,
-                    DeadlinePollMethod(
+                    Ert_DeadlinePollMethod(
                         &aFd,
                         LAMBDA(
                             int, (int *fd),
                             {
                                 return waitFdWriteReady(*fd, &ZeroDuration);
                             })),
-                    DeadlineWaitMethod(
+                    Ert_DeadlineWaitMethod(
                         &aFd,
                         LAMBDA(
                             int, (int *fd,
@@ -1160,7 +1160,7 @@ Finally:
 
 ssize_t
 writeFdDeadline(int aFd,
-                const char *aBuf, size_t aLen, struct Deadline *aDeadline)
+                const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return writeFdDeadline_(aFd, aBuf, aLen, aDeadline, &write);
 }
@@ -1173,13 +1173,13 @@ readFd_(int aFd,
 {
     ssize_t rc = -1;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
     if (aTimeout)
     {
         ERROR_IF(
-            createDeadline(&deadline_, aTimeout));
+            ert_createDeadline(&deadline_, aTimeout));
         deadline = &deadline_;
     }
 
@@ -1189,7 +1189,7 @@ Finally:
 
     FINALLY
     ({
-        deadline = closeDeadline(deadline);
+        deadline = ert_closeDeadline(deadline);
     });
 
     return rc;
@@ -1217,13 +1217,13 @@ writeFd_(int aFd,
 {
     ssize_t rc = -1;
 
-    struct Deadline  deadline_;
-    struct Deadline *deadline = 0;
+    struct Ert_Deadline  deadline_;
+    struct Ert_Deadline *deadline = 0;
 
     if (aTimeout)
     {
         ERROR_IF(
-            createDeadline(&deadline_, aTimeout));
+            ert_createDeadline(&deadline_, aTimeout));
         deadline = &deadline_;
     }
 
@@ -1233,7 +1233,7 @@ Finally:
 
     FINALLY
     ({
-        deadline = closeDeadline(deadline);
+        deadline = ert_closeDeadline(deadline);
     });
 
     return rc;
