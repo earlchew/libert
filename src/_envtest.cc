@@ -35,12 +35,12 @@ TEST(EnvTest, Delete)
 {
     unsetenv("NIL");
 
-    EXPECT_EQ(-1, deleteEnv("NIL"));
+    EXPECT_EQ(-1, ert_deleteEnv("NIL"));
     EXPECT_EQ(ENOENT, errno);
 
     setenv("EMPTY", "", 1);
-    EXPECT_EQ(0,  deleteEnv("EMPTY"));
-    EXPECT_EQ(-1, deleteEnv("EMPTY"));
+    EXPECT_EQ(0,  ert_deleteEnv("EMPTY"));
+    EXPECT_EQ(-1, ert_deleteEnv("EMPTY"));
     EXPECT_EQ(ENOENT, errno);
 }
 
@@ -51,16 +51,16 @@ TEST(EnvTest, String)
     {
         const char *value;
 
-        EXPECT_EQ(-1, getEnvString("NIL", &value));
+        EXPECT_EQ(-1, ert_getEnvString("NIL", &value));
         EXPECT_EQ(ENOENT, errno);
     }
 
     {
-        EXPECT_EQ(0, strcmp("abc", setEnvString("VALUE", "abc")));
+        EXPECT_EQ(0, strcmp("abc", ert_setEnvString("VALUE", "abc")));
 
         const char *value;
 
-        EXPECT_EQ(0,  getEnvString("VALUE", &value));
+        EXPECT_EQ(0,  ert_getEnvString("VALUE", &value));
         EXPECT_EQ(0,  strcmp("abc", value));
     }
 }
@@ -72,7 +72,7 @@ TEST(EnvTest, Int)
     {
         int value;
 
-        EXPECT_EQ(-1, getEnvInt("NIL", &value));
+        EXPECT_EQ(-1, ert_getEnvInt("NIL", &value));
     }
 
     {
@@ -81,36 +81,36 @@ TEST(EnvTest, Int)
 
         int value;
 
-        EXPECT_EQ(-1, getEnvInt("EMPTY0", &value));
+        EXPECT_EQ(-1, ert_getEnvInt("EMPTY0", &value));
         EXPECT_EQ(EINVAL, errno);
-        EXPECT_EQ(-1, getEnvInt("EMPTY1", &value));
+        EXPECT_EQ(-1, ert_getEnvInt("EMPTY1", &value));
         EXPECT_EQ(EINVAL, errno);
     }
 
     {
-        EXPECT_EQ(0, strcmp("0", setEnvInt("VALUE", 0)));
+        EXPECT_EQ(0, strcmp("0", ert_setEnvInt("VALUE", 0)));
 
         int value;
 
-        EXPECT_EQ(0,  getEnvInt("VALUE", &value));
+        EXPECT_EQ(0,  ert_getEnvInt("VALUE", &value));
         EXPECT_EQ(0,  value);
     }
 
     {
-        EXPECT_EQ(0, strcmp("-1", setEnvInt("VALUE", -1)));
+        EXPECT_EQ(0, strcmp("-1", ert_setEnvInt("VALUE", -1)));
 
         int value;
 
-        EXPECT_EQ(0,  getEnvInt("VALUE", &value));
+        EXPECT_EQ(0,  ert_getEnvInt("VALUE", &value));
         EXPECT_EQ(-1, value);
     }
 
     {
-        EXPECT_EQ(0, strcmp("1", setEnvInt("VALUE", 1)));
+        EXPECT_EQ(0, strcmp("1", ert_setEnvInt("VALUE", 1)));
 
         int value;
 
-        EXPECT_EQ(0, getEnvInt("VALUE", &value));
+        EXPECT_EQ(0, ert_getEnvInt("VALUE", &value));
         EXPECT_EQ(1, value);
     }
 }
@@ -122,7 +122,7 @@ TEST(EnvTest, UInt)
     {
         unsigned value;
 
-        EXPECT_EQ(-1, getEnvUInt("NIL", &value));
+        EXPECT_EQ(-1, ert_getEnvUInt("NIL", &value));
         EXPECT_EQ(ENOENT, errno);
     }
 
@@ -132,36 +132,36 @@ TEST(EnvTest, UInt)
 
         unsigned value;
 
-        EXPECT_EQ(-1, getEnvUInt("EMPTY0", &value));
+        EXPECT_EQ(-1, ert_getEnvUInt("EMPTY0", &value));
         EXPECT_EQ(EINVAL, errno);
-        EXPECT_EQ(-1, getEnvUInt("EMPTY1", &value));
+        EXPECT_EQ(-1, ert_getEnvUInt("EMPTY1", &value));
         EXPECT_EQ(EINVAL, errno);
     }
 
     {
-        EXPECT_EQ(0, strcmp("0", setEnvUInt("VALUE", 0)));
+        EXPECT_EQ(0, strcmp("0", ert_setEnvUInt("VALUE", 0)));
 
         unsigned value;
 
-        EXPECT_EQ(0, getEnvUInt("VALUE", &value));
+        EXPECT_EQ(0, ert_getEnvUInt("VALUE", &value));
         EXPECT_EQ(0u, value);
     }
 
     {
-        EXPECT_EQ(0, strcmp("-1", setEnvString("VALUE", "-1")));
+        EXPECT_EQ(0, strcmp("-1", ert_setEnvString("VALUE", "-1")));
 
         unsigned value;
 
-        EXPECT_EQ(-1,  getEnvUInt("VALUE", &value));
+        EXPECT_EQ(-1,  ert_getEnvUInt("VALUE", &value));
         EXPECT_EQ(EINVAL, errno);
     }
 
     {
-        EXPECT_EQ(0, strcmp("1", setEnvUInt("VALUE", 1)));
+        EXPECT_EQ(0, strcmp("1", ert_setEnvUInt("VALUE", 1)));
 
         unsigned value;
 
-        EXPECT_EQ(0, getEnvUInt("VALUE", &value));
+        EXPECT_EQ(0, ert_getEnvUInt("VALUE", &value));
         EXPECT_EQ(1u, value);
     }
 }

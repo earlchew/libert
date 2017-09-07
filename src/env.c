@@ -36,7 +36,7 @@
 
 /* -------------------------------------------------------------------------- */
 int
-deleteEnv(const char *aName)
+ert_deleteEnv(const char *aName)
 {
     int rc = -1;
 
@@ -64,7 +64,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-getEnvString(const char *aName, const char **aValue)
+ert_getEnvString(const char *aName, const char **aValue)
 {
     int rc = -1;
 
@@ -85,7 +85,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 const char *
-setEnvString(const char *aName, const char *aValue)
+ert_setEnvString(const char *aName, const char *aValue)
 {
     const char *rc = 0;
 
@@ -95,7 +95,7 @@ setEnvString(const char *aName, const char *aValue)
     const char *env;
 
     ERROR_IF(
-        getEnvString(aName, &env));
+        ert_getEnvString(aName, &env));
 
     rc = env;
 
@@ -108,14 +108,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-getEnvInt(const char *aName, int *aValue)
+ert_getEnvInt(const char *aName, int *aValue)
 {
     int rc = -1;
 
     const char *env;
 
     ERROR_IF(
-        getEnvString(aName, &env));
+        ert_getEnvString(aName, &env));
 
     ERROR_IF(
         parseInt(env, aValue));
@@ -131,7 +131,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 const char *
-setEnvInt(const char *aName, int aValue)
+ert_setEnvInt(const char *aName, int aValue)
 {
     const char *rc = 0;
 
@@ -143,7 +143,7 @@ setEnvInt(const char *aName, int aValue)
     const char *env = 0;
 
     ERROR_UNLESS(
-        (env = setEnvString(aName, value)));
+        (env = ert_setEnvString(aName, value)));
 
     rc = env;
 
@@ -156,14 +156,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-getEnvUInt(const char *aName, unsigned *aValue)
+ert_getEnvUInt(const char *aName, unsigned *aValue)
 {
     int rc = -1;
 
     const char *env;
 
     ERROR_IF(
-        getEnvString(aName, &env));
+        ert_getEnvString(aName, &env));
 
     ERROR_IF(
         parseUInt(env, aValue));
@@ -179,7 +179,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 const char *
-setEnvUInt(const char *aName, unsigned aValue)
+ert_setEnvUInt(const char *aName, unsigned aValue)
 {
     const char *rc = 0;
 
@@ -191,7 +191,7 @@ setEnvUInt(const char *aName, unsigned aValue)
     const char *env = 0;
 
     ERROR_UNLESS(
-        (env = setEnvString(aName, value)));
+        (env = ert_setEnvString(aName, value)));
 
     rc = env;
 
@@ -204,14 +204,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-getEnvUInt64(const char *aName, uint64_t *aValue)
+ert_getEnvUInt64(const char *aName, uint64_t *aValue)
 {
     int rc = -1;
 
     const char *env;
 
     ERROR_IF(
-        getEnvString(aName, &env));
+        ert_getEnvString(aName, &env));
 
     ERROR_IF(
         parseUInt64(env, aValue));
@@ -227,7 +227,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 const char *
-setEnvUInt64(const char *aName, uint64_t aValue)
+ert_setEnvUInt64(const char *aName, uint64_t aValue)
 {
     const char *rc = 0;
 
@@ -239,7 +239,7 @@ setEnvUInt64(const char *aName, uint64_t aValue)
     const char *env = 0;
 
     ERROR_UNLESS(
-        (env = setEnvString(aName, value)));
+        (env = ert_setEnvString(aName, value)));
 
     rc = env;
 
@@ -252,14 +252,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-getEnvPid(const char *aName, struct Pid *aValue)
+ert_getEnvPid(const char *aName, struct Pid *aValue)
 {
     int rc = -1;
 
     const char *env;
 
     ERROR_IF(
-        getEnvString(aName, &env));
+        ert_getEnvString(aName, &env));
 
     ERROR_IF(
         parsePid(env, aValue));
@@ -275,7 +275,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 const char *
-setEnvPid(const char *aName, struct Pid aValue)
+ert_setEnvPid(const char *aName, struct Pid aValue)
 {
     const char *rc = 0;
 
@@ -287,7 +287,7 @@ setEnvPid(const char *aName, struct Pid aValue)
     const char *env = 0;
 
     ERROR_UNLESS(
-        (env = setEnvString(aName, value)));
+        (env = ert_setEnvString(aName, value)));
 
     rc = env;
 

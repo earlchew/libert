@@ -152,7 +152,7 @@ Test_init(struct TestModule *self, const char *aErrorEnv)
         if (aErrorEnv)
         {
             ERROR_IF(
-                getEnvUInt64(aErrorEnv, &errorTrigger) && ENOENT != errno);
+                ert_getEnvUInt64(aErrorEnv, &errorTrigger) && ENOENT != errno);
         }
 
         ERROR_IF(

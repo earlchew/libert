@@ -40,37 +40,37 @@ ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-deleteEnv(const char *aName);
+ert_deleteEnv(const char *aName);
 
 const char *
-setEnvInt(const char *aName, int aValue);
+ert_setEnvInt(const char *aName, int aValue);
 
 ERT_CHECKED int
-getEnvInt(const char *aName, int *aValue);
+ert_getEnvInt(const char *aName, int *aValue);
 
 const char *
-setEnvUInt(const char *aName, unsigned aValue);
+ert_setEnvUInt(const char *aName, unsigned aValue);
 
 ERT_CHECKED int
-getEnvUInt(const char *aName, unsigned *aValue);
+ert_getEnvUInt(const char *aName, unsigned *aValue);
 
 const char *
-setEnvUInt64(const char *aName, uint64_t aValue);
+ert_setEnvUInt64(const char *aName, uint64_t aValue);
 
 ERT_CHECKED int
-getEnvUInt64(const char *aName, uint64_t *aValue);
+ert_getEnvUInt64(const char *aName, uint64_t *aValue);
 
 const char *
-setEnvString(const char *aName, const char *aValue);
+ert_setEnvString(const char *aName, const char *aValue);
 
 ERT_CHECKED int
-getEnvString(const char *aName, const char **aValue);
+ert_getEnvString(const char *aName, const char **aValue);
 
 const char *
-setEnvPid(const char *aName, struct Pid aValue);
+ert_setEnvPid(const char *aName, struct Pid aValue);
 
 ERT_CHECKED int
-getEnvPid(const char *aName, struct Pid *aValue);
+ert_getEnvPid(const char *aName, struct Pid *aValue);
 
 /* -------------------------------------------------------------------------- */
 
