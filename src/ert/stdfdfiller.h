@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/file.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct StdFdFiller
 {
@@ -41,14 +41,14 @@ struct StdFdFiller
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createStdFdFiller(struct StdFdFiller *self);
 
-CHECKED struct StdFdFiller *
+ERT_CHECKED struct StdFdFiller *
 closeStdFdFiller(struct StdFdFiller *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_STDFDFILLER_H */

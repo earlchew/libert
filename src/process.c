@@ -287,7 +287,7 @@ dispatchSigHandler_(int aSigNum)
     });
 }
 
-static CHECKED int
+static ERT_CHECKED int
 changeSigAction_(unsigned          aSigNum,
                  struct sigaction  aNewAction,
                  struct sigaction *aOldAction)
@@ -423,7 +423,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 resetProcessSigPipe_(void)
 {
     int rc = -1;
@@ -488,7 +488,7 @@ sigCont_(int aSigNum)
     lock = unlockThreadSigMutex(lock);
 }
 
-static CHECKED int
+static ERT_CHECKED int
 hookProcessSigCont_(void)
 {
     int rc = -1;
@@ -507,7 +507,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 unhookProcessSigCont_(void)
 {
     int rc = -1;
@@ -527,7 +527,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 updateProcessSigContMethod_(struct WatchProcessMethod aMethod)
 {
     struct ThreadSigMutex *lock =
@@ -538,7 +538,7 @@ updateProcessSigContMethod_(struct WatchProcessMethod aMethod)
     return 0;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 resetProcessSigCont_(void)
 {
     int rc = -1;
@@ -579,7 +579,7 @@ unwatchProcessSigCont(void)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED unsigned
+static ERT_CHECKED unsigned
 fetchProcessSigContTracker_(void)
 {
     /* Because this function is called from lockMutex(), amongst other places,
@@ -651,7 +651,7 @@ sigStop_(int aSigNum)
     lock = unlockThreadSigMutex(lock);
 }
 
-static CHECKED int
+static ERT_CHECKED int
 hookProcessSigStop_(void)
 {
     int rc = -1;
@@ -671,7 +671,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 unhookProcessSigStop_(void)
 {
     int rc = -1;
@@ -691,7 +691,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 updateProcessSigStopMethod_(struct WatchProcessMethod aMethod)
 {
     struct ThreadSigMutex *lock =
@@ -702,7 +702,7 @@ updateProcessSigStopMethod_(struct WatchProcessMethod aMethod)
     return 0;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 resetProcessSigStop_(void)
 {
     int rc = -1;
@@ -756,7 +756,7 @@ sigChld_(int aSigNum)
     }
 }
 
-static CHECKED int
+static ERT_CHECKED int
 resetProcessChildrenWatch_(void)
 {
     int rc = -1;
@@ -833,7 +833,7 @@ clockTick_(int aSigNum)
     }
 }
 
-static CHECKED int
+static ERT_CHECKED int
 resetProcessClockWatch_(void)
 {
     int rc = -1;
@@ -1036,7 +1036,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 resetProcessSignalsWatch_(void)
 {
     int rc  = 0;
@@ -1077,7 +1077,7 @@ unwatchProcessSignals(void)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 resetSignals_(void)
 {
     int rc = -1;
@@ -1231,7 +1231,7 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 createProcessLock_(struct ProcessLock *self)
 {
     int rc = -1;
@@ -1261,7 +1261,7 @@ closeProcessLock_(struct ProcessLock *self)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 lockProcessLock_(struct ProcessLock *self)
 {
     int rc = -1;
@@ -1412,7 +1412,7 @@ ownProcessAppLockFile(const struct ProcessAppLock *self)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED struct ProcessForkChildLock_ *
+static ERT_CHECKED struct ProcessForkChildLock_ *
 acquireProcessForkChildLock_(struct ProcessForkChildLock_ *self)
 {
     struct Tid tid = ownThreadId();
@@ -1439,7 +1439,7 @@ acquireProcessForkChildLock_(struct ProcessForkChildLock_ *self)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED struct ProcessForkChildLock_ *
+static ERT_CHECKED struct ProcessForkChildLock_ *
 relinquishProcessForkChildLock_(struct ProcessForkChildLock_ *self,
                                 unsigned                      aRelease)
 {
@@ -1484,14 +1484,14 @@ relinquishProcessForkChildLock_(struct ProcessForkChildLock_ *self,
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED struct ProcessForkChildLock_ *
+static ERT_CHECKED struct ProcessForkChildLock_ *
 releaseProcessForkChildLock_(struct ProcessForkChildLock_ *self)
 {
     return relinquishProcessForkChildLock_(self, 1);
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED struct ProcessForkChildLock_ *
+static ERT_CHECKED struct ProcessForkChildLock_ *
 resetProcessForkChildLock_(struct ProcessForkChildLock_ *self)
 {
     return relinquishProcessForkChildLock_(self, self->mCount);
@@ -1702,7 +1702,7 @@ struct ForkProcessChannel_
     struct Ert_BellSocketPair *mResultSocket;
 };
 
-static CHECKED struct ForkProcessChannel_ *
+static ERT_CHECKED struct ForkProcessChannel_ *
 closeForkProcessChannel_(
     struct ForkProcessChannel_ *self)
 {
@@ -1734,7 +1734,7 @@ closeForkProcessChannelResultParent_(
     ert_closeBellSocketPairParent(self->mResultSocket);
 }
 
-static CHECKED int
+static ERT_CHECKED int
 createForkProcessChannel_(
     struct ForkProcessChannel_ *self, struct ForkProcessChannel_ **aList)
 {
@@ -1780,7 +1780,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 includeForkProcessChannelFdSet_(
     const struct ForkProcessChannel_ *self,
     struct FdSet                     *aFdSet)
@@ -1816,7 +1816,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 excludeForkProcessChannelFdSet_(
     const struct ForkProcessChannel_ *self,
     struct FdSet                     *aFdSet)
@@ -1852,7 +1852,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 sendForkProcessChannelResult_(
     struct ForkProcessChannel_      *self,
     const struct ForkProcessResult_ *aResult)
@@ -1875,7 +1875,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 recvForkProcessChannelResult_(
     struct ForkProcessChannel_ *self,
     struct ForkProcessResult_  *aResult)
@@ -1898,7 +1898,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 recvForkProcessChannelAcknowledgement_(
     struct ForkProcessChannel_ *self)
 {
@@ -1916,7 +1916,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 sendForkProcessChannelAcknowledgement_(
     struct ForkProcessChannel_ *self)
 {
@@ -1925,7 +1925,7 @@ sendForkProcessChannelAcknowledgement_(
 
 /* -------------------------------------------------------------------------- */
 static void
-callForkMethod_(struct ForkProcessMethod aMethod) NORETURN;
+callForkMethod_(struct ForkProcessMethod aMethod) ERT_NORETURN;
 
 static void
 callForkMethod_(struct ForkProcessMethod aMethod)
@@ -1975,7 +1975,7 @@ callForkMethod_(struct ForkProcessMethod aMethod)
     exitProcess(status);
 }
 
-static CHECKED int
+static ERT_CHECKED int
 forkProcessChild_PostParent_(
     struct ForkProcessChannel_        *self,
     enum ForkProcessOption             aOption,
@@ -2417,7 +2417,7 @@ struct ForkProcessDaemonSigHandler
     unsigned mHangUp;
 };
 
-static CHECKED int
+static ERT_CHECKED int
 forkProcessDaemonSignalHandler_(
     struct ForkProcessDaemonSigHandler *self,
     int                                 aSigNum,

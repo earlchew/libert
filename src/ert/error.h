@@ -38,7 +38,7 @@
 #include <errno.h>
 #include <setjmp.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct ErrorModule
 {
@@ -130,7 +130,7 @@ struct ErrorModule
                                                                 \
             if ( ! setjmp(unwindFrame_->mJmpBuf))               \
             {                                                   \
-                AUTO(Action_, &Actor_);                         \
+                ERT_AUTO(Action_, &Actor_);                         \
                                                                 \
                 __VA_ARGS__                                     \
                                                                 \
@@ -349,14 +349,14 @@ errorTerminate(
     __attribute__ ((__format__(__printf__, 5, 6), __noreturn__));
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 Error_init(struct ErrorModule *self);
 
-CHECKED struct ErrorModule *
+ERT_CHECKED struct ErrorModule *
 Error_exit(struct ErrorModule *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_ERROR_H */

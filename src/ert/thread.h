@@ -90,7 +90,7 @@
  * guarantee that a user space reference count will be decremented when
  * a process is killed. */
 
-#define THREAD_NOT_IMPLEMENTED NOTIMPLEMENTED
+#define THREAD_NOT_IMPLEMENTED ERT_NOTIMPLEMENTED
 
 /* -------------------------------------------------------------------------- */
 /* Fork Sentry
@@ -101,13 +101,13 @@
  */
 
 #define THREAD_FORK_SENTRY(Lock_, Unlock_)                      \
-    THREAD_FORK_SENTRY_1_(COUNTER, Lock_, Unlock_)
+    THREAD_FORK_SENTRY_1_(ERT_COUNTER, Lock_, Unlock_)
 
 #define THREAD_FORK_SENTRY_1_(Suffix_, Lock_, Unlock_)          \
     THREAD_FORK_SENTRY_2_(Suffix_, Lock_, Unlock_)
 
 #define THREAD_FORK_SENTRY_2_(Suffix_, Lock_, Unlock_)          \
-    EARLY_INITIALISER(                                          \
+    ERT_EARLY_INITIALISER(                                          \
         threadForkLockSentry_ ## Suffix_,                       \
         ({                                                      \
             void (*lock_)(void) =                               \
@@ -133,7 +133,7 @@
 
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Tid;
 
@@ -205,156 +205,156 @@ struct Tid
 ownThreadId(void);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct Thread *
+ERT_CHECKED struct Thread *
 createThread(
     struct Thread           *self,
     const char              *aName,
     const struct ThreadAttr *aAttr,
     struct ThreadMethod      aMethod);
 
-CHECKED int
+ERT_CHECKED int
 joinThread(struct Thread *self);
 
 void
 cancelThread(struct Thread *self);
 
-CHECKED struct Thread *
+ERT_CHECKED struct Thread *
 closeThread(struct Thread *self);
 
-CHECKED int
+ERT_CHECKED int
 killThread(struct Thread *self, int aSignal);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct ThreadAttr *
+ERT_CHECKED struct ThreadAttr *
 createThreadAttr(struct ThreadAttr *self);
 
-CHECKED struct ThreadAttr *
+ERT_CHECKED struct ThreadAttr *
 destroyThreadAttr(struct ThreadAttr *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct ThreadSigMutex *
+ERT_CHECKED struct ThreadSigMutex *
 createThreadSigMutex(struct ThreadSigMutex *self);
 
-CHECKED struct ThreadSigMutex *
+ERT_CHECKED struct ThreadSigMutex *
 destroyThreadSigMutex(struct ThreadSigMutex *self);
 
-CHECKED struct ThreadSigMutex *
+ERT_CHECKED struct ThreadSigMutex *
 lockThreadSigMutex(struct ThreadSigMutex *self);
 
 unsigned
 ownThreadSigMutexLocked(struct ThreadSigMutex *self);
 
-CHECKED struct ThreadSigMutex *
+ERT_CHECKED struct ThreadSigMutex *
 unlockThreadSigMutex(struct ThreadSigMutex *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED pthread_mutex_t *
+ERT_CHECKED pthread_mutex_t *
 createMutex(pthread_mutex_t *self);
 
-CHECKED pthread_mutex_t *
+ERT_CHECKED pthread_mutex_t *
 destroyMutex(pthread_mutex_t *self);
 
-CHECKED pthread_mutex_t *
+ERT_CHECKED pthread_mutex_t *
 lockMutex(pthread_mutex_t *self);
 
-CHECKED pthread_mutex_t *
+ERT_CHECKED pthread_mutex_t *
 unlockMutex(pthread_mutex_t *self);
 
-CHECKED pthread_mutex_t *
+ERT_CHECKED pthread_mutex_t *
 unlockMutexSignal(pthread_mutex_t *self, pthread_cond_t *aCond);
 
-CHECKED pthread_mutex_t *
+ERT_CHECKED pthread_mutex_t *
 unlockMutexBroadcast(pthread_mutex_t *self, pthread_cond_t *aCond);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 createSharedMutex(struct SharedMutex *self);
 
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 destroySharedMutex(struct SharedMutex *self);
 
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 refSharedMutex(struct SharedMutex *self) THREAD_NOT_IMPLEMENTED;
 
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 unrefSharedMutex(struct SharedMutex *self) THREAD_NOT_IMPLEMENTED;
 
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 lockSharedMutex(struct SharedMutex *self, struct MutexRepairMethod aRepair);
 
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 unlockSharedMutex(struct SharedMutex *self);
 
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 unlockSharedMutexSignal(struct SharedMutex *self, struct SharedCond *aCond);
 
-CHECKED struct SharedMutex *
+ERT_CHECKED struct SharedMutex *
 unlockSharedMutexBroadcast(struct SharedMutex *self, struct SharedCond *aCond);
 
 /* -------------------------------------------------------------------------- */
-CHECKED pthread_rwlock_t *
+ERT_CHECKED pthread_rwlock_t *
 createRWMutex(pthread_rwlock_t *self);
 
-CHECKED pthread_rwlock_t *
+ERT_CHECKED pthread_rwlock_t *
 destroyRWMutex(pthread_rwlock_t *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct RWMutexReader *
+ERT_CHECKED struct RWMutexReader *
 createRWMutexReader(struct RWMutexReader *self,
                     pthread_rwlock_t     *aMutex);
 
-CHECKED struct RWMutexReader *
+ERT_CHECKED struct RWMutexReader *
 destroyRWMutexReader(struct RWMutexReader *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct RWMutexWriter *
+ERT_CHECKED struct RWMutexWriter *
 createRWMutexWriter(struct RWMutexWriter *self,
                     pthread_rwlock_t     *aMutex);
 
-CHECKED struct RWMutexWriter *
+ERT_CHECKED struct RWMutexWriter *
 destroyRWMutexWriter(struct RWMutexWriter *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED pthread_cond_t *
+ERT_CHECKED pthread_cond_t *
 createCond(pthread_cond_t *self);
 
-CHECKED pthread_cond_t *
+ERT_CHECKED pthread_cond_t *
 destroyCond(pthread_cond_t *self);
 
-CHECKED struct SharedCond *
+ERT_CHECKED struct SharedCond *
 refSharedCond(struct SharedCond *self) THREAD_NOT_IMPLEMENTED;
 
-CHECKED struct SharedCond *
+ERT_CHECKED struct SharedCond *
 unrefSharedCond(struct SharedCond *self) THREAD_NOT_IMPLEMENTED;
 
 void
 waitCond(pthread_cond_t *self, pthread_mutex_t *aMutex);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct SharedCond *
+ERT_CHECKED struct SharedCond *
 createSharedCond(struct SharedCond *self);
 
-CHECKED struct SharedCond *
+ERT_CHECKED struct SharedCond *
 destroySharedCond(struct SharedCond *self);
 
-CHECKED int
+ERT_CHECKED int
 waitSharedCond(struct SharedCond *self, struct SharedMutex *aMutex);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct ThreadSigMask *
+ERT_CHECKED struct ThreadSigMask *
 pushThreadSigMask(
     struct ThreadSigMask    *self,
     enum ThreadSigMaskAction aAction,
     const int               *aSigList);
 
-CHECKED struct ThreadSigMask *
+ERT_CHECKED struct ThreadSigMask *
 popThreadSigMask(struct ThreadSigMask *self);
 
-CHECKED int
+ERT_CHECKED int
 waitThreadSigMask(const int *aSigList);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_THREAD_H */

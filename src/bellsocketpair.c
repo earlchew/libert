@@ -80,7 +80,7 @@ ert_closeBellSocketPair(struct Ert_BellSocketPair *self)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 ert_ringBellSocketPair_(struct UnixSocket *aSocket)
 {
     int rc = -1;
@@ -122,7 +122,7 @@ ert_ringBellSocketPairChild(struct Ert_BellSocketPair *self)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 ert_waitBellSocketPair_(struct UnixSocket     *aSocket,
                     const struct Duration *aTimeout)
 {

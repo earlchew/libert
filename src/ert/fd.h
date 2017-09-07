@@ -35,7 +35,7 @@
 
 #include <sys/types.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Deadline;
 struct Duration;
@@ -87,122 +87,122 @@ struct WhenceType
 #define WhenceTypeEnd   ((struct WhenceType) { mType : WhenceTypeEnd_ })
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 openFd(const char *aPathName, int aFlags, mode_t aMode);
 
-CHECKED int
+ERT_CHECKED int
 openStdFds(void);
 
-CHECKED int
+ERT_CHECKED int
 closeFd(int aFd);
 
-CHECKED int
+ERT_CHECKED int
 closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen);
 
-CHECKED int
+ERT_CHECKED int
 closeFdExceptWhiteList(const struct FdSet *aFdSet);
 
-CHECKED int
+ERT_CHECKED int
 closeFdOnlyBlackList(const struct FdSet *aFdSet);
 
 bool
 stdFd(int aFd);
 
-CHECKED int
+ERT_CHECKED int
 duplicateFd(int aFd, int aTargetFd);
 
-CHECKED int
+ERT_CHECKED int
 nullifyFd(int aFd);
 
-CHECKED int
+ERT_CHECKED int
 nonBlockingFd(int aFd, unsigned aNonBlocking);
 
-CHECKED int
+ERT_CHECKED int
 ownFdNonBlocking(int aFd);
 
-CHECKED int
+ERT_CHECKED int
 ownFdValid(int aFd);
 
-CHECKED int
+ERT_CHECKED int
 ownFdFlags(int aFd);
 
-CHECKED int
+ERT_CHECKED int
 closeFdOnExec(int aFd, unsigned aCloseOnExec);
 
-CHECKED int
+ERT_CHECKED int
 ownFdCloseOnExec(int aFd);
 
-CHECKED int
+ERT_CHECKED int
 ioctlFd(int aFd, int aReq, void *aArg);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags);
 
-CHECKED off_t
+ERT_CHECKED off_t
 lseekFd(int aFd, off_t aOffset, struct WhenceType aWhenceType);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readFdFully(int aFd, char **aBuf, size_t aBufSize);
 
 /* -------------------------------------------------------------------------- */
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeFd(int aFd,
         const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeFdRaw(int aFd,
            const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readFd(int aFd,
        char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readFdRaw(int aFd,
           char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeFdDeadline(int aFd,
                 const char *aBuf, size_t aLen, struct Deadline *aDeadline);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readFdDeadline(int aFd,
                char *aBuf, size_t aLen, struct Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 lockFd(int aFd, struct LockType aLockType);
 
-CHECKED int
+ERT_CHECKED int
 unlockFd(int aFd);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 lockFdRegion(int aFd, struct LockType aLockType, off_t aPos, off_t aLen);
 
-CHECKED int
+ERT_CHECKED int
 unlockFdRegion(int aFd, off_t aPos, off_t aLen);
 
 struct LockType
 ownFdRegionLocked(int aFd, off_t aPos, off_t aLen);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 waitFdWriteReady(int aFd, const struct Duration *aTimeout);
 
-CHECKED int
+ERT_CHECKED int
 waitFdReadReady(int aFd, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 waitFdWriteReadyDeadline(int aFd, struct Deadline *aDeadline);
 
-CHECKED int
+ERT_CHECKED int
 waitFdReadReadyDeadline(int aFd, struct Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_FD_H */

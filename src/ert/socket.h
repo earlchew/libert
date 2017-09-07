@@ -34,7 +34,7 @@
 
 #include <sys/socket.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Socket
 {
@@ -43,89 +43,89 @@ struct Socket
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createSocket(struct Socket *self, int aFd);
 
-CHECKED struct Socket *
+ERT_CHECKED struct Socket *
 closeSocket(struct Socket *self);
 
 bool
 ownSocketValid(const struct Socket *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeSocket(struct Socket *self,
             const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readSocket(struct Socket *self,
            char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeSocketDeadline(struct Socket *self,
                     const char *aBuf, size_t aLen, struct Deadline *aDeadline);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readSocketDeadline(struct Socket *self,
                    char *aBuf, size_t aLen, struct Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 waitSocketWriteReady(const struct Socket   *self,
                      const struct Duration *aTimeout);
 
-CHECKED int
+ERT_CHECKED int
 waitSocketReadReady(const struct Socket   *self,
                     const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 bindSocket(struct Socket *self, struct sockaddr *aAddr, size_t aAddrLen);
 
-CHECKED int
+ERT_CHECKED int
 connectSocket(struct Socket *self, struct sockaddr *aAddr, size_t aAddrLen);
 
-CHECKED int
+ERT_CHECKED int
 acceptSocket(struct Socket *self, unsigned aFlags);
 
-CHECKED int
+ERT_CHECKED int
 listenSocket(struct Socket *self, unsigned aQueueLen);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 sendSocket(struct Socket *self, const char *aBuf, size_t aLen);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 recvSocket(struct Socket *self, char *aBuf, size_t aLen);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 sendSocketMsg(struct Socket *self, const struct msghdr *aMsg, int aFlags);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 recvSocketMsg(struct Socket *self, struct msghdr *aMsg, int aFlags);
 
-CHECKED int
+ERT_CHECKED int
 shutdownSocketReader(struct Socket *self);
 
-CHECKED int
+ERT_CHECKED int
 shutdownSocketWriter(struct Socket *self);
 
-CHECKED int
+ERT_CHECKED int
 ownSocketName(const struct Socket *self,
               struct sockaddr *aAddr, socklen_t *aAddrLen);
 
-CHECKED int
+ERT_CHECKED int
 ownSocketPeerName(const struct Socket *self,
                   struct sockaddr *aAddr, socklen_t *aAddrLen);
 
-CHECKED int
+ERT_CHECKED int
 ownSocketError(const struct Socket *self, int *aError);
 
-CHECKED int
+ERT_CHECKED int
 ownSocketPeerCred(const struct Socket *self, struct ucred *aCred);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_SOCKET_H */

@@ -37,7 +37,7 @@
 
 #include <sys/time.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct TimeKeepingModule
 {
@@ -104,7 +104,7 @@ bootclockTime(void);
 
 /* -------------------------------------------------------------------------- */
 #ifdef __linux__
-CHECKED int
+ERT_CHECKED int
 procUptime(struct Duration *aUptime, const char *aFileName);
 #endif
 
@@ -143,14 +143,14 @@ monotonicDeadlineTimeExpired(
     const struct MonotonicTime *aTime);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 Timekeeping_init(struct TimeKeepingModule *self);
 
-CHECKED struct TimeKeepingModule *
+ERT_CHECKED struct TimeKeepingModule *
 Timekeeping_exit(struct TimeKeepingModule *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_TIMEKEEPING_H */

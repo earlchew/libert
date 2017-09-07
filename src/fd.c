@@ -367,7 +367,7 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 rankFd_(const void *aLhs, const void *aRhs)
 {
     int lhs = * (const int *) aLhs;
@@ -801,7 +801,7 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
 {
     int rc = -1;
@@ -910,7 +910,7 @@ waitFdReadReady(int aFd, const struct Duration *aTimeout)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 waitFdReadyDeadline_(int aFd, unsigned aPollMask, struct Deadline *aDeadline)
 {
     int rc = -1;

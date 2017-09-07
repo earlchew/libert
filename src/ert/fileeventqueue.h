@@ -34,9 +34,9 @@
 #include "ert/method.h"
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 struct FileEventQueue;
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #define METHOD_DEFINITION
 #define METHOD_RETURN_FileEventQueueActivityMethod    int
@@ -61,7 +61,7 @@ END_C_SCOPE;
         METHOD_CALL_LIST_FileEventQueueActivityMethod)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Duration;
 
@@ -95,32 +95,32 @@ struct FileEventQueueActivity
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createFileEventQueue(struct FileEventQueue *self, int aQueueSize);
 
-CHECKED struct FileEventQueue *
+ERT_CHECKED struct FileEventQueue *
 closeFileEventQueue(struct FileEventQueue *self);
 
-CHECKED int
+ERT_CHECKED int
 pollFileEventQueueActivity(struct FileEventQueue *self,
                            const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createFileEventQueueActivity(struct FileEventQueueActivity *self,
                              struct FileEventQueue         *aQueue,
                              struct File                   *aFile);
 
-CHECKED int
+ERT_CHECKED int
 armFileEventQueueActivity(struct FileEventQueueActivity      *self,
                           enum EventQueuePollTrigger          aTrigger,
                           struct FileEventQueueActivityMethod aMethod);
 
-CHECKED struct FileEventQueueActivity *
+ERT_CHECKED struct FileEventQueueActivity *
 closeFileEventQueueActivity(struct FileEventQueueActivity *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_FILEEVENTQUEUE_H */

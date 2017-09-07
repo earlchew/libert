@@ -33,7 +33,7 @@
 #include "ert/lambda.h"
 #include "ert/macros.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
@@ -56,7 +56,7 @@ BEGIN_C_SCOPE;
 #define METHOD_TRAMPOLINE(                                               \
     Object_, Method_, Name_, Return_, Const_, ArgList_, CallList_)       \
 ({                                                                       \
-    typedef Const_ DECLTYPE(*(Object_)) *ObjectT_;                       \
+    typedef Const_ ERT_DECLTYPE(*(Object_)) *ObjectT_;                       \
                                                                          \
     Const_ void *ValidateObject_ = (Object_);                            \
                                                                          \
@@ -81,7 +81,7 @@ BEGIN_C_SCOPE;
 void
 methodEnsure_(const char *aFunction, const char *aFile, unsigned aLine,
               const char *aPredicate)
-    NORETURN;
+    ERT_NORETURN;
 
 #define METHOD_ENSURE_(aPredicate)                                      \
     do                                                                  \
@@ -89,7 +89,7 @@ methodEnsure_(const char *aFunction, const char *aFile, unsigned aLine,
             methodEnsure_(__func__, __FILE__, __LINE__, # aPredicate);  \
     while (0);
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_METHOD_H */
 
@@ -99,7 +99,7 @@ END_C_SCOPE;
 
 #include <stdbool.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 typedef METHOD_RETURN (*CONCAT(METHOD_NAME, T_))(
     METHOD_CONST void *self EXPAND(ARGS METHOD_ARG_LIST));
@@ -154,7 +154,7 @@ CONCAT(METHOD_NAME, Nil)(void)
     return CONCAT(METHOD_NAME, _)(0, 0);
 }
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 

@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/socket.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Duration;
 
@@ -46,82 +46,82 @@ struct UnixSocket
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createUnixSocketPair(struct UnixSocket *aParent,
                      struct UnixSocket *aChild,
                      unsigned           aFlags);
 
-CHECKED int
+ERT_CHECKED int
 createUnixSocket(struct UnixSocket *self,
                  const char        *aName,
                  size_t             aNameLen,
                  unsigned           aQueueLen);
 
-CHECKED int
+ERT_CHECKED int
 acceptUnixSocket(struct UnixSocket       *self,
                  const struct UnixSocket *aServer);
 
-CHECKED int
+ERT_CHECKED int
 connectUnixSocket(struct UnixSocket *self,
                  const char         *aName,
                  size_t              aNameLen);
 
-CHECKED struct UnixSocket *
+ERT_CHECKED struct UnixSocket *
 closeUnixSocket(struct UnixSocket *self);
 
-CHECKED int
+ERT_CHECKED int
 sendUnixSocketFd(struct UnixSocket *self, int aFd);
 
-CHECKED int
+ERT_CHECKED int
 recvUnixSocketFd(struct UnixSocket *self, unsigned aFlags);
 
 bool
 ownUnixSocketValid(const struct UnixSocket *self);
 
-CHECKED int
+ERT_CHECKED int
 shutdownUnixSocketReader(struct UnixSocket *self);
 
-CHECKED int
+ERT_CHECKED int
 shutdownUnixSocketWriter(struct UnixSocket *self);
 
-CHECKED int
+ERT_CHECKED int
 waitUnixSocketWriteReady(const struct UnixSocket *self,
                          const struct Duration   *aTimeout);
 
-CHECKED int
+ERT_CHECKED int
 waitUnixSocketReadReady(const struct UnixSocket *self,
                         const struct Duration   *aTimeout);
 
-CHECKED int
+ERT_CHECKED int
 ownUnixSocketPeerName(const struct UnixSocket *self,
                       struct sockaddr_un      *aAddr);
 
-CHECKED int
+ERT_CHECKED int
 ownUnixSocketName(const struct UnixSocket *self,
                   struct sockaddr_un      *aAddr);
 
-CHECKED int
+ERT_CHECKED int
 ownUnixSocketError(const struct UnixSocket *self, int *aError);
 
-CHECKED int
+ERT_CHECKED int
 ownUnixSocketPeerCred(const struct UnixSocket *self, struct ucred *aCred);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 sendUnixSocket(struct UnixSocket *self, const char *aBuf, size_t aLen);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 recvUnixSocket(struct UnixSocket *self, char *aBuf, size_t aLen);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeUnixSocket(struct UnixSocket *self,
                 const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readUnixSocket(struct UnixSocket *self,
                char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_UNIXSOCKET_H */

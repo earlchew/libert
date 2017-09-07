@@ -36,9 +36,9 @@
 
 #include <stdbool.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 struct Duration;
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 #define METHOD_DEFINITION
@@ -87,7 +87,7 @@ END_C_SCOPE;
         METHOD_CALL_LIST_DeadlineWaitMethod)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Deadline
 {
@@ -101,10 +101,10 @@ struct Deadline
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createDeadline(struct Deadline *self, const struct Duration *aDuration);
 
-CHECKED int
+ERT_CHECKED int
 checkDeadlineExpired(struct Deadline *self,
                      struct DeadlinePollMethod aPollMethod,
                      struct DeadlineWaitMethod aWaitMethod);
@@ -112,11 +112,11 @@ checkDeadlineExpired(struct Deadline *self,
 bool
 ownDeadlineExpired(const struct Deadline *self);
 
-CHECKED struct Deadline *
+ERT_CHECKED struct Deadline *
 closeDeadline(struct Deadline *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_DEADLINE_H */

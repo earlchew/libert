@@ -55,37 +55,37 @@
 #define SWAP(Lhs_, Rhs_)                        \
 do                                              \
 {                                               \
-    AUTO(swp_, Lhs_);                           \
+    ERT_AUTO(swp_, Lhs_);                           \
     Lhs_ = Rhs_;                                \
     Rhs_ = swp_;                                \
 } while (0)
 
 #define MIN(Lhs_, Rhs_)                         \
 ({                                              \
-    AUTO(lhs_, (Lhs_));                         \
-    AUTO(rhs_, (Rhs_));                         \
+    ERT_AUTO(lhs_, (Lhs_));                         \
+    ERT_AUTO(rhs_, (Rhs_));                         \
                                                 \
     lhs_ < rhs_ ? lhs_ : rhs_;                  \
 })
 
 #define MAX(Lhs_, Rhs_)                         \
 ({                                              \
-    AUTO(lhs_, (Lhs_));                         \
-    AUTO(rhs_, (Rhs_));                         \
+    ERT_AUTO(lhs_, (Lhs_));                         \
+    ERT_AUTO(rhs_, (Rhs_));                         \
                                                 \
     lhs_ < rhs_ ? rhs_ : lhs_;                  \
 })
 
 #define ROUNDUP(Value_, Alignment_)                             \
 ({                                                              \
-    AUTO(alignment_, (Alignment_));                             \
+    ERT_AUTO(alignment_, (Alignment_));                             \
                                                                 \
     ( (Value_) + alignment_ - 1 ) / alignment_ * alignment_;    \
 })
 
 #define ROUNDDOWN(Value_, Alignment_)           \
 ({                                              \
-    AUTO(alignment_, (Alignment_));             \
+    ERT_AUTO(alignment_, (Alignment_));             \
                                                 \
     (Value_) / alignment_ * alignment_;         \
 })

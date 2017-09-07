@@ -33,7 +33,7 @@
 
 #include <stddef.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 const char *
@@ -44,6 +44,6 @@ fetchSystemPageSize(void);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_SYSTEM_H */

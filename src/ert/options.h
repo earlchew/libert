@@ -35,7 +35,7 @@
 #include <sys/types.h>
 #include <stdbool.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 struct Options
@@ -52,6 +52,6 @@ initOptions(const struct Options *aOpts);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_OPTIONS_H */

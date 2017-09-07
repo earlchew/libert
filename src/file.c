@@ -147,7 +147,7 @@ temporaryFileName_(struct TemporaryFileName_ *self, uint32_t *aRandom)
     }
 }
 
-static CHECKED int
+static ERT_CHECKED int
 temporaryFileCreate_(const char *aDirName)
 {
     int rc = -1;
@@ -209,7 +209,7 @@ struct TemporaryFileProcess_
     struct Thread     *mThread;
 };
 
-static CHECKED struct TemporaryFileProcess_ *
+static ERT_CHECKED struct TemporaryFileProcess_ *
 closeTemporaryFileProcess_(struct TemporaryFileProcess_ *self)
 {
     if (self)
@@ -221,7 +221,7 @@ closeTemporaryFileProcess_(struct TemporaryFileProcess_ *self)
     return 0;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 createTemporaryFileProcess_(struct TemporaryFileProcess_ *self,
                             const char                   *aDirName)
 {
@@ -234,7 +234,7 @@ createTemporaryFileProcess_(struct TemporaryFileProcess_ *self,
     return 0;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 recvTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
 {
     int rc = -1;
@@ -270,7 +270,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 waitTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self)
 {
     int rc = -1;
@@ -287,7 +287,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 prepareTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self,
                                    const struct PreForkProcess  *aFork)
 {
@@ -327,7 +327,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 sendTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
 {
     int rc = -1;
@@ -367,7 +367,7 @@ Finally:
     return rc;
 }
 
-static CHECKED int
+static ERT_CHECKED int
 temporaryFile_(const char *aDirName)
 {
     int rc = -1;

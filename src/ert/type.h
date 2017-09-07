@@ -31,7 +31,7 @@
 
 #include "ert/compiler.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Type
 {
@@ -43,6 +43,6 @@ struct Type
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_TYPE_H */

@@ -34,7 +34,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct timespec;
 struct timeval;
@@ -259,6 +259,6 @@ earliestTime(const struct timespec *aLhs, const struct timespec *aRhs);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_TIMESCALE_H */

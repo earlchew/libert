@@ -32,7 +32,7 @@
 
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 reapJobControl_(struct JobControl *self)
 {
     int rc = -1;
@@ -51,7 +51,7 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 raiseJobControlSignal_(
     struct JobControl *self, int aSigNum, struct Pid aPid, struct Uid aUid)
 {
@@ -72,7 +72,7 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 raiseJobControlSigStop_(struct JobControl *self)
 {
     int rc = -1;
@@ -104,7 +104,7 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 raiseJobControlSigCont_(struct JobControl *self)
 {
     int rc = -1;

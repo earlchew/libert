@@ -86,7 +86,7 @@
         METHOD_CALL_LIST_PollFdCallbackMethod)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct pollfd;
 
@@ -144,7 +144,7 @@ struct PollEventText
 #define POLL_DISCONNECTEVENT   ((unsigned) (POLLHUP|POLLERR))
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createPollFd(struct PollFd                 *self,
              struct pollfd                 *aPoll,
              struct PollFdAction           *aFdActions,
@@ -155,10 +155,10 @@ createPollFd(struct PollFd                 *self,
              size_t                         aNumTimerActions,
              struct PollFdCompletionMethod  aCompletionQuery);
 
-CHECKED int
+ERT_CHECKED int
 runPollFdLoop(struct PollFd *self);
 
-CHECKED struct PollFd *
+ERT_CHECKED struct PollFd *
 closePollFd(struct PollFd *self);
 
 /* -------------------------------------------------------------------------- */
@@ -168,6 +168,6 @@ createPollEventText(
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_POLLFD_H */

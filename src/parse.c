@@ -36,7 +36,7 @@
 #include <limits.h>
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 parseUnsignedLongLong_(const char *aArg, unsigned long long *aValue)
 {
     int rc = -1;
@@ -59,7 +59,7 @@ parseUnsignedLongLong_(const char *aArg, unsigned long long *aValue)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 parseLongLong_(const char *aArg, long long *aValue)
 {
     int rc = -1;

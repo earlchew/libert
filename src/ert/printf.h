@@ -59,7 +59,7 @@
         METHOD_CALL_LIST_PrintfMethod)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Type;
 
@@ -134,7 +134,7 @@ int
 xfprintf(FILE *aFile, const char *aFmt, ...)
     __attribute__ ((__format__(__printf__, 2, 3)));
 
-CHECKED int
+ERT_CHECKED int
 xsnprintf(char *aBuf, size_t aSize, const char *aFmt, ...)
     __attribute__ ((__format__(__printf__, 3, 4)));
 
@@ -146,21 +146,21 @@ xdprintf(int aFd, const char *aFmt, ...)
 int
 xvfprintf(FILE *aFile, const char *aFmt, va_list);
 
-CHECKED int
+ERT_CHECKED int
 xvsnprintf(char *aBuf, size_t aSize, const char *aFmt, va_list);
 
 int
 xvdprintf(int aFd, const char *aFmt, va_list);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 Printf_init(struct PrintfModule *self);
 
-CHECKED struct PrintfModule *
+ERT_CHECKED struct PrintfModule *
 Printf_exit(struct PrintfModule *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_PRINTF_H */

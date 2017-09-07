@@ -43,7 +43,7 @@
 /* Verify that the function signature of the interceptor matches the    \
  * declared function signature. */                                      \
                                                                         \
-static DECLTYPE(Name_ ## _) *Name_ ## _check_ UNUSED = Name_;           \
+static ERT_DECLTYPE(Name_ ## _) *Name_ ## _check_ ERT_UNUSED = Name_;           \
                                                                         \
 Return_                                                                 \
 Name_ Signature_                                                        \
@@ -166,7 +166,7 @@ interruptSystemCall(enum SystemCallKind aKind, const char *aErrName);
             }                                                       \
         }                                                           \
                                                                     \
-        (DECLTYPE(Function_) *) syscall_;                           \
+        (ERT_DECLTYPE(Function_) *) syscall_;                           \
     })
 
 /* -------------------------------------------------------------------------- */
@@ -175,7 +175,7 @@ interruptSystemCall(enum SystemCallKind aKind, const char *aErrName);
     {                                                           \
         uintptr_t syscall_ = invokeSystemCall((Kind_));         \
                                                                 \
-        AUTO(rc, ((DECLTYPE(Function_) *) syscall_) Args_);     \
+        ERT_AUTO(rc, ((ERT_DECLTYPE(Function_) *) syscall_) Args_);     \
                                                                 \
         return rc;                                              \
                                                                 \
@@ -240,7 +240,7 @@ close_raw_(int aFd, uintptr_t aCloseAddr)
      * asynchronously and the process shall have no further ability to track
      * the completion or final status of the close operation. */
 
-    int rc = ((DECLTYPE(close) *) aCloseAddr)(aFd);
+    int rc = ((ERT_DECLTYPE(close) *) aCloseAddr)(aFd);
 
     rc = ! rc
         ? 0
@@ -316,7 +316,7 @@ fcntl_raw_(uintptr_t aFcntlAddr, int aFd, int aCmd, va_list aArgs)
 {
     int rc = -1;
 
-    AUTO(fcntlp, (DECLTYPE(fcntl) *) aFcntlAddr);
+    ERT_AUTO(fcntlp, (ERT_DECLTYPE(fcntl) *) aFcntlAddr);
 
     switch (aCmd)
     {
@@ -1012,7 +1012,7 @@ static struct SystemCall systemCall_[SYSTEMCALL_KINDS] =
 };
 
 /* -------------------------------------------------------------------------- */
-EARLY_INITIALISER(
+ERT_EARLY_INITIALISER(
     eintr_,
     ({
         for (size_t sx = 0; NUMBEROF(systemCall_) > sx; ++sx)

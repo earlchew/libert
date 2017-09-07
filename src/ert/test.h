@@ -34,7 +34,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct ErrorFrame;
 
@@ -78,14 +78,14 @@ uint64_t
 testErrorLevel(void);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 Test_init(struct TestModule *self, const char *aErrorEnv);
 
-CHECKED struct TestModule *
+ERT_CHECKED struct TestModule *
 Test_exit(struct TestModule *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_TEST_H */

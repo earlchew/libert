@@ -33,7 +33,7 @@
 
 #include <sys/types.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 struct Uid
@@ -85,6 +85,6 @@ Gid(gid_t aGid)
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_UID_H */

@@ -33,7 +33,7 @@
 
 #include <sys/types.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 struct Tid
@@ -118,6 +118,6 @@ Pgid(pid_t aPgid)
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_PID_H */

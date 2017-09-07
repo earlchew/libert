@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/file.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Pipe
 {
@@ -43,16 +43,16 @@ struct Pipe
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createPipe(struct Pipe *self, unsigned aFlags);
 
-CHECKED struct Pipe *
+ERT_CHECKED struct Pipe *
 closePipe(struct Pipe *self);
 
-CHECKED int
+ERT_CHECKED int
 detachPipeReader(struct Pipe *self);
 
-CHECKED int
+ERT_CHECKED int
 detachPipeWriter(struct Pipe *self);
 
 void
@@ -61,14 +61,14 @@ closePipeReader(struct Pipe *self);
 void
 closePipeWriter(struct Pipe *self);
 
-CHECKED int
+ERT_CHECKED int
 closePipeOnExec(struct Pipe *self, unsigned aCloseOnExec);
 
-CHECKED int
+ERT_CHECKED int
 nonBlockingPipe(struct Pipe *self, unsigned aNonBlocking);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_PIPE_H */

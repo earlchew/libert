@@ -37,7 +37,7 @@
 
 #include <stdbool.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct EventPipe
 {
@@ -52,19 +52,19 @@ struct EventPipe
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createEventPipe(struct EventPipe *self, unsigned aFlags);
 
-CHECKED struct EventPipe *
+ERT_CHECKED struct EventPipe *
 closeEventPipe(struct EventPipe *self);
 
-CHECKED int
+ERT_CHECKED int
 setEventPipe(struct EventPipe *self);
 
-CHECKED int
+ERT_CHECKED int
 resetEventPipe(struct EventPipe *self);
 
-CHECKED int
+ERT_CHECKED int
 pollEventPipe(struct EventPipe            *self,
               const struct EventClockTime *aPollTime);
 
@@ -79,6 +79,6 @@ detachEventPipeLatch_(struct EventPipe           *self,
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_EVENTPIPE_H */

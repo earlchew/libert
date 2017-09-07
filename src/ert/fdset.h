@@ -38,7 +38,7 @@
 #include <sys/types.h>
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 struct File;
 struct FdRange;
 
@@ -55,7 +55,7 @@ struct FdRange
     int mLhs;
     int mRhs;
 };
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 #define METHOD_DEFINITION
@@ -81,7 +81,7 @@ END_C_SCOPE;
         METHOD_CALL_LIST_FdSetVisitor)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct FdSetElement_
 {
@@ -103,7 +103,7 @@ struct FdSet
     { .mRoot = RB_INITIALIZER((FdSet_).mRoot) }
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createFdSet(struct FdSet *self);
 
 struct FdSet *
@@ -115,31 +115,31 @@ printFdSet(const struct FdSet *self, FILE *aFile);
 void
 clearFdSet(struct FdSet *self);
 
-CHECKED int
+ERT_CHECKED int
 invertFdSet(struct FdSet *self);
 
-CHECKED int
+ERT_CHECKED int
 fillFdSet(struct FdSet *self);
 
-CHECKED int
+ERT_CHECKED int
 insertFdSetRange(struct FdSet *self, struct FdRange aRange);
 
-CHECKED int
+ERT_CHECKED int
 removeFdSetRange(struct FdSet *self, struct FdRange aRange);
 
-CHECKED int
+ERT_CHECKED int
 insertFdSet(struct FdSet *self, int aFd);
 
-CHECKED int
+ERT_CHECKED int
 removeFdSet(struct FdSet *self, int aFd);
 
-CHECKED int
+ERT_CHECKED int
 insertFdSetFile(struct FdSet *self, const struct File *aFile);
 
-CHECKED int
+ERT_CHECKED int
 removeFdSetFile(struct FdSet *self, const struct File *aFile);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 visitFdSet(const struct FdSet *self, struct FdSetVisitor aVisitor);
 
 /* -------------------------------------------------------------------------- */
@@ -168,6 +168,6 @@ rightFdRangeNeighbour(struct FdRange self, struct FdRange aOther);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_FDSET_H */

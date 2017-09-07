@@ -79,7 +79,7 @@ random_(void)
     return value >> 32;
 }
 
-EARLY_INITIALISER(
+ERT_EARLY_INITIALISER(
     random_,
     ({
         scrambleRandomSeed(getpid());

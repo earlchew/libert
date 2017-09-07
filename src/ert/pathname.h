@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/file.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct stat;
 
@@ -56,23 +56,23 @@ enum PathNameStatus
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED enum PathNameStatus
+ERT_CHECKED enum PathNameStatus
 createPathName(struct PathName *self, const char *aFileName);
 
-CHECKED struct PathName *
+ERT_CHECKED struct PathName *
 closePathName(struct PathName *self);
 
-CHECKED int
+ERT_CHECKED int
 openPathName(struct PathName *self, int aFlags, mode_t aMode);
 
-CHECKED int
+ERT_CHECKED int
 unlinkPathName(struct PathName *self, int aFlags);
 
-CHECKED int
+ERT_CHECKED int
 fstatPathName(const struct PathName *self, struct stat *aStat, int aFlags);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_PATHNAME_H */

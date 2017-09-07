@@ -33,7 +33,7 @@
 
 #include <inttypes.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 char *
@@ -41,6 +41,6 @@ findDlSymbol(const char *aSymName, uintptr_t *aSymAddr, const char **aErr);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_DL_H */

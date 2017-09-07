@@ -32,20 +32,20 @@
 #include "ert/compiler.h"
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 void
 scrambleRandomSeed(unsigned aSeed);
 
-CHECKED unsigned
+ERT_CHECKED unsigned
 fetchRandomRange(unsigned aRange);
 
-CHECKED unsigned
+ERT_CHECKED unsigned
 fetchRandomUniform(unsigned aLhs, unsigned aRhs);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_RANDOM_H */

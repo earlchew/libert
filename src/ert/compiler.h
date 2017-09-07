@@ -38,11 +38,11 @@
  * a C++ compiler.
  */
 #ifdef __cplusplus
-#define BEGIN_C_SCOPE struct CppScope_; extern "C" { struct CScope_
-#define END_C_SCOPE   } struct CppScope_
+#define ERT_BEGIN_C_SCOPE struct Ert_CppScope_; extern "C" { struct Ert_CScope_
+#define ERT_END_C_SCOPE   } struct Ert_CppScope_
 #else
-#define BEGIN_C_SCOPE struct CScope_
-#define END_C_SCOPE   struct CScope_
+#define ERT_BEGIN_C_SCOPE struct Ert_CScope_
+#define ERT_END_C_SCOPE   struct Ert_CScope_
 #endif
 
 /* -------------------------------------------------------------------------- */
@@ -54,10 +54,10 @@
  */
 
 #ifdef __COUNTER__
-#define COUNTER __COUNTER__
+#define ERT_COUNTER __COUNTER__
 #else
 #error
-#define COUNTER __LINE__
+#define ERT_COUNTER __LINE__
 #endif
 
 /* -------------------------------------------------------------------------- */
@@ -67,28 +67,28 @@
  * and executables.
  */
 
-#define EARLY_INITIALISER(Name_, Ctor_, Dtor_)  \
-    EARLY_INITIALISER_(Name_, Ctor_, Dtor_)
+#define ERT_EARLY_INITIALISER(Name_, Ctor_, Dtor_)  \
+    ERT_EARLY_INITIALISER_(Name_, Ctor_, Dtor_)
 
-#define EARLY_INITIALISER_(Name_, Ctor_, Dtor_) \
-                                                \
-static __attribute__((__constructor__(101)))    \
-void Name_ ## _ctor_(void)                      \
-{                                               \
-    do                                          \
-        EXPAND Ctor_                            \
-    while (0);                                  \
-}                                               \
-                                                \
-static __attribute__((__destructor__(101)))     \
-void Name_ ## _dtor_(void)                      \
-{                                               \
-    do                                          \
-        EXPAND Dtor_                            \
-    while (0);                                  \
-}                                               \
-                                                \
-struct EarlyInit
+#define ERT_EARLY_INITIALISER_(Name_, Ctor_, Dtor_) \
+                                                    \
+static __attribute__((__constructor__(101)))        \
+void Name_ ## _ctor_(void)                          \
+{                                                   \
+    do                                              \
+        EXPAND Ctor_                                \
+    while (0);                                      \
+}                                                   \
+                                                    \
+static __attribute__((__destructor__(101)))         \
+void Name_ ## _dtor_(void)                          \
+{                                                   \
+    do                                              \
+        EXPAND Dtor_                                \
+    while (0);                                      \
+}                                                   \
+                                                    \
+struct Ert_EarlyInit
 
 /* -------------------------------------------------------------------------- */
 /* No Return
@@ -96,7 +96,7 @@ struct EarlyInit
  * Mark a function as not returning. This only makes sense if the function
  * has a void return. */
 
-#define NORETURN __attribute__((__noreturn__))
+#define ERT_NORETURN __attribute__((__noreturn__))
 
 /* -------------------------------------------------------------------------- */
 /* Checked Return Value
@@ -104,7 +104,7 @@ struct EarlyInit
  * Where there are return code that need to be checked, this decorator
  * is used to have the compiler enforce policy. */
 
-#define CHECKED __attribute__((__warn_unused_result__))
+#define ERT_CHECKED __attribute__((__warn_unused_result__))
 
 /* -------------------------------------------------------------------------- */
 /* Unused Object
@@ -112,7 +112,7 @@ struct EarlyInit
  * This decorator is used to mark variables and functions that are defined
  * but not used. */
 
-#define UNUSED __attribute__((__unused__))
+#define ERT_UNUSED __attribute__((__unused__))
 
 /* -------------------------------------------------------------------------- */
 /* Deprecated Object
@@ -120,8 +120,8 @@ struct EarlyInit
  * This decorator is used to mark variables and functions whose use is not
  * longer advised. */
 
-#define DEPRECATED     __attribute__((__deprecated__))
-#define NOTIMPLEMENTED __attribute__((__deprecated__))
+#define ERT_DEPRECATED     __attribute__((__deprecated__))
+#define ERT_NOTIMPLEMENTED __attribute__((__deprecated__))
 
 /* -------------------------------------------------------------------------- */
 /* Abort
@@ -137,6 +137,9 @@ static __inline__ void
 abort_(void)
 { }
 
+/* Assume the presence of an argument is a function declaration or
+ * definition. This allows compiler headers to be parsed correctly. */
+
 #define abort(Arg_) IFEMPTY(abort_(), abort(Arg_), Arg_)
 
 /* -------------------------------------------------------------------------- */
@@ -147,12 +150,12 @@ abort_(void)
 
 #ifndef  __cplusplus
 
-#define DECLTYPE(Expr_) __typeof__((Expr_))
+#define ERT_DECLTYPE(Expr_) __typeof__((Expr_))
 
 #else
 
 #include <type_traits>
-#define DECLTYPE(Expr_) std::remove_reference<decltype((Expr_))>::type
+#define ERT_DECLTYPE(Expr_) std::remove_reference<decltype((Expr_))>::type
 
 #endif
 
@@ -164,11 +167,11 @@ abort_(void)
 
 #ifndef __cplusplus
 
-#define AUTO(Var_, Value_) DECLTYPE((Value_)) Var_ = (Value_)
+#define ERT_AUTO(Var_, Value_) ERT_DECLTYPE((Value_)) Var_ = (Value_)
 
 #else
 
-#define AUTO(Var_, Value_) auto Var_ = (Value_)
+#define ERT_AUTO(Var_, Value_) auto Var_ = (Value_)
 
 #endif
 

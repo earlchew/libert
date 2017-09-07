@@ -42,7 +42,7 @@
 #include <sys/types.h>
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct FdSet;
 
@@ -52,7 +52,7 @@ struct PreForkProcess
     struct FdSet *mWhitelistFds;
 };
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 #define METHOD_DEFINITION
@@ -196,7 +196,7 @@ END_C_SCOPE;
         METHOD_CALL_LIST_WatchProcessSignalMethod)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct timespec;
 
@@ -305,51 +305,51 @@ struct ProcessDirName
     char mDirName[sizeof(PROCESS_DIRNAME_FMT_) + sizeof(pid_t) * CHAR_BIT];
 };
 
-CHECKED int
+ERT_CHECKED int
 initProcessDirName(struct ProcessDirName *self, struct Pid aPid);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 purgeProcessOrphanedFds(void);
 
 /* -------------------------------------------------------------------------- */
 unsigned
 ownProcessSignalContext(void);
 
-CHECKED int
+ERT_CHECKED int
 watchProcessChildren(struct WatchProcessMethod aMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchProcessChildren(void);
 
-CHECKED int
+ERT_CHECKED int
 watchProcessSignals(struct WatchProcessSignalMethod aMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchProcessSignals(void);
 
-CHECKED int
+ERT_CHECKED int
 ignoreProcessSigPipe(void);
 
-CHECKED int
+ERT_CHECKED int
 resetProcessSigPipe(void);
 
-CHECKED int
+ERT_CHECKED int
 watchProcessSigCont(struct WatchProcessMethod aMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchProcessSigCont(void);
 
-CHECKED int
+ERT_CHECKED int
 watchProcessSigStop(struct WatchProcessMethod aMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchProcessSigStop(void);
 
-CHECKED int
+ERT_CHECKED int
 watchProcessClock(struct WatchProcessMethod aMethod, struct Duration aPeriod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchProcessClock(void);
 
 /* -------------------------------------------------------------------------- */
@@ -365,7 +365,7 @@ bool
 checkProcessSigContTracker(struct ProcessSigContTracker *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED struct Pid
+ERT_CHECKED struct Pid
 forkProcessChild(enum ForkProcessOption             aOption,
                  struct Pgid                        aPgid,
                  struct PreForkProcessMethod        aPreForkMethod,
@@ -373,22 +373,22 @@ forkProcessChild(enum ForkProcessOption             aOption,
                  struct PostForkParentProcessMethod aPostForkParentMethod,
                  struct ForkProcessMethod           aMethod);
 
-CHECKED struct Pid
+ERT_CHECKED struct Pid
 forkProcessDaemon(struct PreForkProcessMethod        aPreForkMethod,
                   struct PostForkChildProcessMethod  aPostForkChildMethod,
                   struct PostForkParentProcessMethod aPostForkParentMethod,
                   struct ForkProcessMethod           aMethod);
 
-CHECKED int
+ERT_CHECKED int
 reapProcessChild(struct Pid aPid, int *aStatus);
 
-CHECKED struct ChildProcessState
+ERT_CHECKED struct ChildProcessState
 waitProcessChild(struct Pid aPid);
 
-CHECKED struct ChildProcessState
+ERT_CHECKED struct ChildProcessState
 monitorProcessChild(struct Pid aPid);
 
-CHECKED struct Pid
+ERT_CHECKED struct Pid
 waitProcessChildren(void);
 
 struct ExitCode
@@ -400,29 +400,29 @@ execProcess(const char *aCmd, const char * const *aArgv);
 void
 execShell(const char *aCmd);
 
-CHECKED int
+ERT_CHECKED int
 signalProcessGroup(struct Pgid aPgid, int aSignal);
 
 void
-exitProcess(int aStatus) NORETURN;
+exitProcess(int aStatus) ERT_NORETURN;
 
 void
-abortProcess(void) NORETURN;
+abortProcess(void) ERT_NORETURN;
 
 void
-quitProcess(void) NORETURN;
+quitProcess(void) ERT_NORETURN;
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 acquireProcessAppLock(void);
 
-CHECKED int
+ERT_CHECKED int
 releaseProcessAppLock(void);
 
-CHECKED struct ProcessAppLock *
+ERT_CHECKED struct ProcessAppLock *
 createProcessAppLock(void);
 
-CHECKED struct ProcessAppLock *
+ERT_CHECKED struct ProcessAppLock *
 destroyProcessAppLock(struct ProcessAppLock *self);
 
 unsigned
@@ -458,14 +458,14 @@ struct Pgid
 fetchProcessGroupId(struct Pid aPid);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 Process_init(struct ProcessModule *self, const char *aArg0);
 
-CHECKED struct ProcessModule *
+ERT_CHECKED struct ProcessModule *
 Process_exit(struct ProcessModule *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_PROCESS_H */

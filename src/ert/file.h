@@ -37,9 +37,9 @@
 #include <stdbool.h>
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 struct File;
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #define METHOD_DEFINITION
 #define METHOD_RETURN_FileVisitor    int
@@ -64,7 +64,7 @@ END_C_SCOPE;
         METHOD_CALL_LIST_FileVisitor)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct stat;
 struct sockaddr;
@@ -79,91 +79,91 @@ struct File
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 temporaryFile(struct File *self);
 
-CHECKED int
+ERT_CHECKED int
 createFile(struct File *self, int aFd);
 
-CHECKED int
+ERT_CHECKED int
 detachFile(struct File *self);
 
-CHECKED struct File *
+ERT_CHECKED struct File *
 closeFile(struct File *self);
 
 void
 walkFileList(struct FileVisitor aVisitor);
 
-CHECKED int
+ERT_CHECKED int
 duplicateFile(struct File *self, const struct File *aOther);
 
-CHECKED int
+ERT_CHECKED int
 nonBlockingFile(struct File *self, unsigned aNonBlocking);
 
-CHECKED int
+ERT_CHECKED int
 ownFileNonBlocking(const struct File *self);
 
-CHECKED int
+ERT_CHECKED int
 closeFileOnExec(struct File *self, unsigned aCloseOnExec);
 
-CHECKED int
+ERT_CHECKED int
 ownFileCloseOnExec(const struct File *self);
 
-CHECKED off_t
+ERT_CHECKED off_t
 lseekFile(struct File *self, off_t aOffset, struct WhenceType aWhenceType);
 
-CHECKED int
+ERT_CHECKED int
 fstatFile(struct File *self, struct stat *aStat);
 
-CHECKED int
+ERT_CHECKED int
 fcntlFileGetFlags(struct File *self);
 
-CHECKED int
+ERT_CHECKED int
 ftruncateFile(struct File *self, off_t aLength);
 
 bool
 ownFileValid(const struct File *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeFile(struct File *self,
           const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readFile(struct File *self,
          char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 writeFileDeadline(struct File *self,
                   const char *aBuf, size_t aLen, struct Deadline *aDeadline);
 
-CHECKED ssize_t
+ERT_CHECKED ssize_t
 readFileDeadline(struct File *self,
                  char *aBuf, size_t aLen, struct Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 waitFileWriteReady(const struct File     *self,
                    const struct Duration *aTimeout);
 
-CHECKED int
+ERT_CHECKED int
 waitFileReadReady(const struct File     *self,
                   const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 lockFile(struct File *self, struct LockType aLockType);
 
-CHECKED int
+ERT_CHECKED int
 unlockFile(struct File *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 lockFileRegion(
     struct File *self, struct LockType aLockType, off_t aPos, off_t aLen);
 
-CHECKED int
+ERT_CHECKED int
 unlockFileRegion(struct File *self, off_t aPos, off_t aLen);
 
 struct LockType
@@ -171,6 +171,6 @@ ownFileRegionLocked(const struct File *self, off_t aPos, off_t aLen);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_FILE_H */

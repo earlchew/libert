@@ -88,7 +88,7 @@ static struct
  * must be released.
  *
  * To do this, attach a callback to be invoked when the thread is destroyed
- * by using pthread_key_create(). Use pthread_once() and EARLY_INITIALISER()
+ * by using pthread_key_create(). Use pthread_once() and ERT_EARLY_INITIALISER()
  * to ensure that pthread_key_create() is invoked at some time during
  * program initialisation. Most likely there will only be one thread
  * running at this time, but this cannot be guaranteed necessitating
@@ -147,7 +147,7 @@ setErrorKey_(struct ErrorFrameChunk *aChunk)
         abortProcess();
 }
 
-EARLY_INITIALISER(
+ERT_EARLY_INITIALISER(
     error_,
     ({
         initErrorKey_();
@@ -432,7 +432,7 @@ ownErrorUnwindActiveFrame_(void)
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 tryErrTextLength_(int aErrCode, size_t *aSize)
 {
     int rc = -1;
@@ -456,7 +456,7 @@ Finally:
     return rc;
 }
 
-static CHECKED size_t
+static ERT_CHECKED size_t
 findErrTextLength_(int aErrCode)
 {
     size_t rc = 0;
@@ -804,7 +804,7 @@ printf_(
 }
 
 /* -------------------------------------------------------------------------- */
-static CHECKED int
+static ERT_CHECKED int
 errorEnsureBacktrace_(int aFd, int aDepth)
 {
     int rc = -1;

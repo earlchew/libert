@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/socketpair.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Duration;
 
@@ -43,10 +43,10 @@ struct Ert_BellSocketPair
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 ert_createBellSocketPair(struct Ert_BellSocketPair *self, unsigned aFlags);
 
-CHECKED struct Ert_BellSocketPair *
+ERT_CHECKED struct Ert_BellSocketPair *
 ert_closeBellSocketPair(struct Ert_BellSocketPair *self);
 
 void
@@ -55,22 +55,22 @@ ert_closeBellSocketPairParent(struct Ert_BellSocketPair *self);
 void
 ert_closeBellSocketPairChild(struct Ert_BellSocketPair *self);
 
-CHECKED int
+ERT_CHECKED int
 ert_ringBellSocketPairChild(struct Ert_BellSocketPair *self);
 
-CHECKED int
+ERT_CHECKED int
 ert_ringBellSocketPairParent(struct Ert_BellSocketPair *self);
 
-CHECKED int
+ERT_CHECKED int
 ert_waitBellSocketPairChild(struct Ert_BellSocketPair *self,
                             const struct Duration *aTimeout);
 
-CHECKED int
+ERT_CHECKED int
 ert_waitBellSocketPairParent(struct Ert_BellSocketPair *self,
                              const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_BELLSOCKETPAIR_H */

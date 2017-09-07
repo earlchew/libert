@@ -32,7 +32,7 @@
 #include "ert/compiler.h"
 #include "ert/unixsocket.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct SocketPair
 {
@@ -43,10 +43,10 @@ struct SocketPair
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createSocketPair(struct SocketPair *self, unsigned aFlags);
 
-CHECKED struct SocketPair *
+ERT_CHECKED struct SocketPair *
 closeSocketPair(struct SocketPair *self);
 
 void
@@ -57,6 +57,6 @@ closeSocketPairChild(struct SocketPair *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_SOCKETPAIR_H */

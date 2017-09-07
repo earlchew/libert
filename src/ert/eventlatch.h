@@ -37,9 +37,9 @@
 #include <stdio.h>
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 struct EventClockTime;
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #define METHOD_DEFINITION
 #define METHOD_RETURN_EventLatchMethod    int
@@ -66,7 +66,7 @@ END_C_SCOPE;
         METHOD_CALL_LIST_EventLatchMethod)
 
 /* -------------------------------------------------------------------------- */
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct EventPipe;
 struct EventLatch;
@@ -102,35 +102,35 @@ enum EventLatchSetting
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 pollEventLatchListEntry(struct EventLatchListEntry  *self,
                         const struct EventClockTime *aPollTime);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createEventLatch(struct EventLatch *self, const char *aName);
 
-CHECKED struct EventLatch *
+ERT_CHECKED struct EventLatch *
 closeEventLatch(struct EventLatch *self);
 
 int
 printEventLatch(const struct EventLatch *self, FILE *aFile);
 
-CHECKED enum EventLatchSetting
+ERT_CHECKED enum EventLatchSetting
 bindEventLatchPipe(struct EventLatch       *self,
                    struct EventPipe        *aPipe,
                    struct EventLatchMethod  aMethod);
 
-CHECKED enum EventLatchSetting
+ERT_CHECKED enum EventLatchSetting
 unbindEventLatchPipe(struct EventLatch *self);
 
-CHECKED enum EventLatchSetting
+ERT_CHECKED enum EventLatchSetting
 disableEventLatch(struct EventLatch *self);
 
-CHECKED enum EventLatchSetting
+ERT_CHECKED enum EventLatchSetting
 setEventLatch(struct EventLatch *self);
 
-CHECKED enum EventLatchSetting
+ERT_CHECKED enum EventLatchSetting
 resetEventLatch(struct EventLatch *self);
 
 enum EventLatchSetting
@@ -138,6 +138,6 @@ ownEventLatchSetting(const struct EventLatch *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_EVENTLATCH_H */

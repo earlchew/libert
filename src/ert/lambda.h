@@ -29,10 +29,12 @@
 #ifndef ERT_LAMBDA_H
 #define ERT_LAMBDA_H
 
+#include "ert/compiler.h"
+
 #ifdef __cplusplus
 
 #define LAMBDA(Return_, Signature_, ...) \
-    LAMBDA_1_(__COUNTER__, Return_, Signature_, __VA_ARGS__)
+    LAMBDA_1_(ERT_COUNTER, Return_, Signature_, __VA_ARGS__)
 
 #define LAMBDA_1_(Counter_, Return_, Signature_, ...)  \
     LAMBDA_2_(Counter_, Return_, Signature_, __VA_ARGS__)
@@ -51,7 +53,7 @@
 #else
 
 #define LAMBDA(Return_, Signature_, ...) \
-    LAMBDA_1_(__COUNTER__, Return_, Signature_, __VA_ARGS__)
+    LAMBDA_1_(ERT_COUNTER, Return_, Signature_, __VA_ARGS__)
 
 #define LAMBDA_1_(Counter_, Return_, Signature_, ...)  \
     LAMBDA_2_(Counter_, Return_, Signature_, __VA_ARGS__)

@@ -33,7 +33,7 @@
 #include "ert/process.h"
 #include "ert/thread.h"
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 struct JobControl
@@ -61,43 +61,43 @@ struct JobControl
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createJobControl(struct JobControl *self);
 
-CHECKED struct JobControl *
+ERT_CHECKED struct JobControl *
 closeJobControl(struct JobControl *self);
 
-CHECKED int
+ERT_CHECKED int
 watchJobControlSignals(struct JobControl              *self,
                        struct WatchProcessSignalMethod aRaiseMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchJobControlSignals(struct JobControl *self);
 
-CHECKED int
+ERT_CHECKED int
 watchJobControlDone(struct JobControl        *self,
                     struct WatchProcessMethod aReapMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchJobControlDone(struct JobControl *self);
 
-CHECKED int
+ERT_CHECKED int
 watchJobControlStop(struct JobControl        *self,
                     struct WatchProcessMethod aPauseMethod,
                     struct WatchProcessMethod aResumeMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchJobControlStop(struct JobControl *self);
 
-CHECKED int
+ERT_CHECKED int
 watchJobControlContinue(struct JobControl        *self,
                         struct WatchProcessMethod aContinueMethod);
 
-CHECKED int
+ERT_CHECKED int
 unwatchJobControlContinue(struct JobControl *self);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_JOBCONTROL_H */

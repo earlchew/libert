@@ -381,7 +381,7 @@ struct {								\
 #define	RB_PROTOTYPE(name, type, field, cmp)				\
 	RB_PROTOTYPE_INTERNAL(name, type, field, cmp,)
 #define	RB_PROTOTYPE_STATIC(name, type, field, cmp)			\
-	RB_PROTOTYPE_INTERNAL(name, type, field, cmp, UNUSED static)
+	RB_PROTOTYPE_INTERNAL(name, type, field, cmp, ERT_UNUSED static)
 #define RB_PROTOTYPE_INTERNAL(name, type, field, cmp, attr)		\
 	RB_PROTOTYPE_INSERT_COLOR(name, type, attr);			\
 	RB_PROTOTYPE_REMOVE_COLOR(name, type, attr);			\
@@ -417,7 +417,7 @@ struct {								\
 #define	RB_GENERATE(name, type, field, cmp)				\
 	RB_GENERATE_INTERNAL(name, type, field, cmp,)
 #define	RB_GENERATE_STATIC(name, type, field, cmp)			\
-	RB_GENERATE_INTERNAL(name, type, field, cmp, UNUSED static)
+	RB_GENERATE_INTERNAL(name, type, field, cmp, ERT_UNUSED static)
 #define RB_GENERATE_INTERNAL(name, type, field, cmp, attr)		\
 	RB_GENERATE_INSERT_COLOR(name, type, field, attr)		\
 	RB_GENERATE_REMOVE_COLOR(name, type, field, attr)		\

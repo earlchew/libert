@@ -35,7 +35,7 @@
 
 #include <sys/types.h>
 
-BEGIN_C_SCOPE;
+ERT_BEGIN_C_SCOPE;
 
 struct Pid;
 
@@ -47,33 +47,33 @@ struct ParseArgList
 };
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 createParseArgListCopy(struct ParseArgList *self, const char * const *aArgv);
 
-CHECKED int
+ERT_CHECKED int
 createParseArgListCSV(struct ParseArgList *self, const char *aArg);
 
-CHECKED struct ParseArgList *
+ERT_CHECKED struct ParseArgList *
 closeParseArgList(struct ParseArgList *self);
 
 const char * const *
 ownParseArgListArgv(const struct ParseArgList *self);
 
 /* -------------------------------------------------------------------------- */
-CHECKED int
+ERT_CHECKED int
 parseInt(const char *aArg, int *aValue);
 
-CHECKED int
+ERT_CHECKED int
 parseUInt(const char *aArg, unsigned *aValue);
 
-CHECKED int
+ERT_CHECKED int
 parseUInt64(const char *aArg, uint64_t *aValue);
 
-CHECKED int
+ERT_CHECKED int
 parsePid(const char *aArg, struct Pid *aValue);
 
 /* -------------------------------------------------------------------------- */
 
-END_C_SCOPE;
+ERT_END_C_SCOPE;
 
 #endif /* ERT_PARSE_H */
