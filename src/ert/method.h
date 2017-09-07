@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef METHOD_H
-#define METHOD_H
+#ifndef ERT_METHOD_H
+#define ERT_METHOD_H
 
 #include "ert/compiler.h"
 #include "ert/lambda.h"
@@ -91,7 +91,7 @@ methodEnsure_(const char *aFunction, const char *aFile, unsigned aLine,
 
 END_C_SCOPE;
 
-#endif /* METHOD_H */
+#endif /* ERT_METHOD_H */
 
 /* -------------------------------------------------------------------------- */
 #ifdef METHOD_DEFINITION

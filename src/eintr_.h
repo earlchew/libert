@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef EINTR_H
-#define EINTR_H
+#ifndef ERT_EINTR_H_
+#define ERT_EINTR_H_
 
 #include "ert/compiler.h"
 
@@ -387,4 +387,4 @@ EINTR_FUNCTION_DECL_(
 
 /* -------------------------------------------------------------------------- */
 
-#endif /* EINTR_H */
+#endif /* ERT_EINTR_H_ */

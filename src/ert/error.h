@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef ERT_ERROR_H
+#define ERT_ERROR_H
 
 #include "ert/compiler.h"
 #include "ert/options.h"
@@ -359,4 +359,4 @@ Error_exit(struct ErrorModule *self);
 
 END_C_SCOPE;
 
-#endif /* ERROR_H */
+#endif /* ERT_ERROR_H */

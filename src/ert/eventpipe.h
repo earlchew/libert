@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef EVENTPIPE_H
-#define EVENTPIPE_H
+#ifndef ERT_EVENTPIPE_H
+#define ERT_EVENTPIPE_H
 
 #include "ert/compiler.h"
 #include "ert/pipe.h"
@@ -81,4 +81,4 @@ detachEventPipeLatch_(struct EventPipe           *self,
 
 END_C_SCOPE;
 
-#endif /* EVENTPIPE_H */
+#endif /* ERT_EVENTPIPE_H */

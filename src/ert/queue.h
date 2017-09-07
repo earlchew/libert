@@ -30,8 +30,8 @@
  * $FreeBSD$
  */
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef ERT_QUEUE_H
+#define ERT_QUEUE_H
 
 #include "ert/compiler.h"
 
@@ -784,4 +784,4 @@ struct {								\
 		(head2)->tqh_last = &(head2)->tqh_first;		\
 } while (0)
 
-#endif /* !_SYS_QUEUE_H_ */
+#endif /* ERT_QUEUE_H */

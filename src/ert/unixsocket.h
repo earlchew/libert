@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef UNIXSOCKET_H
-#define UNIXSOCKET_H
+#ifndef ERT_UNIXSOCKET_H
+#define ERT_UNIXSOCKET_H
 
 #include "ert/compiler.h"
 #include "ert/socket.h"
@@ -124,4 +124,4 @@ readUnixSocket(struct UnixSocket *self,
 
 END_C_SCOPE;
 
-#endif /* UNIXSOCKET_H */
+#endif /* ERT_UNIXSOCKET_H */

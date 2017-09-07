@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef PRINTF_H
-#define PRINTF_H
+#ifndef ERT_PRINTF_H
+#define ERT_PRINTF_H
 
 #include "ert/compiler.h"
 #include "ert/method.h"
@@ -163,4 +163,4 @@ Printf_exit(struct PrintfModule *self);
 
 END_C_SCOPE;
 
-#endif /* PRINTF_H */
+#endif /* ERT_PRINTF_H */

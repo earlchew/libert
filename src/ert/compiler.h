@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef COMPILER_H
-#define COMPILER_H
+#ifndef ERT_COMPILER_H
+#define ERT_COMPILER_H
 
 #include "ert/macros.h"
 
@@ -172,4 +172,4 @@ abort_(void)
 
 #endif
 
-#endif /* COMPILER_H */
+#endif /* ERT_COMPILER_H */

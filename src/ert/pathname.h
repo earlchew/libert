@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef PATHNAME_H
-#define PATHNAME_H
+#ifndef ERT_PATHNAME_H
+#define ERT_PATHNAME_H
 
 #include "ert/compiler.h"
 #include "ert/file.h"
@@ -75,4 +75,4 @@ fstatPathName(const struct PathName *self, struct stat *aStat, int aFlags);
 
 END_C_SCOPE;
 
-#endif /* PATHNAME_H */
+#endif /* ERT_PATHNAME_H */

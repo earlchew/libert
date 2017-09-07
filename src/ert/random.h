@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef RANDOM_H
-#define RANDOM_H
+#ifndef ERT_RANDOM_H
+#define ERT_RANDOM_H
 
 #include "ert/compiler.h"
 
@@ -48,4 +48,4 @@ fetchRandomUniform(unsigned aLhs, unsigned aRhs);
 
 END_C_SCOPE;
 
-#endif /* RANDOM_H */
+#endif /* ERT_RANDOM_H */

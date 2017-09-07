@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef STDFDFILLER_H
-#define STDFDFILLER_H
+#ifndef ERT_STDFDFILLER_H
+#define ERT_STDFDFILLER_H
 
 #include "ert/compiler.h"
 #include "ert/file.h"
@@ -51,4 +51,4 @@ closeStdFdFiller(struct StdFdFiller *self);
 
 END_C_SCOPE;
 
-#endif /* STDFDFILLER_H */
+#endif /* ERT_STDFDFILLER_H */

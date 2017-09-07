@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef DEADLINE_H
-#define DEADLINE_H
+#ifndef ERT_DEADLINE_H
+#define ERT_DEADLINE_H
 
 #include "ert/compiler.h"
 #include "ert/timekeeping.h"
@@ -119,4 +119,4 @@ closeDeadline(struct Deadline *self);
 
 END_C_SCOPE;
 
-#endif /* DEADLINE_H */
+#endif /* ERT_DEADLINE_H */

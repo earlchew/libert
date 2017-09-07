@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef TIMEKEEPING_H
-#define TIMEKEEPING_H
+#ifndef ERT_TIMEKEEPING_H
+#define ERT_TIMEKEEPING_H
 
 #include "ert/compiler.h"
 #include "ert/timescale.h"
@@ -153,4 +153,4 @@ Timekeeping_exit(struct TimeKeepingModule *self);
 
 END_C_SCOPE;
 
-#endif /* TIMEKEEPING_H */
+#endif /* ERT_TIMEKEEPING_H */

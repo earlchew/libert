@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef THREAD_H
-#define THREAD_H
+#ifndef ERT_THREAD_H
+#define ERT_THREAD_H
 
 #include "ert/compiler.h"
 #include "ert/method.h"
@@ -357,4 +357,4 @@ waitThreadSigMask(const int *aSigList);
 
 END_C_SCOPE;
 
-#endif /* THREAD_H */
+#endif /* ERT_THREAD_H */

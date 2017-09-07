@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef PIPE_H
-#define PIPE_H
+#ifndef ERT_PIPE_H
+#define ERT_PIPE_H
 
 #include "ert/compiler.h"
 #include "ert/file.h"
@@ -71,4 +71,4 @@ nonBlockingPipe(struct Pipe *self, unsigned aNonBlocking);
 
 END_C_SCOPE;
 
-#endif /* PIPE_H */
+#endif /* ERT_PIPE_H */

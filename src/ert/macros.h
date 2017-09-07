@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef MACROS_H
-#define MACROS_H
+#ifndef ERT_MACROS_H
+#define ERT_MACROS_H
 
 #define NUMBEROF(Vector_) (sizeof((Vector_))/sizeof((Vector_)[0]))
 
@@ -90,4 +90,4 @@ do                                              \
     (Value_) / alignment_ * alignment_;         \
 })
 
-#endif /* MACROS_H */
+#endif /* ERT_MACROS_H */

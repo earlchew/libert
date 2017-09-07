@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef TEST_H
-#define TEST_H
+#ifndef ERT_TEST_H
+#define ERT_TEST_H
 
 #include "ert/compiler.h"
 
@@ -88,4 +88,4 @@ Test_exit(struct TestModule *self);
 
 END_C_SCOPE;
 
-#endif /* TEST_H */
+#endif /* ERT_TEST_H */

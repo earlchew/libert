@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef PID_H
-#define PID_H
+#ifndef ERT_PID_H
+#define ERT_PID_H
 
 #include "ert/compiler.h"
 
@@ -120,4 +120,4 @@ Pgid(pid_t aPgid)
 
 END_C_SCOPE;
 
-#endif /* PID_H */
+#endif /* ERT_PID_H */

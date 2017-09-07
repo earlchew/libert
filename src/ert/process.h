@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef ERT_PROCESS_H
+#define ERT_PROCESS_H
 
 #include "ert/compiler.h"
 #include "ert/timescale.h"
@@ -468,4 +468,4 @@ Process_exit(struct ProcessModule *self);
 
 END_C_SCOPE;
 
-#endif /* PROCESS_H */
+#endif /* ERT_PROCESS_H */

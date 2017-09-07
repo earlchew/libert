@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef SOCKETPAIR_H
-#define SOCKETPAIR_H
+#ifndef ERT_SOCKETPAIR_H
+#define ERT_SOCKETPAIR_H
 
 #include "ert/compiler.h"
 #include "ert/unixsocket.h"
@@ -59,4 +59,4 @@ closeSocketPairChild(struct SocketPair *self);
 
 END_C_SCOPE;
 
-#endif /* SOCKETPAIR_H */
+#endif /* ERT_SOCKETPAIR_H */

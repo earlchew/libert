@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef BELLSOCKETPAIR_H
-#define BELLSOCKETPAIR_H
+#ifndef ERT_BELLSOCKETPAIR_H
+#define ERT_BELLSOCKETPAIR_H
 
 #include "ert/compiler.h"
 #include "ert/socketpair.h"
@@ -73,4 +73,4 @@ waitBellSocketPairParent(struct BellSocketPair *self,
 
 END_C_SCOPE;
 
-#endif /* BELLSOCKETPAIR_H */
+#endif /* ERT_BELLSOCKETPAIR_H */

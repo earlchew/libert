@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef PARSE_H
-#define PARSE_H
+#ifndef ERT_PARSE_H
+#define ERT_PARSE_H
 
 #include "ert/compiler.h"
 
@@ -76,4 +76,4 @@ parsePid(const char *aArg, struct Pid *aValue);
 
 END_C_SCOPE;
 
-#endif /* PARSE_H */
+#endif /* ERT_PARSE_H */

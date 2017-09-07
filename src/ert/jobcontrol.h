@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef JOBCONTROL_H
-#define JOBCONTROL_H
+#ifndef ERT_JOBCONTROL_H
+#define ERT_JOBCONTROL_H
 
 #include "ert/compiler.h"
 #include "ert/process.h"
@@ -100,4 +100,4 @@ unwatchJobControlContinue(struct JobControl *self);
 
 END_C_SCOPE;
 
-#endif /* JOBCONTROL_H */
+#endif /* ERT_JOBCONTROL_H */

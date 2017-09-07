@@ -27,8 +27,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef	TREE_H
-#define	TREE_H
+#ifndef	ERT_TREE_H
+#define	ERT_TREE_H
 
 #include "ert/compiler.h"
 
@@ -798,4 +798,4 @@ name##_RB_MINMAX(struct name *head, int val)				\
 	    ((x) != NULL) && ((y) = name##_RB_PREV(x), (x) != NULL);	\
 	     (x) = (y))
 
-#endif	/* TREE_H_ */
+#endif	/* ERT_TREE_H */

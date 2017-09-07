@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef FILE_H
-#define FILE_H
+#ifndef ERT_FILE_H
+#define ERT_FILE_H
 
 #include "ert/compiler.h"
 #include "ert/fd.h"
@@ -173,4 +173,4 @@ ownFileRegionLocked(const struct File *self, off_t aPos, off_t aLen);
 
 END_C_SCOPE;
 
-#endif /* FILE_H */
+#endif /* ERT_FILE_H */

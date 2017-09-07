@@ -26,23 +26,9 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef ERT_TYPE_H
-#define ERT_TYPE_H
+#ifndef LIBERT_H_
+#define LIBERT_H_
 
-#include "ert/compiler.h"
+/* This file currently only used as a target for configure.ac */
 
-BEGIN_C_SCOPE;
-
-struct Type
-{
-    const char *mName;
-};
-
-/* -------------------------------------------------------------------------- */
-#define TYPE(aType) (& (const struct Type) { .mName = (aType) })
-
-/* -------------------------------------------------------------------------- */
-
-END_C_SCOPE;
-
-#endif /* ERT_TYPE_H */
+#endif /* LIBERT_H_ */

@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef LAMBDA_H
-#define LAMBDA_H
+#ifndef ERT_LAMBDA_H
+#define ERT_LAMBDA_H
 
 #ifdef __cplusplus
 
@@ -68,4 +68,4 @@
 
 #endif
 
-#endif /* LAMBDA_H */
+#endif /* ERT_LAMBDA_H */

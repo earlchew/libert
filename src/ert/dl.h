@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef DL_H
-#define DL_H
+#ifndef ERT_DL_H
+#define ERT_DL_H
 
 #include "ert/compiler.h"
 
@@ -43,4 +43,4 @@ findDlSymbol(const char *aSymName, uintptr_t *aSymAddr, const char **aErr);
 
 END_C_SCOPE;
 
-#endif /* DL_H */
+#endif /* ERT_DL_H */

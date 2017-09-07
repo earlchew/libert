@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef TIMESCALE_H
-#define TIMESCALE_H
+#ifndef ERT_TIMESCALE_H
+#define ERT_TIMESCALE_H
 
 #include "ert/compiler.h"
 
@@ -261,4 +261,4 @@ earliestTime(const struct timespec *aLhs, const struct timespec *aRhs);
 
 END_C_SCOPE;
 
-#endif /* TIMESCALE_H */
+#endif /* ERT_TIMESCALE_H */

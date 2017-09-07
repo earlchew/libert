@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef ENV_H
-#define ENV_H
+#ifndef ERT_ENV_H
+#define ERT_ENV_H
 
 #include "ert/compiler.h"
 #include "ert/pid.h"
@@ -76,4 +76,4 @@ getEnvPid(const char *aName, struct Pid *aValue);
 
 END_C_SCOPE;
 
-#endif /* ENV_H */
+#endif /* ERT_ENV_H */

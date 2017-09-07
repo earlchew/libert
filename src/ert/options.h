@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef ERT_OPTIONS_H
+#define ERT_OPTIONS_H
 
 #include "ert/compiler.h"
 #include "ert/pid.h"
@@ -54,4 +54,4 @@ initOptions(const struct Options *aOpts);
 
 END_C_SCOPE;
 
-#endif /* OPTIONS_H */
+#endif /* ERT_OPTIONS_H */

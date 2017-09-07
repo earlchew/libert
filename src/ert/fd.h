@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef FD_H
-#define FD_H
+#ifndef ERT_FD_H
+#define ERT_FD_H
 
 #include "ert/compiler.h"
 
@@ -205,4 +205,4 @@ waitFdReadReadyDeadline(int aFd, struct Deadline *aDeadline);
 
 END_C_SCOPE;
 
-#endif /* FD_H */
+#endif /* ERT_FD_H */

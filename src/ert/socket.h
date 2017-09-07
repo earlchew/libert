@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef SOCKET_H
-#define SOCKET_H
+#ifndef ERT_SOCKET_H
+#define ERT_SOCKET_H
 
 #include "ert/compiler.h"
 #include "ert/file.h"
@@ -128,4 +128,4 @@ ownSocketPeerCred(const struct Socket *self, struct ucred *aCred);
 
 END_C_SCOPE;
 
-#endif /* SOCKET_H */
+#endif /* ERT_SOCKET_H */

@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ifndef ERT_SYSTEM_H
+#define ERT_SYSTEM_H
 
 #include "ert/compiler.h"
 
@@ -46,4 +46,4 @@ fetchSystemPageSize(void);
 
 END_C_SCOPE;
 
-#endif /* SYSTEM_H */
+#endif /* ERT_SYSTEM_H */

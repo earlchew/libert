@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef MALLOC_H
-#define MALLOC_H
+#ifndef ERT_MALLOC_H_
+#define ERT_MALLOC_H_
 
 #define malloc         __libc_malloc
 #define valloc         __libc_valloc
@@ -87,4 +87,4 @@ realloc(void *aBlock, size_t aSize);
 
 /* -------------------------------------------------------------------------- */
 
-#endif /* MALLOC_H */
+#endif /* ERT_MALLOC_H_ */

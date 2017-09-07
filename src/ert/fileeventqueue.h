@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef FILEEVENTQUEUE_H
-#define FILEEVENTQUEUE_H
+#ifndef ERT_FILEEVENTQUEUE_H
+#define ERT_FILEEVENTQUEUE_H
 
 #include "ert/compiler.h"
 #include "ert/file.h"
@@ -123,4 +123,4 @@ closeFileEventQueueActivity(struct FileEventQueueActivity *self);
 
 END_C_SCOPE;
 
-#endif /* FILEEVENTQUEUE_H */
+#endif /* ERT_FILEEVENTQUEUE_H */

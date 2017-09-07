@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef EVENTLATCH_H
-#define EVENTLATCH_H
+#ifndef ERT_EVENTLATCH_H
+#define ERT_EVENTLATCH_H
 
 #include "ert/compiler.h"
 #include "ert/thread.h"
@@ -140,4 +140,4 @@ ownEventLatchSetting(const struct EventLatch *self);
 
 END_C_SCOPE;
 
-#endif /* EVENTLATCH_H */
+#endif /* ERT_EVENTLATCH_H */

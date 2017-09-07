@@ -26,8 +26,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef POLLFD_H
-#define POLLFD_H
+#ifndef ERT_POLLFD_H
+#define ERT_POLLFD_H
 
 #include "ert/compiler.h"
 #include "ert/timekeeping.h"
@@ -170,4 +170,4 @@ createPollEventText(
 
 END_C_SCOPE;
 
-#endif /* POLLFD_H */
+#endif /* ERT_POLLFD_H */
