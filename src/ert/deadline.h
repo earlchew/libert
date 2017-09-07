@@ -41,55 +41,62 @@ struct Duration;
 ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_DeadlinePollMethod    int
-#define METHOD_CONST_DeadlinePollMethod
-#define METHOD_ARG_LIST_DeadlinePollMethod  ()
-#define METHOD_CALL_LIST_DeadlinePollMethod ()
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_DeadlinePollMethod    int
+#define ERT_METHOD_CONST_DeadlinePollMethod
+#define ERT_METHOD_ARG_LIST_DeadlinePollMethod  ()
+#define ERT_METHOD_CALL_LIST_DeadlinePollMethod ()
 
-#define METHOD_NAME      DeadlinePollMethod
-#define METHOD_RETURN    METHOD_RETURN_DeadlinePollMethod
-#define METHOD_CONST     METHOD_CONST_DeadlinePollMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_DeadlinePollMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_DeadlinePollMethod
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
+#define ERT_METHOD_NAME      DeadlinePollMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_DeadlinePollMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_DeadlinePollMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_DeadlinePollMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_DeadlinePollMethod
 #include "ert/method.h"
 
-#define DeadlinePollMethod(Object_, Method_) \
-    METHOD_TRAMPOLINE(                       \
-        Object_, Method_,                    \
-        DeadlinePollMethod_,                 \
-        METHOD_RETURN_DeadlinePollMethod,    \
-        METHOD_CONST_DeadlinePollMethod,     \
-        METHOD_ARG_LIST_DeadlinePollMethod,  \
-        METHOD_CALL_LIST_DeadlinePollMethod)
+#define Ert_DeadlinePollMethod(Object_, Method_) \
+    ERT_METHOD_TRAMPOLINE(                           \
+        Object_, Method_,                        \
+        Ert_DeadlinePollMethod_,                 \
+        ERT_METHOD_RETURN_DeadlinePollMethod,    \
+        ERT_METHOD_CONST_DeadlinePollMethod,     \
+        ERT_METHOD_ARG_LIST_DeadlinePollMethod,  \
+        ERT_METHOD_CALL_LIST_DeadlinePollMethod)
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_DEFINITION
-#define METHOD_RETURN_DeadlineWaitMethod    int
-#define METHOD_CONST_DeadlineWaitMethod
-#define METHOD_ARG_LIST_DeadlineWaitMethod  (const struct Duration *aTimeout_)
-#define METHOD_CALL_LIST_DeadlineWaitMethod (aTimeout_)
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_DeadlineWaitMethod    int
+#define ERT_METHOD_CONST_DeadlineWaitMethod
+#define ERT_METHOD_ARG_LIST_DeadlineWaitMethod  \
+    (const struct Duration *aTimeout_)
+#define ERT_METHOD_CALL_LIST_DeadlineWaitMethod (aTimeout_)
 
-#define METHOD_NAME      DeadlineWaitMethod
-#define METHOD_RETURN    METHOD_RETURN_DeadlineWaitMethod
-#define METHOD_CONST     METHOD_CONST_DeadlineWaitMethod
-#define METHOD_ARG_LIST  METHOD_ARG_LIST_DeadlineWaitMethod
-#define METHOD_CALL_LIST METHOD_CALL_LIST_DeadlineWaitMethod
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
+#define ERT_METHOD_NAME      DeadlineWaitMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_DeadlineWaitMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_DeadlineWaitMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_DeadlineWaitMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_DeadlineWaitMethod
 #include "ert/method.h"
 
-#define DeadlineWaitMethod(Object_, Method_) \
-    METHOD_TRAMPOLINE(                       \
-        Object_, Method_,                    \
-        DeadlineWaitMethod_,                 \
-        METHOD_RETURN_DeadlineWaitMethod,    \
-        METHOD_CONST_DeadlineWaitMethod,     \
-        METHOD_ARG_LIST_DeadlineWaitMethod,  \
-        METHOD_CALL_LIST_DeadlineWaitMethod)
+#define Ert_DeadlineWaitMethod(Object_, Method_) \
+    ERT_METHOD_TRAMPOLINE(                           \
+        Object_, Method_,                        \
+        Ert_DeadlineWaitMethod_,                 \
+        ERT_METHOD_RETURN_DeadlineWaitMethod,    \
+        ERT_METHOD_CONST_DeadlineWaitMethod,     \
+        ERT_METHOD_ARG_LIST_DeadlineWaitMethod,  \
+        ERT_METHOD_CALL_LIST_DeadlineWaitMethod)
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
 
-struct Deadline
+struct Ert_Deadline
 {
     struct EventClockTime        mSince;
     struct EventClockTime        mTime;
@@ -102,18 +109,18 @@ struct Deadline
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createDeadline(struct Deadline *self, const struct Duration *aDuration);
+ert_createDeadline(struct Ert_Deadline *self, const struct Duration *aDuration);
 
 ERT_CHECKED int
-checkDeadlineExpired(struct Deadline *self,
-                     struct DeadlinePollMethod aPollMethod,
-                     struct DeadlineWaitMethod aWaitMethod);
+ert_checkDeadlineExpired(struct Ert_Deadline *self,
+                         struct Ert_DeadlinePollMethod aPollMethod,
+                         struct Ert_DeadlineWaitMethod aWaitMethod);
 
 bool
-ownDeadlineExpired(const struct Deadline *self);
+ert_ownDeadlineExpired(const struct Ert_Deadline *self);
 
-ERT_CHECKED struct Deadline *
-closeDeadline(struct Deadline *self);
+ERT_CHECKED struct Ert_Deadline *
+ert_closeDeadline(struct Ert_Deadline *self);
 
 /* -------------------------------------------------------------------------- */
 
