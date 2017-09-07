@@ -37,9 +37,9 @@ ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define METHOD_CTOR_(Const_, Struct_)
+#define ERT_METHOD_CTOR_(Const_, Struct_)
 #else
-#define METHOD_CTOR_(Const_, Struct_)                   \
+#define ERT_METHOD_CTOR_(Const_, Struct_)               \
     explicit Struct_()                                  \
     : mObject(0),                                       \
       mMethod(0)                                        \
@@ -53,10 +53,10 @@ ERT_BEGIN_C_SCOPE;
 #endif
 
 /* -------------------------------------------------------------------------- */
-#define METHOD_TRAMPOLINE(                                               \
+#define ERT_METHOD_TRAMPOLINE(                                           \
     Object_, Method_, Name_, Return_, Const_, ArgList_, CallList_)       \
 ({                                                                       \
-    typedef Const_ ERT_DECLTYPE(*(Object_)) *ObjectT_;                       \
+    typedef Const_ ERT_DECLTYPE(*(Object_)) *ObjectT_;                   \
                                                                          \
     Const_ void *ValidateObject_ = (Object_);                            \
                                                                          \
@@ -79,14 +79,14 @@ ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 void
-methodEnsure_(const char *aFunction, const char *aFile, unsigned aLine,
-              const char *aPredicate)
+ert_methodEnsure_(const char *aFunction, const char *aFile, unsigned aLine,
+                  const char *aPredicate)
     ERT_NORETURN;
 
-#define METHOD_ENSURE_(aPredicate)                                      \
-    do                                                                  \
-        if ( ! (aPredicate))                                            \
-            methodEnsure_(__func__, __FILE__, __LINE__, # aPredicate);  \
+#define ERT_METHOD_ENSURE_(aPredicate)                                      \
+    do                                                                      \
+        if ( ! (aPredicate))                                                \
+            ert_methodEnsure_(__func__, __FILE__, __LINE__, # aPredicate);  \
     while (0);
 
 ERT_END_C_SCOPE;
@@ -94,74 +94,91 @@ ERT_END_C_SCOPE;
 #endif /* ERT_METHOD_H */
 
 /* -------------------------------------------------------------------------- */
-#ifdef METHOD_DEFINITION
-#undef METHOD_DEFINITION
+#ifdef ERT_METHOD_DEFINITION
+#undef ERT_METHOD_DEFINITION
 
 #include <stdbool.h>
 
 ERT_BEGIN_C_SCOPE;
 
-typedef METHOD_RETURN (*CONCAT(METHOD_NAME, T_))(
-    METHOD_CONST void *self EXPAND(ARGS METHOD_ARG_LIST));
+#ifndef ERT_METHOD_TYPE_PREFIX
+#define ERT_METHOD_TYPE_PREFIX
+#endif
 
-static __inline__ struct METHOD_NAME
-CONCAT(METHOD_NAME, _) (METHOD_CONST void      *aObject,
-                        CONCAT(METHOD_NAME, T_) aMethod);
+#ifndef ERT_METHOD_FUNCTION_PREFIX
+#define ERT_METHOD_FUNCTION_PREFIX
+#endif
 
-struct METHOD_NAME
+#define ERT_METHOD_NAME_ CONCAT(ERT_METHOD_TYPE_PREFIX, ERT_METHOD_NAME)
+
+typedef ERT_METHOD_RETURN (*CONCAT(ERT_METHOD_NAME_, T_))(
+    ERT_METHOD_CONST void *self EXPAND(ARGS ERT_METHOD_ARG_LIST));
+
+static __inline__ struct ERT_METHOD_NAME_
+CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
+                             CONCAT(ERT_METHOD_NAME_, T_) aMethod);
+
+struct ERT_METHOD_NAME_
 {
-    METHOD_CTOR_(METHOD_CONST, METHOD_NAME)
+    ERT_METHOD_CTOR_(ERT_METHOD_CONST, ERT_METHOD_NAME_)
 
-    METHOD_CONST void      *mObject;
-    CONCAT(METHOD_NAME, T_) mMethod;
+    ERT_METHOD_CONST void       *mObject;
+    CONCAT(ERT_METHOD_NAME_, T_) mMethod;
 };
 
-static __inline__ struct METHOD_NAME
-CONCAT(METHOD_NAME, _) (METHOD_CONST void      *aObject,
-                        CONCAT(METHOD_NAME, T_) aMethod)
+static __inline__ struct ERT_METHOD_NAME_
+CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
+                             CONCAT(ERT_METHOD_NAME_, T_) aMethod)
 {
-    METHOD_ENSURE_(aMethod || ! aObject);
+    ERT_METHOD_ENSURE_(aMethod || ! aObject);
 
     /* In C++ programs, this initialiser will use the struct ctor, so
      * the struct ctor must not use this function to avoid death
      * by recursion. */
 
-    return (struct METHOD_NAME)
+    return (struct ERT_METHOD_NAME_)
     {
         mObject : aObject,
         mMethod : aMethod,
     };
 }
 
-static __inline__ METHOD_RETURN
-CONCAT(call, METHOD_NAME) (struct METHOD_NAME self
-                           EXPAND(ARGS METHOD_ARG_LIST))
+static __inline__ ERT_METHOD_RETURN
+CONCAT(
+    CONCAT(ERT_METHOD_FUNCTION_PREFIX, call), ERT_METHOD_NAME) (
+        struct ERT_METHOD_NAME_ self
+        EXPAND(ARGS ERT_METHOD_ARG_LIST))
 {
-    METHOD_ENSURE_(self.mMethod);
+    ERT_METHOD_ENSURE_(self.mMethod);
 
-    return self.mMethod(self.mObject EXPAND(ARGS METHOD_CALL_LIST));
+    return self.mMethod(self.mObject EXPAND(ARGS ERT_METHOD_CALL_LIST));
 }
 
 static __inline__ bool
-CONCAT(CONCAT(own, METHOD_NAME), Nil)(struct METHOD_NAME self)
+CONCAT(CONCAT(own, ERT_METHOD_NAME_), Nil)(struct ERT_METHOD_NAME_ self)
 {
     return ! self.mMethod;
 }
 
-static __inline__ struct METHOD_NAME
-CONCAT(METHOD_NAME, Nil)(void)
+static __inline__ struct ERT_METHOD_NAME_
+CONCAT(ERT_METHOD_NAME_, Nil)(void)
 {
-    return CONCAT(METHOD_NAME, _)(0, 0);
+    return CONCAT(ERT_METHOD_NAME_, _)(0, 0);
 }
 
 ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 
-#undef METHOD_NAME
-#undef METHOD_RETURN
-#undef METHOD_CONST
-#undef METHOD_ARG_LIST
-#undef METHOD_CALL_LIST
+#undef ERT_METHOD_NAME_
 
-#endif /* METHOD_DEFINITION */
+#undef ERT_METHOD_TYPE_PREFIX
+#undef ERT_METHOD_FUNCTION_PREFIX
+
+#undef ERT_METHOD_NAME
+#undef ERT_METHOD_RETURN
+#undef ERT_METHOD_CONST
+#undef ERT_METHOD_ARG_LIST
+#undef ERT_METHOD_CALL_LIST
+
+#endif /* ERT_METHOD_DEFINITION */
