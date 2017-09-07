@@ -97,7 +97,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 char *
-findDlSymbol(const char *aSymName, uintptr_t *aSymAddr, const char **aErr)
+ert_findDlSymbol(const char *aSymName, uintptr_t *aSymAddr, const char **aErr)
 {
     char *rc = 0;
 

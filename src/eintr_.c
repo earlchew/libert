@@ -43,7 +43,7 @@
 /* Verify that the function signature of the interceptor matches the    \
  * declared function signature. */                                      \
                                                                         \
-static ERT_DECLTYPE(Name_ ## _) *Name_ ## _check_ ERT_UNUSED = Name_;           \
+static ERT_DECLTYPE(Name_ ## _) *Name_ ## _check_ ERT_UNUSED = Name_;   \
                                                                         \
 Return_                                                                 \
 Name_ Signature_                                                        \
@@ -941,7 +941,7 @@ initSystemCall(struct SystemCall *self)
     {
         const char *err;
 
-        char *libName = findDlSymbol(self->mName, &addr, &err);
+        char *libName = ert_findDlSymbol(self->mName, &addr, &err);
 
         ensure(libName);
 
