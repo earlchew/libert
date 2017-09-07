@@ -31,7 +31,7 @@
 
 /* -------------------------------------------------------------------------- */
 int
-createDeadline(struct Deadline *self, const struct Duration *aDuration)
+ert_createDeadline(struct Ert_Deadline *self, const struct Duration *aDuration)
 {
     int rc = -1;
 
@@ -50,24 +50,24 @@ Finally:
     FINALLY
     ({
         if (rc)
-            self = closeDeadline(self);
+            self = ert_closeDeadline(self);
     });
 
     return rc;
 }
 
 /* -------------------------------------------------------------------------- */
-struct Deadline *
-closeDeadline(struct Deadline *self)
+struct Ert_Deadline *
+ert_closeDeadline(struct Ert_Deadline *self)
 {
     return 0;
 }
 
 /* -------------------------------------------------------------------------- */
 int
-checkDeadlineExpired(struct Deadline *self,
-                     struct DeadlinePollMethod aPollMethod,
-                     struct DeadlineWaitMethod aWaitMethod)
+ert_checkDeadlineExpired(struct Ert_Deadline *self,
+                         struct Ert_DeadlinePollMethod aPollMethod,
+                         struct Ert_DeadlineWaitMethod aWaitMethod)
 {
     int rc = -1;
 
@@ -86,7 +86,7 @@ checkDeadlineExpired(struct Deadline *self,
             ready = -1;
 
             ERROR_IF(
-                (ready = callDeadlinePollMethod(aPollMethod),
+                (ready = ert_callDeadlinePollMethod(aPollMethod),
                  -1 == ready));
         });
 
@@ -118,7 +118,7 @@ checkDeadlineExpired(struct Deadline *self,
 
         if ( ! ready)
             ERROR_IF(
-                (ready = callDeadlineWaitMethod(
+                (ready = ert_callDeadlineWaitMethod(
                     aWaitMethod,
                     self->mDuration ? &self->mRemaining : 0),
                  -1 == ready));
@@ -136,9 +136,9 @@ checkDeadlineExpired(struct Deadline *self,
      *     underlying event is not ready.
      *
      * -1  Either the deadline timed out or an error occurred. If the
-     *     deadline expired, ownDeadlineExpired() will return true and
+     *     deadline expired, ert_ownDeadlineExpired() will return true and
      *     errno will be set to ETIMEDOUT. If another error occurred,
-     *     ownDeadlineExpired() will return false, and errno will take
+     *     ert_ownDeadlineExpired() will return false, and errno will take
      *     on an arbitrary value. */
 
     if (0 > ready)
@@ -158,7 +158,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 bool
-ownDeadlineExpired(const struct Deadline *self)
+ert_ownDeadlineExpired(const struct Ert_Deadline *self)
 {
     return self->mExpired;
 }
