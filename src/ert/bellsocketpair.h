@@ -36,7 +36,7 @@ BEGIN_C_SCOPE;
 
 struct Duration;
 
-struct BellSocketPair
+struct Ert_BellSocketPair
 {
     struct SocketPair  mSocketPair_;
     struct SocketPair *mSocketPair;
@@ -44,30 +44,30 @@ struct BellSocketPair
 
 /* -------------------------------------------------------------------------- */
 CHECKED int
-createBellSocketPair(struct BellSocketPair *self, unsigned aFlags);
+ert_createBellSocketPair(struct Ert_BellSocketPair *self, unsigned aFlags);
 
-CHECKED struct BellSocketPair *
-closeBellSocketPair(struct BellSocketPair *self);
-
-void
-closeBellSocketPairParent(struct BellSocketPair *self);
+CHECKED struct Ert_BellSocketPair *
+ert_closeBellSocketPair(struct Ert_BellSocketPair *self);
 
 void
-closeBellSocketPairChild(struct BellSocketPair *self);
+ert_closeBellSocketPairParent(struct Ert_BellSocketPair *self);
+
+void
+ert_closeBellSocketPairChild(struct Ert_BellSocketPair *self);
 
 CHECKED int
-ringBellSocketPairChild(struct BellSocketPair *self);
+ert_ringBellSocketPairChild(struct Ert_BellSocketPair *self);
 
 CHECKED int
-ringBellSocketPairParent(struct BellSocketPair *self);
+ert_ringBellSocketPairParent(struct Ert_BellSocketPair *self);
 
 CHECKED int
-waitBellSocketPairChild(struct BellSocketPair *self,
-                        const struct Duration *aTimeout);
+ert_waitBellSocketPairChild(struct Ert_BellSocketPair *self,
+                            const struct Duration *aTimeout);
 
 CHECKED int
-waitBellSocketPairParent(struct BellSocketPair *self,
-                         const struct Duration *aTimeout);
+ert_waitBellSocketPairParent(struct Ert_BellSocketPair *self,
+                             const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 

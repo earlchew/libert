@@ -173,7 +173,7 @@ struct DaemonState
     int mErrno;
     int mSigMask[NSIG];
 
-    struct BellSocketPair *mBellSocket;
+    struct Ert_BellSocketPair *mBellSocket;
 };
 
 static int
@@ -201,9 +201,9 @@ daemonProcess_(struct DaemonState *self)
     while (unlockMutex(lockMutex(mutex)))
         break;
 
-    closeBellSocketPairParent(self->mBellSocket);
-    if (ringBellSocketPairChild(self->mBellSocket) ||
-        waitBellSocketPairChild(self->mBellSocket, 0))
+    ert_closeBellSocketPairParent(self->mBellSocket);
+    if (ert_ringBellSocketPairChild(self->mBellSocket) ||
+        ert_waitBellSocketPairChild(self->mBellSocket, 0))
     {
         execl("/bin/false", "false", (char *) 0);
     }
@@ -217,10 +217,10 @@ daemonProcess_(struct DaemonState *self)
 
 TEST_F(ProcessTest, ProcessDaemon)
 {
-    struct BellSocketPair  bellSocket_;
-    struct BellSocketPair *bellSocket = 0;
+    struct Ert_BellSocketPair  bellSocket_;
+    struct Ert_BellSocketPair *bellSocket = 0;
 
-    EXPECT_EQ(0, createBellSocketPair(&bellSocket_, 0));
+    EXPECT_EQ(0, ert_createBellSocketPair(&bellSocket_, 0));
     bellSocket = &bellSocket_;
 
     struct DaemonState *daemonState =
@@ -239,7 +239,7 @@ TEST_F(ProcessTest, ProcessDaemon)
         PreForkProcessMethod(
             bellSocket,
             LAMBDA(
-                int, (struct BellSocketPair       *aBellSocket,
+                int, (struct Ert_BellSocketPair       *aBellSocket,
                       const struct PreForkProcess *aPreFork),
                 {
                     int rc_ = -1;
@@ -269,13 +269,13 @@ TEST_F(ProcessTest, ProcessDaemon)
         PostForkParentProcessMethodNil(),
         ForkProcessMethod(daemonState, daemonProcess_));
 
-    closeBellSocketPairChild(bellSocket);
+    ert_closeBellSocketPairChild(bellSocket);
 
     EXPECT_NE(-1, daemonPid.mPid);
     EXPECT_EQ(daemonPid.mPid, getpgid(daemonPid.mPid));
     EXPECT_EQ(getsid(0), getsid(daemonPid.mPid));
 
-    EXPECT_EQ(0, waitBellSocketPairParent(bellSocket, 0));
+    EXPECT_EQ(0, ert_waitBellSocketPairParent(bellSocket, 0));
 
     EXPECT_EQ(0, daemonState->mErrno);
 
@@ -292,7 +292,7 @@ TEST_F(ProcessTest, ProcessDaemon)
 
     EXPECT_EQ(0, munmap(daemonState, sizeof(*daemonState)));
 
-    bellSocket = closeBellSocketPair(bellSocket);
+    bellSocket = ert_closeBellSocketPair(bellSocket);
 }
 
 struct ProcessForkArg

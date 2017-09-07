@@ -59,7 +59,7 @@ class FileEventQueueTest : public ::testing::Test
         ASSERT_EQ(0, createFileEventQueue(&mEventQueue_, 2));
         mEventQueue = &mEventQueue_;
 
-        ASSERT_EQ(0, createBellSocketPair(&mTestSocket_, 0));
+        ASSERT_EQ(0, ert_createBellSocketPair(&mTestSocket_, 0));
         mTestSocket = &mTestSocket_;
 
         mEventActivity = 0;
@@ -69,7 +69,7 @@ class FileEventQueueTest : public ::testing::Test
     {
         ASSERT_EQ(0, mEventActivity);
 
-        mTestSocket = closeBellSocketPair(mTestSocket);
+        mTestSocket = ert_closeBellSocketPair(mTestSocket);
         mEventQueue = closeFileEventQueue(mEventQueue);
     }
 
@@ -78,8 +78,8 @@ protected:
     struct FileEventQueue  mEventQueue_;
     struct FileEventQueue *mEventQueue;
 
-    struct BellSocketPair  mTestSocket_;
-    struct BellSocketPair *mTestSocket;
+    struct Ert_BellSocketPair  mTestSocket_;
+    struct Ert_BellSocketPair *mTestSocket;
 
     struct FileEventQueueActivity  mEventActivity_;
     struct FileEventQueueActivity *mEventActivity;
@@ -106,7 +106,7 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
     EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
-    EXPECT_EQ(0, ringBellSocketPairChild(mTestSocket));
+    EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
@@ -156,7 +156,7 @@ TEST_F(FileEventQueueTest, ReadyArmPollClose)
     EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
-    EXPECT_EQ(0, ringBellSocketPairChild(mTestSocket));
+    EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
@@ -195,7 +195,7 @@ TEST_F(FileEventQueueTest, ArmPollReadyClose)
     EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
-    EXPECT_EQ(0, ringBellSocketPairChild(mTestSocket));
+    EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
@@ -241,7 +241,7 @@ TEST_F(FileEventQueueTest, ArmReadyClose)
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
-    EXPECT_EQ(0, ringBellSocketPairChild(mTestSocket));
+    EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
@@ -264,7 +264,7 @@ TEST_F(FileEventQueueTest, ReadyArmClose)
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
     mEventActivity = &mEventActivity_;
 
-    EXPECT_EQ(0, ringBellSocketPairChild(mTestSocket));
+    EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
@@ -311,7 +311,7 @@ TEST_F(FileEventQueueTest, ReadyClose)
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
     mEventActivity = &mEventActivity_;
 
-    EXPECT_EQ(0, ringBellSocketPairChild(mTestSocket));
+    EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 

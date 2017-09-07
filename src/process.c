@@ -1698,8 +1698,8 @@ struct ForkProcessChannel_
     struct Pipe  mResultPipe_;
     struct Pipe *mResultPipe;
 
-    struct BellSocketPair  mResultSocket_;
-    struct BellSocketPair *mResultSocket;
+    struct Ert_BellSocketPair  mResultSocket_;
+    struct Ert_BellSocketPair *mResultSocket;
 };
 
 static CHECKED struct ForkProcessChannel_ *
@@ -1711,7 +1711,7 @@ closeForkProcessChannel_(
         *self->mList = self->mPrev;
         self->mPrev  = 0;
 
-        self->mResultSocket = closeBellSocketPair(self->mResultSocket);
+        self->mResultSocket = ert_closeBellSocketPair(self->mResultSocket);
         self->mResultPipe   = closePipe(self->mResultPipe);
     }
 
@@ -1723,7 +1723,7 @@ closeForkProcessChannelResultChild_(
     struct ForkProcessChannel_ *self)
 {
     closePipeWriter(self->mResultPipe);
-    closeBellSocketPairChild(self->mResultSocket);
+    ert_closeBellSocketPairChild(self->mResultSocket);
 }
 
 static void
@@ -1731,7 +1731,7 @@ closeForkProcessChannelResultParent_(
     struct ForkProcessChannel_ *self)
 {
     closePipeReader(self->mResultPipe);
-    closeBellSocketPairParent(self->mResultSocket);
+    ert_closeBellSocketPairParent(self->mResultSocket);
 }
 
 static CHECKED int
@@ -1762,7 +1762,7 @@ createForkProcessChannel_(
     self->mResultPipe = &self->mResultPipe_;
 
     ERROR_IF(
-        createBellSocketPair(&self->mResultSocket_, O_CLOEXEC));
+        ert_createBellSocketPair(&self->mResultSocket_, O_CLOEXEC));
     self->mResultSocket = &self->mResultSocket_;
 
     rc = 0;
@@ -1864,7 +1864,7 @@ sendForkProcessChannelResult_(
             self->mResultPipe->mWrFile, (char *) aResult, sizeof(*aResult), 0));
 
     ERROR_IF(
-        ringBellSocketPairChild(self->mResultSocket));
+        ert_ringBellSocketPairChild(self->mResultSocket));
 
     rc = 0;
 
@@ -1883,7 +1883,7 @@ recvForkProcessChannelResult_(
     int rc = -1;
 
     ERROR_IF(
-        waitBellSocketPairParent(self->mResultSocket, 0));
+        ert_waitBellSocketPairParent(self->mResultSocket, 0));
 
     ERROR_IF(
         sizeof(*aResult) != readFile(
@@ -1905,7 +1905,7 @@ recvForkProcessChannelAcknowledgement_(
     int rc = -1;
 
     ERROR_IF(
-        waitBellSocketPairChild(self->mResultSocket, 0));
+        ert_waitBellSocketPairChild(self->mResultSocket, 0));
 
     rc = 0;
 
@@ -1920,7 +1920,7 @@ static CHECKED int
 sendForkProcessChannelAcknowledgement_(
     struct ForkProcessChannel_ *self)
 {
-    return ringBellSocketPairParent(self->mResultSocket);
+    return ert_ringBellSocketPairParent(self->mResultSocket);
 }
 
 /* -------------------------------------------------------------------------- */
