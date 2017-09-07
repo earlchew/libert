@@ -59,7 +59,7 @@ Name_ ## _raw Signature_                                                \
     SYSCALL_RAW_(Enum_, Name_, Args_);                                  \
 }                                                                       \
                                                                         \
-struct EintrModule
+struct ErtEintrModule_
 
 /* -------------------------------------------------------------------------- */
 /* Interrupted System Calls
@@ -474,7 +474,7 @@ Name_(int aFd, EINTR_IOCTL_REQUEST_T_ aRequest, ...)            \
                                                                 \
     return local_ ## Name_ ## _(aFd, aRequest, arg);            \
 }                                                               \
-struct EintrModule
+struct ErtEintrModule_
 
 EINTR_IOCTL_DEFN_(ioctl);
 EINTR_IOCTL_DEFN_(ioctl_raw);
@@ -587,7 +587,7 @@ Name_(const char *aPath, int aFlags, ...)               \
                                                         \
     return local_ ## Name_ ## _(aPath, aFlags, mode);   \
 }                                                       \
-struct EintrModule
+struct ErtEintrModule_
 
 EINTR_OPEN_DEFN_(open);
 EINTR_OPEN_DEFN_(open_raw);

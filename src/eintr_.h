@@ -167,23 +167,20 @@
 #include <stdbool.h>
 
 /* -------------------------------------------------------------------------- */
-struct EintrModule
-{
-    struct EintrModule *mModule;
-};
+struct ErtEintrModule_;
 
 /* -------------------------------------------------------------------------- */
 #ifndef EINTR_MODULE_DEFN_
 #define EINTR_FUNCTION_DECL_(Return_, Name_, Signature_) \
     Return_ Name_ ## _raw Signature_;                    \
     Return_ Name_ ## _eintr Signature_;                  \
-    struct EintrModule
+    struct ErtEintrModule_
 #else
 #define EINTR_FUNCTION_DECL_(Return_, Name_, Signature_) \
     Return_ Name_           Signature_;                  \
     Return_ Name_ ## _raw   Signature_;                  \
     Return_ Name_ ## _eintr Signature_;                  \
-    struct EintrModule
+    struct ErtEintrModule_
 #endif
 
 /* -------------------------------------------------------------------------- */
