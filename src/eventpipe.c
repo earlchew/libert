@@ -185,7 +185,7 @@ Finally:
 /* -------------------------------------------------------------------------- */
 void
 attachEventPipeLatch_(struct EventPipe           *self,
-                      struct EventLatchListEntry *aEntry)
+                      struct Ert_EventLatchListEntry *aEntry)
 {
     struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
 
@@ -197,7 +197,7 @@ attachEventPipeLatch_(struct EventPipe           *self,
 /* -------------------------------------------------------------------------- */
 void
 detachEventPipeLatch_(struct EventPipe           *self,
-                      struct EventLatchListEntry *aEntry)
+                      struct Ert_EventLatchListEntry *aEntry)
 {
     struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
 
@@ -218,7 +218,7 @@ pollEventPipe(struct EventPipe            *self,
 
     if (self->mSignalled)
     {
-        struct EventLatchListEntry *iter;
+        struct Ert_EventLatchListEntry *iter;
 
         int called = 0;
 
@@ -227,7 +227,7 @@ pollEventPipe(struct EventPipe            *self,
             called = -1;
 
             ERROR_IF(
-                (called = pollEventLatchListEntry(iter, aPollTime),
+                (called = ert_pollEventLatchListEntry(iter, aPollTime),
                  -1 == called && ! pollCount));
 
             if (-1 == called)

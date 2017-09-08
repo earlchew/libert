@@ -47,8 +47,8 @@ struct EventPipe
     struct Pipe           *mPipe;
     bool                   mSignalled;
 
-    struct EventLatchList   mLatchList_;
-    struct EventLatchList  *mLatchList;
+    struct Ert_EventLatchList   mLatchList_;
+    struct Ert_EventLatchList  *mLatchList;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -71,11 +71,11 @@ pollEventPipe(struct EventPipe            *self,
 /* -------------------------------------------------------------------------- */
 void
 attachEventPipeLatch_(struct EventPipe           *self,
-                      struct EventLatchListEntry *aEntry);
+                      struct Ert_EventLatchListEntry *aEntry);
 
 void
 detachEventPipeLatch_(struct EventPipe           *self,
-                      struct EventLatchListEntry *aEntry);
+                      struct Ert_EventLatchListEntry *aEntry);
 
 /* -------------------------------------------------------------------------- */
 
