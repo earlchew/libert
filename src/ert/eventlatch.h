@@ -59,10 +59,10 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_EventLatchMethod
 #include "ert/method.h"
 
-#define EventLatchMethod(Object_, Method_)     \
+#define Ert_EventLatchMethod(Object_, Method_) \
     ERT_METHOD_TRAMPOLINE(                     \
         Object_, Method_,                      \
-        EventLatchMethod_,                     \
+        Ert_EventLatchMethod_,                 \
         ERT_METHOD_RETURN_EventLatchMethod,    \
         ERT_METHOD_CONST_EventLatchMethod,     \
         ERT_METHOD_ARG_LIST_EventLatchMethod,  \
