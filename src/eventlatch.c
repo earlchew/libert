@@ -43,7 +43,7 @@
 
 /* -------------------------------------------------------------------------- */
 int
-createEventLatch(struct EventLatch *self, const char *aName)
+ert_createEventLatch(struct Ert_EventLatch *self, const char *aName)
 {
     int rc = -1;
 
@@ -51,9 +51,9 @@ createEventLatch(struct EventLatch *self, const char *aName)
     self->mEvent = 0;
     self->mPipe  = 0;
     self->mName  = 0;
-    self->mList  = (struct EventLatchListEntry)
+    self->mList  = (struct Ert_EventLatchListEntry)
     {
-        .mMethod = EventLatchMethodNil(),
+        .mMethod = Ert_EventLatchMethodNil(),
         .mLatch = self,
     };
 
@@ -67,21 +67,21 @@ Finally:
     FINALLY
     ({
         if (rc)
-            self = closeEventLatch(self);
+            self = ert_closeEventLatch(self);
     });
 
     return 0;
 }
 
 /* -------------------------------------------------------------------------- */
-struct EventLatch *
-closeEventLatch(struct EventLatch *self)
+struct Ert_EventLatch *
+ert_closeEventLatch(struct Ert_EventLatch *self)
 {
     if (self)
     {
         if (self->mPipe)
             ABORT_IF(
-                EventLatchSettingError == unbindEventLatchPipe(self));
+                Ert_EventLatchSettingError == ert_unbindEventLatchPipe(self));
 
         self->mMutex = destroyThreadSigMutex(self->mMutex);
 
@@ -93,14 +93,14 @@ closeEventLatch(struct EventLatch *self)
 
 /* -------------------------------------------------------------------------- */
 int
-printEventLatch(const struct EventLatch *self, FILE *aFile)
+ert_printEventLatch(const struct Ert_EventLatch *self, FILE *aFile)
 {
     return fprintf(aFile, "<%p %s>", self, self->mName);
 }
 
 /* -------------------------------------------------------------------------- */
 static int
-signalEventLatch_(struct EventLatch *self)
+ert_signalEventLatch_(struct Ert_EventLatch *self)
 {
     int rc = -1;
 
@@ -129,32 +129,32 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static enum EventLatchSetting
-bindEventLatchPipe_(struct EventLatch       *self,
+static enum Ert_EventLatchSetting
+ert_bindEventLatchPipe_(struct Ert_EventLatch       *self,
                     struct EventPipe        *aPipe,
-                    struct EventLatchMethod  aMethod)
+                    struct Ert_EventLatchMethod  aMethod)
 {
-    enum EventLatchSetting rc = EventLatchSettingError;
+    enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
     struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
 
-    enum EventLatchSetting setting;
+    enum Ert_EventLatchSetting setting;
 
     unsigned event = self->mEvent;
 
     if (event & EVENTLATCH_DISABLE_MASK_)
-        setting = EventLatchSettingDisabled;
+        setting = Ert_EventLatchSettingDisabled;
     else
         setting = (event & EVENTLATCH_DATA_MASK_)
-            ? EventLatchSettingOn
-            : EventLatchSettingOff;
+            ? Ert_EventLatchSettingOn
+            : Ert_EventLatchSettingOff;
 
     if (self->mPipe != aPipe)
     {
         if (self->mPipe)
         {
             detachEventPipeLatch_(self->mPipe, &self->mList);
-            self->mList.mMethod = EventLatchMethodNil();
+            self->mList.mMethod = Ert_EventLatchMethodNil();
         }
 
         self->mPipe = aPipe;
@@ -164,9 +164,9 @@ bindEventLatchPipe_(struct EventLatch       *self,
             self->mList.mMethod = aMethod;
             attachEventPipeLatch_(self->mPipe, &self->mList);
 
-            if (EventLatchSettingOff != setting)
+            if (Ert_EventLatchSettingOff != setting)
                 ERROR_IF(
-                    signalEventLatch_(self));
+                    ert_signalEventLatch_(self));
         }
     }
 
@@ -182,45 +182,45 @@ Finally:
     return rc;
 }
 
-enum EventLatchSetting
-bindEventLatchPipe(struct EventLatch       *self,
+enum Ert_EventLatchSetting
+ert_bindEventLatchPipe(struct Ert_EventLatch       *self,
                    struct EventPipe        *aPipe,
-                   struct EventLatchMethod  aMethod)
+                   struct Ert_EventLatchMethod  aMethod)
 {
     ensure(aPipe);
     ensure( ! self->mPipe);
 
-    return bindEventLatchPipe_(self, aPipe, aMethod);
+    return ert_bindEventLatchPipe_(self, aPipe, aMethod);
 }
 
-enum EventLatchSetting
-unbindEventLatchPipe(struct EventLatch *self)
+enum Ert_EventLatchSetting
+ert_unbindEventLatchPipe(struct Ert_EventLatch *self)
 {
-    return bindEventLatchPipe_(self, 0, EventLatchMethodNil());
+    return ert_bindEventLatchPipe_(self, 0, Ert_EventLatchMethodNil());
 }
 
 /* -------------------------------------------------------------------------- */
-enum EventLatchSetting
-disableEventLatch(struct EventLatch *self)
+enum Ert_EventLatchSetting
+ert_disableEventLatch(struct Ert_EventLatch *self)
 {
-    enum EventLatchSetting rc = EventLatchSettingError;
+    enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
     struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
 
-    enum EventLatchSetting setting;
+    enum Ert_EventLatchSetting setting;
 
     unsigned event = self->mEvent;
 
     if (event & EVENTLATCH_DISABLE_MASK_)
-        setting = EventLatchSettingDisabled;
+        setting = Ert_EventLatchSettingDisabled;
     else
     {
         setting = (event & EVENTLATCH_DATA_MASK_)
-            ? EventLatchSettingOn
-            : EventLatchSettingOff;
+            ? Ert_EventLatchSettingOn
+            : Ert_EventLatchSettingOff;
 
         ERROR_IF(
-            signalEventLatch_(self));
+            ert_signalEventLatch_(self));
 
         self->mEvent = event ^ EVENTLATCH_DISABLE_MASK_;
     }
@@ -238,27 +238,27 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-enum EventLatchSetting
-setEventLatch(struct EventLatch *self)
+enum Ert_EventLatchSetting
+ert_setEventLatch(struct Ert_EventLatch *self)
 {
-    enum EventLatchSetting rc = EventLatchSettingError;
+    enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
     struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
 
-    enum EventLatchSetting setting;
+    enum Ert_EventLatchSetting setting;
 
     unsigned event = self->mEvent;
 
     if (event & EVENTLATCH_DISABLE_MASK_)
-        setting = EventLatchSettingDisabled;
+        setting = Ert_EventLatchSettingDisabled;
     else if (event & EVENTLATCH_DATA_MASK_)
-        setting = EventLatchSettingOn;
+        setting = Ert_EventLatchSettingOn;
     else
     {
-        setting = EventLatchSettingOff;
+        setting = Ert_EventLatchSettingOff;
 
         ERROR_IF(
-            signalEventLatch_(self));
+            ert_signalEventLatch_(self));
 
         self->mEvent = event ^ EVENTLATCH_DATA_MASK_;
     }
@@ -276,24 +276,24 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-enum EventLatchSetting
-resetEventLatch(struct EventLatch *self)
+enum Ert_EventLatchSetting
+ert_resetEventLatch(struct Ert_EventLatch *self)
 {
-    enum EventLatchSetting rc = EventLatchSettingError;
+    enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
     struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
 
-    enum EventLatchSetting setting;
+    enum Ert_EventLatchSetting setting;
 
     unsigned event = self->mEvent;
 
     if (event & EVENTLATCH_DISABLE_MASK_)
-        setting = EventLatchSettingDisabled;
+        setting = Ert_EventLatchSettingDisabled;
     else if ( ! (event & EVENTLATCH_DATA_MASK_))
-        setting = EventLatchSettingOff;
+        setting = Ert_EventLatchSettingOff;
     else
     {
-        setting = EventLatchSettingOn;
+        setting = Ert_EventLatchSettingOn;
 
         self->mEvent = event ^ EVENTLATCH_DATA_MASK_;
     }
@@ -311,25 +311,25 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-enum EventLatchSetting
-ownEventLatchSetting(const struct EventLatch *self_)
+enum Ert_EventLatchSetting
+ert_ownEventLatchSetting(const struct Ert_EventLatch *self_)
 {
-    enum EventLatchSetting rc = EventLatchSettingError;
+    enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
-    struct EventLatch *self = (struct EventLatch *) self_;
+    struct Ert_EventLatch *self = (struct Ert_EventLatch *) self_;
 
     struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
 
-    enum EventLatchSetting setting;
+    enum Ert_EventLatchSetting setting;
 
     unsigned event = self->mEvent;
 
     if (event & EVENTLATCH_DISABLE_MASK_)
-        setting = EventLatchSettingDisabled;
+        setting = Ert_EventLatchSettingDisabled;
     else
         setting = (event & EVENTLATCH_DATA_MASK_)
-            ? EventLatchSettingOn
-            : EventLatchSettingOff;
+            ? Ert_EventLatchSettingOn
+            : Ert_EventLatchSettingOff;
 
     rc = setting;
 
@@ -345,7 +345,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-pollEventLatchListEntry(struct EventLatchListEntry  *self,
+ert_pollEventLatchListEntry(struct Ert_EventLatchListEntry  *self,
                         const struct EventClockTime *aPollTime)
 {
     int rc = -1;
@@ -354,25 +354,25 @@ pollEventLatchListEntry(struct EventLatchListEntry  *self,
 
     if (self->mLatch)
     {
-        enum EventLatchSetting setting;
+        enum Ert_EventLatchSetting setting;
         ERROR_IF(
-            (setting = resetEventLatch(self->mLatch),
-             EventLatchSettingError == setting),
+            (setting = ert_resetEventLatch(self->mLatch),
+             Ert_EventLatchSettingError == setting),
             {
                 warn(errno,
                      "Unable to reset event latch %" PRIs_Method,
-                     FMTs_Method(self->mLatch, printEventLatch));
+                     FMTs_Method(self->mLatch, ert_printEventLatch));
             });
 
-        if (EventLatchSettingOff != setting)
+        if (Ert_EventLatchSettingOff != setting)
         {
             bool enabled;
 
-            if (EventLatchSettingOn == setting)
+            if (Ert_EventLatchSettingOn == setting)
                 enabled = true;
             else
             {
-                ensure(EventLatchSettingDisabled == setting);
+                ensure(Ert_EventLatchSettingDisabled == setting);
 
                 self->mLatch = 0;
 
@@ -382,7 +382,7 @@ pollEventLatchListEntry(struct EventLatchListEntry  *self,
             called = 1;
 
             ERROR_IF(
-                callEventLatchMethod(self->mMethod, enabled, aPollTime));
+                ert_callEventLatchMethod(self->mMethod, enabled, aPollTime));
         }
     }
 

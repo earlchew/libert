@@ -49,6 +49,9 @@ ERT_END_C_SCOPE;
     const struct EventClockTime *aPollTime_)
 #define ERT_METHOD_CALL_LIST_EventLatchMethod (aEnabled_, aPollTime_)
 
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
 #define ERT_METHOD_NAME      EventLatchMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_EventLatchMethod
 #define ERT_METHOD_CONST     ERT_METHOD_CONST_EventLatchMethod
@@ -69,72 +72,72 @@ ERT_END_C_SCOPE;
 ERT_BEGIN_C_SCOPE;
 
 struct EventPipe;
-struct EventLatch;
+struct Ert_EventLatch;
 
-struct EventLatchListEntry
+struct Ert_EventLatchListEntry
 {
-    struct EventLatch              *mLatch;
-    struct EventLatchMethod         mMethod;
-    LIST_ENTRY(EventLatchListEntry) mEntry;
+    struct Ert_EventLatch              *mLatch;
+    struct Ert_EventLatchMethod         mMethod;
+    LIST_ENTRY(Ert_EventLatchListEntry) mEntry;
 };
 
-struct EventLatchList
+struct Ert_EventLatchList
 {
-    LIST_HEAD(, EventLatchListEntry) mList;
+    LIST_HEAD(, Ert_EventLatchListEntry) mList;
 };
 
-struct EventLatch
+struct Ert_EventLatch
 {
-    struct ThreadSigMutex       mMutex_;
-    struct ThreadSigMutex      *mMutex;
-    unsigned                    mEvent;
-    struct EventPipe           *mPipe;
-    char                       *mName;
-    struct EventLatchListEntry  mList;
+    struct ThreadSigMutex           mMutex_;
+    struct ThreadSigMutex          *mMutex;
+    unsigned                        mEvent;
+    struct EventPipe               *mPipe;
+    char                           *mName;
+    struct Ert_EventLatchListEntry  mList;
 };
 
-enum EventLatchSetting
+enum Ert_EventLatchSetting
 {
-    EventLatchSettingError    = -1,
-    EventLatchSettingDisabled =  0,
-    EventLatchSettingOff      =  1,
-    EventLatchSettingOn       =  2,
+    Ert_EventLatchSettingError    = -1,
+    Ert_EventLatchSettingDisabled =  0,
+    Ert_EventLatchSettingOff      =  1,
+    Ert_EventLatchSettingOn       =  2,
 };
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-pollEventLatchListEntry(struct EventLatchListEntry  *self,
-                        const struct EventClockTime *aPollTime);
+ert_pollEventLatchListEntry(struct Ert_EventLatchListEntry  *self,
+                            const struct EventClockTime *aPollTime);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createEventLatch(struct EventLatch *self, const char *aName);
+ert_createEventLatch(struct Ert_EventLatch *self, const char *aName);
 
-ERT_CHECKED struct EventLatch *
-closeEventLatch(struct EventLatch *self);
+ERT_CHECKED struct Ert_EventLatch *
+ert_closeEventLatch(struct Ert_EventLatch *self);
 
 int
-printEventLatch(const struct EventLatch *self, FILE *aFile);
+ert_printEventLatch(const struct Ert_EventLatch *self, FILE *aFile);
 
-ERT_CHECKED enum EventLatchSetting
-bindEventLatchPipe(struct EventLatch       *self,
-                   struct EventPipe        *aPipe,
-                   struct EventLatchMethod  aMethod);
+ERT_CHECKED enum Ert_EventLatchSetting
+ert_bindEventLatchPipe(struct Ert_EventLatch       *self,
+                       struct EventPipe        *aPipe,
+                       struct Ert_EventLatchMethod  aMethod);
 
-ERT_CHECKED enum EventLatchSetting
-unbindEventLatchPipe(struct EventLatch *self);
+ERT_CHECKED enum Ert_EventLatchSetting
+ert_unbindEventLatchPipe(struct Ert_EventLatch *self);
 
-ERT_CHECKED enum EventLatchSetting
-disableEventLatch(struct EventLatch *self);
+ERT_CHECKED enum Ert_EventLatchSetting
+ert_disableEventLatch(struct Ert_EventLatch *self);
 
-ERT_CHECKED enum EventLatchSetting
-setEventLatch(struct EventLatch *self);
+ERT_CHECKED enum Ert_EventLatchSetting
+ert_setEventLatch(struct Ert_EventLatch *self);
 
-ERT_CHECKED enum EventLatchSetting
-resetEventLatch(struct EventLatch *self);
+ERT_CHECKED enum Ert_EventLatchSetting
+ert_resetEventLatch(struct Ert_EventLatch *self);
 
-enum EventLatchSetting
-ownEventLatchSetting(const struct EventLatch *self);
+enum Ert_EventLatchSetting
+ert_ownEventLatchSetting(const struct Ert_EventLatch *self);
 
 /* -------------------------------------------------------------------------- */
 
