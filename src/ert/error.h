@@ -40,9 +40,9 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct ErrorModule
+struct Ert_ErrorModule
 {
-    struct ErrorModule *mModule;
+    struct Ert_ErrorModule *mModule;
 
     struct PrintfModule  mPrintfModule_;
     struct PrintfModule *mPrintfModule;
@@ -70,20 +70,20 @@ struct ErrorModule
         const void *finally_                         \
         __attribute__((__unused__)) = 0;             \
                                                      \
-        struct ErrorFrame frame_ =                   \
-            ERRORFRAME_INIT( (Message_) );           \
+        struct Ert_ErrorFrame frame_ =               \
+            ERT_ERRORFRAME_INIT( (Message_) );       \
                                                      \
         /* Stack unwinding restarts if a new frame   \
          * sequence is started. */                   \
                                                      \
-        restartErrorFrameSequence();                 \
+        ert_restartErrorFrameSequence();             \
                                                      \
         if (testFinally(&frame_) ||                  \
             Sense_ (Predicate_))                     \
         {                                            \
             __VA_ARGS__                              \
                                                      \
-            addErrorFrame(&frame_, errno);           \
+            ert_addErrorFrame(&frame_, errno);       \
             goto Error_;                             \
         }                                            \
     }                                                \
@@ -98,12 +98,12 @@ struct ErrorModule
 /* -------------------------------------------------------------------------- */
 #define ABORT_IF(Predicate_, ...)                       \
     UNWIND_IF_(                                         \
-        terminate, errorTerminate, /*!!*/,              \
+        terminate, ert_errorTerminate, /*!!*/,          \
         Predicate_, # Predicate_, ## __VA_ARGS__)
 
 #define ABORT_UNLESS(Predicate_, ...)                   \
     UNWIND_IF_(                                         \
-        terminate, errorTerminate, !,                   \
+        terminate, ert_errorTerminate, !,               \
         Predicate_, # Predicate_, ## __VA_ARGS__)
 
 #define UNWIND_IF_(                                             \
@@ -113,24 +113,24 @@ struct ErrorModule
         /* Stack unwinding restarts if a new frame              \
          * sequence is started. */                              \
                                                                 \
-        struct ErrorFrameSequence frameSequence_ =              \
-            pushErrorFrameSequence();                           \
+        struct Ert_ErrorFrameSequence frameSequence_ =          \
+            ert_pushErrorFrameSequence();                       \
                                                                 \
         if (Sense_ (Predicate_))                                \
         {                                                       \
-            logErrorFrameSequence();                            \
+            ert_logErrorFrameSequence();                        \
                                                                 \
             /* Unwind the error frame and issue the messages    \
              * before emitting the final message. The last      \
              * message will either not return, or unwind the    \
              * call stack using longjmp(). */                   \
                                                                 \
-            struct ErrorUnwindFrame_ *unwindFrame_ =            \
-                pushErrorUnwindFrame_();                        \
+            struct Ert_ErrorUnwindFrame_ *unwindFrame_ =        \
+                ert_pushErrorUnwindFrame_();                    \
                                                                 \
             if ( ! setjmp(unwindFrame_->mJmpBuf))               \
             {                                                   \
-                ERT_AUTO(Action_, &Actor_);                         \
+                ERT_AUTO(Action_, &Actor_);                     \
                                                                 \
                 __VA_ARGS__                                     \
                                                                 \
@@ -142,10 +142,10 @@ struct ErrorModule
                 while (0);                                      \
             }                                                   \
                                                                 \
-            popErrorUnwindFrame_(unwindFrame_);                 \
+            ert_popErrorUnwindFrame_(unwindFrame_);             \
         }                                                       \
                                                                 \
-        popErrorFrameSequence(frameSequence_);                  \
+        ert_popErrorFrameSequence(frameSequence_);              \
     }                                                           \
     while (0)
 
@@ -162,7 +162,7 @@ struct ErrorModule
         /* Stack unwinding restarts if the      \
          * function completes without error. */ \
                                                 \
-        restartErrorFrameSequence();            \
+        ert_restartErrorFrameSequence();        \
                                                 \
         int finally_                            \
         __attribute__((__unused__));            \
@@ -175,7 +175,7 @@ struct ErrorModule
     {                                                                         \
         if ( Sense_ (Predicate_))                                             \
         {                                                                     \
-            Error_warn_(0,                                                    \
+            Ert_Error_warn_(0,                                                \
                  "%" PRIs_Method                                              \
                  IFEMPTY("", " ", CAR(__VA_ARGS__)) CAR(__VA_ARGS__),         \
                  FMTs_Method(Self_, PrintfMethod_) CDR(__VA_ARGS__));         \
@@ -191,23 +191,23 @@ struct ErrorModule
         !, Predicate_, Self_, PrintfMethod_, ## __VA_ARGS__)
 
 /* -------------------------------------------------------------------------- */
-struct ErrorUnwindFrame_
+struct Ert_ErrorUnwindFrame_
 {
     unsigned mActive;
     jmp_buf  mJmpBuf;
 };
 
-struct ErrorUnwindFrame_ *
-pushErrorUnwindFrame_(void);
+struct Ert_ErrorUnwindFrame_ *
+ert_pushErrorUnwindFrame_(void);
 
-struct ErrorUnwindFrame_ *
-ownErrorUnwindActiveFrame_(void);
+struct Ert_ErrorUnwindFrame_ *
+ert_ownErrorUnwindActiveFrame_(void);
 
 void
-popErrorUnwindFrame_(struct ErrorUnwindFrame_ *self);
+ert_popErrorUnwindFrame_(struct Ert_ErrorUnwindFrame_ *self);
 
 /* -------------------------------------------------------------------------- */
-struct ErrorFrame
+struct Ert_ErrorFrame
 {
     const char *mFile;
     unsigned    mLine;
@@ -216,103 +216,103 @@ struct ErrorFrame
     int         mErrno;
 };
 
-#define ERRORFRAME_INIT(aText) { __FILE__, __LINE__, __func__, aText }
+#define ERT_ERRORFRAME_INIT(aText) { __FILE__, __LINE__, __func__, aText }
 
-struct ErrorFrameChunk;
+struct Ert_ErrorFrameChunk;
 
-struct ErrorFrameIter
+struct Ert_ErrorFrameIter
 {
-    unsigned                mIndex;
-    struct ErrorFrame      *mFrame;
-    struct ErrorFrameChunk *mChunk;
+    unsigned                    mIndex;
+    struct Ert_ErrorFrame      *mFrame;
+    struct Ert_ErrorFrameChunk *mChunk;
 };
 
-struct ErrorFrameSequence
+struct Ert_ErrorFrameSequence
 {
-    struct ErrorFrameIter mIter;
+    struct Ert_ErrorFrameIter mIter;
 };
 
-enum ErrorFrameStackKind
+enum Ert_ErrorFrameStackKind
 {
-    ErrorFrameStackThread = 0,
-    ErrorFrameStackSignal,
-    ErrorFrameStackKinds,
+    Ert_ErrorFrameStackThread = 0,
+    Ert_ErrorFrameStackSignal,
+    Ert_ErrorFrameStackKinds,
 };
 
 void
-addErrorFrame(const struct ErrorFrame *aFrame, int aErrno);
+ert_addErrorFrame(const struct Ert_ErrorFrame *aFrame, int aErrno);
 
 void
-restartErrorFrameSequence_(const char *aFile, unsigned aLine);
+ert_restartErrorFrameSequence_(const char *aFile, unsigned aLine);
 
 void
-restartErrorFrameSequence(void);
+ert_restartErrorFrameSequence(void);
 
-struct ErrorFrameSequence
-pushErrorFrameSequence(void);
+struct Ert_ErrorFrameSequence
+ert_pushErrorFrameSequence(void);
 
 void
-popErrorFrameSequence(struct ErrorFrameSequence aSequence);
+ert_popErrorFrameSequence(struct Ert_ErrorFrameSequence aSequence);
 
-enum ErrorFrameStackKind
-switchErrorFrameStack(enum ErrorFrameStackKind aStack);
+enum Ert_ErrorFrameStackKind
+ert_switchErrorFrameStack(enum Ert_ErrorFrameStackKind aStack);
 
 unsigned
-ownErrorFrameLevel(void);
+ert_ownErrorFrameLevel(void);
 
-const struct ErrorFrame *
-ownErrorFrame(enum ErrorFrameStackKind aStack, unsigned aLevel);
+const struct Ert_ErrorFrame *
+ert_ownErrorFrame(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel);
 
 void
-logErrorFrameSequence(void);
+ert_logErrorFrameSequence(void);
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define breadcrumb Error_breadcrumb_
-#define debug Error_debug_
+#define breadcrumb Ert_Error_breadcrumb_
+#define debug      Ert_Error_debug_
 #endif
 
-#define Error_breadcrumb_() \
-    errorDebug(__func__, __FILE__, __LINE__, ".")
+#define Ert_Error_breadcrumb_() \
+    ert_errorDebug(__func__, __FILE__, __LINE__, ".")
 
-#define Error_debug_(aLevel, ...)                                       \
-    do                                                                  \
-        if ((aLevel) < gErtOptions_.mDebug)                             \
-            errorDebug(__func__, __FILE__, __LINE__, ## __VA_ARGS__);   \
+#define Ert_Error_debug_(aLevel, ...)                                    \
+    do                                                                   \
+        if ((aLevel) < gErtOptions_.mDebug)                              \
+            ert_errorDebug(__func__, __FILE__, __LINE__, ## __VA_ARGS__);\
     while (0)
 
 void
-errorDebug(
+ert_errorDebug(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
     __attribute__ ((__format__(__printf__, 4, 5)));
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define ensure Error_ensure_
+#define ensure Ert_Error_ensure_
 #endif
 
-#define Error_ensure_(aPredicate)                                       \
+#define Ert_Error_ensure_(aPredicate)                                   \
     do                                                                  \
         if ( ! (aPredicate))                                            \
-            errorEnsure(__func__, __FILE__, __LINE__, # aPredicate);    \
+            ert_errorEnsure(__func__, __FILE__, __LINE__, # aPredicate);\
     while (0)
 
 void
-errorEnsure(const char *aFunction, const char *aFile, unsigned aLine,
+ert_errorEnsure(const char *aFunction, const char *aFile, unsigned aLine,
             const char *aPredicate)
     __attribute__ ((__noreturn__));
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define warn Error_warn_
+#define warn Ert_Error_warn_
 #endif
 
-#define Error_warn_(aErrCode, ...) \
-    errorWarn((aErrCode), __func__, __FILE__, __LINE__, ## __VA_ARGS__)
+#define Ert_Error_warn_(aErrCode, ...) \
+    ert_errorWarn((aErrCode), __func__, __FILE__, __LINE__, ## __VA_ARGS__)
 
 void
-errorWarn(
+ert_errorWarn(
     int aErrCode,
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
@@ -320,14 +320,14 @@ errorWarn(
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define message Error_message_
+#define message Ert_Error_message_
 #endif
 
-#define Error_message_(aErrCode, ...) \
-    errorMessage((aErrCode), __func__, __FILE__, __LINE__, ## __VA_ARGS__)
+#define Ert_Error_message_(aErrCode, ...) \
+    ert_errorMessage((aErrCode), __func__, __FILE__, __LINE__, ## __VA_ARGS__)
 
 void
-errorMessage(
+ert_errorMessage(
     int aErrCode,
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
@@ -335,14 +335,14 @@ errorMessage(
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define terminate Error_terminate_
+#define terminate Ert_Error_terminate_
 #endif
 
-#define Error_terminate_(aErrCode, ...) \
-    errorTerminate((aErrCode), __func__, __FILE__, __LINE__, ## __VA_ARGS__)
+#define Ert_Error_terminate_(aErrCode, ...) \
+    ert_errorTerminate((aErrCode), __func__, __FILE__, __LINE__, ## __VA_ARGS__)
 
 void
-errorTerminate(
+ert_errorTerminate(
     int aErrCode,
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
@@ -350,10 +350,10 @@ errorTerminate(
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-Error_init(struct ErrorModule *self);
+Ert_Error_init(struct Ert_ErrorModule *self);
 
-ERT_CHECKED struct ErrorModule *
-Error_exit(struct ErrorModule *self);
+ERT_CHECKED struct Ert_ErrorModule *
+Ert_Error_exit(struct Ert_ErrorModule *self);
 
 /* -------------------------------------------------------------------------- */
 
