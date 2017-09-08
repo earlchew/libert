@@ -192,8 +192,8 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
     sigVecLock = createRWMutexReader(
         &sigVecLock_, &processSignals_.mVectorLock);
 
-    enum ErrorFrameStackKind stackKind =
-        switchErrorFrameStack(ErrorFrameStackSignal);
+    enum Ert_ErrorFrameStackKind stackKind =
+        ert_switchErrorFrameStack(Ert_ErrorFrameStackSignal);
 
     struct ProcessSignalName sigName;
     debug(1,
@@ -209,19 +209,19 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
         {
             ++processSignalContext_;
 
-            struct ErrorFrameSequence frameSequence =
-                pushErrorFrameSequence();
+            struct Ert_ErrorFrameSequence frameSequence =
+                ert_pushErrorFrameSequence();
 
             sv->mAction.sa_sigaction(aSigNum, aSigInfo, aSigContext);
 
-            popErrorFrameSequence(frameSequence);
+            ert_popErrorFrameSequence(frameSequence);
 
             --processSignalContext_;
         }
     }
     actionLock = unlockMutex(actionLock);
 
-    switchErrorFrameStack(stackKind);
+    ert_switchErrorFrameStack(stackKind);
     sigVecLock = destroyRWMutexReader(sigVecLock);
 }
 
@@ -245,8 +245,8 @@ runSigHandler_(int aSigNum)
     sigVecLock = createRWMutexReader(
         &sigVecLock_, &processSignals_.mVectorLock);
 
-    enum ErrorFrameStackKind stackKind =
-        switchErrorFrameStack(ErrorFrameStackSignal);
+    enum Ert_ErrorFrameStackKind stackKind =
+        ert_switchErrorFrameStack(Ert_ErrorFrameStackSignal);
 
     struct ProcessSignalName sigName;
     debug(1,
@@ -262,19 +262,19 @@ runSigHandler_(int aSigNum)
         {
             ++processSignalContext_;
 
-            struct ErrorFrameSequence frameSequence =
-                pushErrorFrameSequence();
+            struct Ert_ErrorFrameSequence frameSequence =
+                ert_pushErrorFrameSequence();
 
             sv->mAction.sa_handler(aSigNum);
 
-            popErrorFrameSequence(frameSequence);
+            ert_popErrorFrameSequence(frameSequence);
 
             --processSignalContext_;
         }
     }
     actionLock = unlockMutex(actionLock);
 
-    switchErrorFrameStack(stackKind);
+    ert_switchErrorFrameStack(stackKind);
     sigVecLock = destroyRWMutexReader(sigVecLock);
 }
 
@@ -3196,7 +3196,7 @@ Process_init(struct ProcessModule *self, const char *aArg0)
     bool hookedSignals = false;
 
     self->mModule      = self;
-    self->mErrorModule = 0;
+    self->ert_mErrorModule = 0;
 
     ensure( ! moduleInit_);
 
@@ -3243,8 +3243,8 @@ Process_init(struct ProcessModule *self, const char *aArg0)
     }
 
     ERROR_IF(
-        Error_init(&self->mErrorModule_));
-    self->mErrorModule = &self->mErrorModule_;
+        Ert_Error_init(&self->ert_mErrorModule_));
+    self->ert_mErrorModule = &self->ert_mErrorModule_;
 
     ERROR_IF(
         errno = pthread_sigmask(SIG_BLOCK, 0, &processSigMask_));
@@ -3284,7 +3284,7 @@ Finally:
 
             closeProcessLock_(processLock);
 
-            self->mErrorModule = Error_exit(self->mErrorModule);
+            self->ert_mErrorModule = Ert_Error_exit(self->ert_mErrorModule);
         }
     });
 
@@ -3313,7 +3313,7 @@ Process_exit(struct ProcessModule *self)
         ABORT_IF(
             errno = pthread_sigmask(SIG_SETMASK, &processSigMask_, 0));
 
-        self->mErrorModule = Error_exit(self->mErrorModule);
+        self->ert_mErrorModule = Ert_Error_exit(self->ert_mErrorModule);
     }
 
     return 0;

@@ -209,8 +209,8 @@ struct ProcessModule
 {
     struct ProcessModule *mModule;
 
-    struct ErrorModule  mErrorModule_;
-    struct ErrorModule *mErrorModule;
+    struct Ert_ErrorModule  ert_mErrorModule_;
+    struct Ert_ErrorModule *ert_mErrorModule;
 };
 
 #define PRId_ExitCode "d"

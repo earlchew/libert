@@ -36,7 +36,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct ErrorFrame;
+struct Ert_ErrorFrame;
 
 struct TestModule
 {
@@ -72,7 +72,7 @@ bool
 testMode(enum TestLevel aLevel);
 
 bool
-testFinally(const struct ErrorFrame *aFrame);
+testFinally(const struct Ert_ErrorFrame *aFrame);
 
 uint64_t
 testErrorLevel(void);

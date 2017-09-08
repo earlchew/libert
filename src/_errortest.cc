@@ -39,26 +39,26 @@ class ErrorTest : public ::testing::Test
 {
     void SetUp()
     {
-        ASSERT_EQ(0, Error_init(&mModule_));
+        ASSERT_EQ(0, Ert_Error_init(&mModule_));
         mModule = &mModule_;
     }
 
     void TearDown()
     {
-        mModule = Error_exit(mModule);
+        mModule = Ert_Error_exit(mModule);
     }
 
 private:
 
-    struct ErrorModule  mModule_;
-    struct ErrorModule *mModule;
+    struct Ert_ErrorModule  mModule_;
+    struct Ert_ErrorModule *mModule;
 };
 
 TEST_F(ErrorTest, ErrnoText)
 {
-    Error_warn_(EPERM, "Test EPERM");
-    Error_warn_(0,     "Test errno 0");
-    Error_warn_(-1,    "Test errno -1");
+    Ert_Error_warn_(EPERM, "Test EPERM");
+    Ert_Error_warn_(0,     "Test errno 0");
+    Ert_Error_warn_(-1,    "Test errno -1");
 }
 
 static int
@@ -175,54 +175,54 @@ TEST_F(ErrorTest, FinallyIf)
     int sigErrCode;
 
     EXPECT_EQ(0, testFinallyIfOk());
-    EXPECT_EQ(0u, ownErrorFrameLevel());
-    restartErrorFrameSequence();
+    EXPECT_EQ(0u, ert_ownErrorFrameLevel());
+    ert_restartErrorFrameSequence();
 
     EXPECT_EQ(-1, testFinallyIfFail_1());
     errCode = errno;
-    EXPECT_EQ(1u, ownErrorFrameLevel());
-    EXPECT_EQ(-1, ownErrorFrame(ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(0,  ownErrorFrame(ErrorFrameStackThread, 1));
-    logErrorFrameSequence();
-    Error_warn_(errCode, "One level error frame test");
-    restartErrorFrameSequence();
+    EXPECT_EQ(1u, ert_ownErrorFrameLevel());
+    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1));
+    ert_logErrorFrameSequence();
+    Ert_Error_warn_(errCode, "One level error frame test");
+    ert_restartErrorFrameSequence();
 
     EXPECT_EQ(-1, testFinallyIfFail_2());
     errCode = errno;
-    EXPECT_EQ(2u, ownErrorFrameLevel());
-    EXPECT_EQ(-1, ownErrorFrame(ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(-2, ownErrorFrame(ErrorFrameStackThread, 1)->mErrno);
-    EXPECT_EQ(0,  ownErrorFrame(ErrorFrameStackThread, 2));
-    logErrorFrameSequence();
-    Error_warn_(errCode, "Two level error frame test");
-    restartErrorFrameSequence();
+    EXPECT_EQ(2u, ert_ownErrorFrameLevel());
+    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(-2, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 2));
+    ert_logErrorFrameSequence();
+    Ert_Error_warn_(errCode, "Two level error frame test");
+    ert_restartErrorFrameSequence();
 
     EXPECT_EQ(-1, testFinallyIfFail_2());
     errCode = errno;
 
-    enum ErrorFrameStackKind stackKind =
-        switchErrorFrameStack(ErrorFrameStackSignal);
-    EXPECT_EQ(ErrorFrameStackThread, stackKind);
+    enum Ert_ErrorFrameStackKind stackKind =
+        ert_switchErrorFrameStack(Ert_ErrorFrameStackSignal);
+    EXPECT_EQ(Ert_ErrorFrameStackThread, stackKind);
 
     EXPECT_EQ(-1, testFinallyIfFail_1());
     sigErrCode = errno;
-    EXPECT_EQ(1u, ownErrorFrameLevel());
-    EXPECT_EQ(-1, ownErrorFrame(ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(0,  ownErrorFrame(ErrorFrameStackThread, 1));
-    logErrorFrameSequence();
-    Error_warn_(sigErrCode, "Signal stack one level error frame test");
-    restartErrorFrameSequence();
+    EXPECT_EQ(1u, ert_ownErrorFrameLevel());
+    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1));
+    ert_logErrorFrameSequence();
+    Ert_Error_warn_(sigErrCode, "Signal stack one level error frame test");
+    ert_restartErrorFrameSequence();
 
-    stackKind = switchErrorFrameStack(stackKind);
-    EXPECT_EQ(ErrorFrameStackSignal, stackKind);
+    stackKind = ert_switchErrorFrameStack(stackKind);
+    EXPECT_EQ(Ert_ErrorFrameStackSignal, stackKind);
 
-    EXPECT_EQ(2u, ownErrorFrameLevel());
-    EXPECT_EQ(-1, ownErrorFrame(ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(-2, ownErrorFrame(ErrorFrameStackThread, 1)->mErrno);
-    EXPECT_EQ(0,  ownErrorFrame(ErrorFrameStackThread, 2));
-    logErrorFrameSequence();
-    Error_warn_(errCode, "Two level error frame test");
-    restartErrorFrameSequence();
+    EXPECT_EQ(2u, ert_ownErrorFrameLevel());
+    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(-2, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 2));
+    ert_logErrorFrameSequence();
+    Ert_Error_warn_(errCode, "Two level error frame test");
+    ert_restartErrorFrameSequence();
 }
 
 #include "../googletest/src/gtest_main.cc"

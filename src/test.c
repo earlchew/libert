@@ -99,7 +99,7 @@ testErrorLevel(void)
 
 /* -------------------------------------------------------------------------- */
 bool
-testFinally(const struct ErrorFrame *aFrame)
+testFinally(const struct Ert_ErrorFrame *aFrame)
 {
     bool inject = false;
 

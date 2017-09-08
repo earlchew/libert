@@ -40,7 +40,7 @@ int main(int argc, char **argv)
         .mTest = TestLevelRace,
         });
 
-    errorEnsure(__func__, __FILE__, __LINE__, 0);
+    ert_errorEnsure(__func__, __FILE__, __LINE__, 0);
 
     return EXIT_FAILURE;
 }

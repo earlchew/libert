@@ -35,7 +35,7 @@ void
 ert_methodEnsure_(const char *aFunction, const char *aFile, unsigned aLine,
                   const char *aPredicate)
 {
-    errorEnsure(aFunction, aFile, aLine, aPredicate);
+    ert_errorEnsure(aFunction, aFile, aLine, aPredicate);
 }
 
 /* -------------------------------------------------------------------------- */
