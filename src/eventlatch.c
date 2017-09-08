@@ -113,7 +113,7 @@ ert_signalEventLatch_(struct Ert_EventLatch *self)
             signalled = -1;
 
             ERROR_IF(
-                (signalled = setEventPipe(self->mPipe),
+                (signalled = ert_setEventPipe(self->mPipe),
                  -1 == signalled && EINTR != errno));
 
         } while (-1 == signalled);
@@ -131,7 +131,7 @@ Finally:
 /* -------------------------------------------------------------------------- */
 static enum Ert_EventLatchSetting
 ert_bindEventLatchPipe_(struct Ert_EventLatch       *self,
-                    struct EventPipe        *aPipe,
+                    struct Ert_EventPipe        *aPipe,
                     struct Ert_EventLatchMethod  aMethod)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
@@ -153,7 +153,7 @@ ert_bindEventLatchPipe_(struct Ert_EventLatch       *self,
     {
         if (self->mPipe)
         {
-            detachEventPipeLatch_(self->mPipe, &self->mList);
+            ert_detachEventPipeLatch_(self->mPipe, &self->mList);
             self->mList.mMethod = Ert_EventLatchMethodNil();
         }
 
@@ -162,7 +162,7 @@ ert_bindEventLatchPipe_(struct Ert_EventLatch       *self,
         if (self->mPipe)
         {
             self->mList.mMethod = aMethod;
-            attachEventPipeLatch_(self->mPipe, &self->mList);
+            ert_attachEventPipeLatch_(self->mPipe, &self->mList);
 
             if (Ert_EventLatchSettingOff != setting)
                 ERROR_IF(
@@ -184,7 +184,7 @@ Finally:
 
 enum Ert_EventLatchSetting
 ert_bindEventLatchPipe(struct Ert_EventLatch       *self,
-                   struct EventPipe        *aPipe,
+                   struct Ert_EventPipe        *aPipe,
                    struct Ert_EventLatchMethod  aMethod)
 {
     ensure(aPipe);

@@ -34,28 +34,28 @@
 
 TEST(EventPipeTest, ResetOnce)
 {
-    struct EventPipe  eventPipe_;
-    struct EventPipe *eventPipe = 0;
+    struct Ert_EventPipe  eventPipe_;
+    struct Ert_EventPipe *eventPipe = 0;
 
-    EXPECT_EQ(0, createEventPipe(&eventPipe_, 0));
+    EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(0, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
     EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
-    eventPipe = closeEventPipe(eventPipe);
+    eventPipe = ert_closeEventPipe(eventPipe);
 }
 
 TEST(EventPipeTest, SetOnce)
 {
-    struct EventPipe  eventPipe_;
-    struct EventPipe *eventPipe = 0;
+    struct Ert_EventPipe  eventPipe_;
+    struct Ert_EventPipe *eventPipe = 0;
 
-    EXPECT_EQ(0, createEventPipe(&eventPipe_, 0));
+    EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, setEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
 
     EXPECT_EQ(1, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
@@ -64,19 +64,19 @@ TEST(EventPipeTest, SetOnce)
 
     EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
-    eventPipe = closeEventPipe(eventPipe);
+    eventPipe = ert_closeEventPipe(eventPipe);
 }
 
 TEST(EventPipeTest, SetTwice)
 {
-    struct EventPipe  eventPipe_;
-    struct EventPipe *eventPipe = 0;
+    struct Ert_EventPipe  eventPipe_;
+    struct Ert_EventPipe *eventPipe = 0;
 
-    EXPECT_EQ(0, createEventPipe(&eventPipe_, 0));
+    EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, setEventPipe(eventPipe));
-    EXPECT_EQ(0, setEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
+    EXPECT_EQ(0, ert_setEventPipe(eventPipe));
 
     EXPECT_EQ(1, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
@@ -85,57 +85,57 @@ TEST(EventPipeTest, SetTwice)
 
     EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
-    eventPipe = closeEventPipe(eventPipe);
+    eventPipe = ert_closeEventPipe(eventPipe);
 }
 
 TEST(EventPipeTest, SetOnceResetOnce)
 {
-    struct EventPipe  eventPipe_;
-    struct EventPipe *eventPipe = 0;
+    struct Ert_EventPipe  eventPipe_;
+    struct Ert_EventPipe *eventPipe = 0;
 
-    EXPECT_EQ(0, createEventPipe(&eventPipe_, 0));
+    EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, setEventPipe(eventPipe));
-    EXPECT_EQ(1, resetEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
 
     EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
-    EXPECT_EQ(0, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
-    eventPipe = closeEventPipe(eventPipe);
+    eventPipe = ert_closeEventPipe(eventPipe);
 }
 
 TEST(EventPipeTest, SetOnceResetTwice)
 {
-    struct EventPipe  eventPipe_;
-    struct EventPipe *eventPipe = 0;
+    struct Ert_EventPipe  eventPipe_;
+    struct Ert_EventPipe *eventPipe = 0;
 
-    EXPECT_EQ(0, createEventPipe(&eventPipe_, 0));
+    EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, setEventPipe(eventPipe));
-    EXPECT_EQ(1, resetEventPipe(eventPipe));
-    EXPECT_EQ(0, resetEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
     EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
-    EXPECT_EQ(0, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
-    eventPipe = closeEventPipe(eventPipe);
+    eventPipe = ert_closeEventPipe(eventPipe);
 }
 
 TEST(EventPipeTest, SetOnceResetOnceSetOnce)
 {
-    struct EventPipe  eventPipe_;
-    struct EventPipe *eventPipe = 0;
+    struct Ert_EventPipe  eventPipe_;
+    struct Ert_EventPipe *eventPipe = 0;
 
-    EXPECT_EQ(0, createEventPipe(&eventPipe_, 0));
+    EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, setEventPipe(eventPipe));
-    EXPECT_EQ(1, resetEventPipe(eventPipe));
-    EXPECT_EQ(1, setEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
 
     EXPECT_EQ(1, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
@@ -144,7 +144,7 @@ TEST(EventPipeTest, SetOnceResetOnceSetOnce)
 
     EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
-    eventPipe = closeEventPipe(eventPipe);
+    eventPipe = ert_closeEventPipe(eventPipe);
 }
 
 #include "../googletest/src/gtest_main.cc"

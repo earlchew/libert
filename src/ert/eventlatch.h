@@ -71,7 +71,7 @@ ERT_END_C_SCOPE;
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
 
-struct EventPipe;
+struct Ert_EventPipe;
 struct Ert_EventLatch;
 
 struct Ert_EventLatchListEntry
@@ -91,7 +91,7 @@ struct Ert_EventLatch
     struct ThreadSigMutex           mMutex_;
     struct ThreadSigMutex          *mMutex;
     unsigned                        mEvent;
-    struct EventPipe               *mPipe;
+    struct Ert_EventPipe               *mPipe;
     char                           *mName;
     struct Ert_EventLatchListEntry  mList;
 };
@@ -121,7 +121,7 @@ ert_printEventLatch(const struct Ert_EventLatch *self, FILE *aFile);
 
 ERT_CHECKED enum Ert_EventLatchSetting
 ert_bindEventLatchPipe(struct Ert_EventLatch       *self,
-                       struct EventPipe        *aPipe,
+                       struct Ert_EventPipe        *aPipe,
                        struct Ert_EventLatchMethod  aMethod);
 
 ERT_CHECKED enum Ert_EventLatchSetting
