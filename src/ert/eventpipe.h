@@ -39,7 +39,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct EventPipe
+struct Ert_EventPipe
 {
     struct ThreadSigMutex  mMutex_;
     struct ThreadSigMutex *mMutex;
@@ -53,29 +53,29 @@ struct EventPipe
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createEventPipe(struct EventPipe *self, unsigned aFlags);
+ert_createEventPipe(struct Ert_EventPipe *self, unsigned aFlags);
 
-ERT_CHECKED struct EventPipe *
-closeEventPipe(struct EventPipe *self);
-
-ERT_CHECKED int
-setEventPipe(struct EventPipe *self);
+ERT_CHECKED struct Ert_EventPipe *
+ert_closeEventPipe(struct Ert_EventPipe *self);
 
 ERT_CHECKED int
-resetEventPipe(struct EventPipe *self);
+ert_setEventPipe(struct Ert_EventPipe *self);
 
 ERT_CHECKED int
-pollEventPipe(struct EventPipe            *self,
-              const struct EventClockTime *aPollTime);
+ert_resetEventPipe(struct Ert_EventPipe *self);
+
+ERT_CHECKED int
+ert_pollEventPipe(struct Ert_EventPipe            *self,
+                  const struct EventClockTime *aPollTime);
 
 /* -------------------------------------------------------------------------- */
 void
-attachEventPipeLatch_(struct EventPipe           *self,
-                      struct Ert_EventLatchListEntry *aEntry);
+ert_attachEventPipeLatch_(struct Ert_EventPipe           *self,
+                          struct Ert_EventLatchListEntry *aEntry);
 
 void
-detachEventPipeLatch_(struct EventPipe           *self,
-                      struct Ert_EventLatchListEntry *aEntry);
+ert_detachEventPipeLatch_(struct Ert_EventPipe           *self,
+                          struct Ert_EventLatchListEntry *aEntry);
 
 /* -------------------------------------------------------------------------- */
 
