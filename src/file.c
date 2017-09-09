@@ -51,12 +51,12 @@
 /* -------------------------------------------------------------------------- */
 static struct
 {
-    LIST_HEAD(, File) mHead;
-    pthread_mutex_t   mMutex;
+    LIST_HEAD(, Ert_File) mHead;
+    pthread_mutex_t       mMutex;
 }
 fileList_ =
 {
-    .mHead  = LIST_HEAD_INITIALIZER(File),
+    .mHead  = LIST_HEAD_INITIALIZER(Ert_File),
     .mMutex = PTHREAD_MUTEX_INITIALIZER,
 };
 
@@ -66,7 +66,7 @@ THREAD_FORK_SENTRY(
 
 /* -------------------------------------------------------------------------- */
 int
-createFile(struct File *self, int aFd)
+ert_createFile(struct Ert_File *self, int aFd)
 {
     int rc = -1;
 
@@ -461,7 +461,7 @@ Finally:
 }
 
 int
-temporaryFile(struct File *self)
+ert_temporaryFile(struct Ert_File *self)
 {
     int rc = -1;
 
@@ -505,7 +505,7 @@ temporaryFile(struct File *self)
     } while (0);
 
     ERROR_IF(
-        createFile(self, fd));
+        ert_createFile(self, fd));
 
     rc = 0;
 
@@ -518,7 +518,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-detachFile(struct File *self)
+ert_detachFile(struct Ert_File *self)
 {
     int rc = -1;
 
@@ -546,8 +546,8 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct File *
-closeFile(struct File *self)
+struct Ert_File *
+ert_closeFile(struct Ert_File *self)
 {
     if (self && -1 != self->mFd)
     {
@@ -565,22 +565,22 @@ closeFile(struct File *self)
 
 /* -------------------------------------------------------------------------- */
 bool
-ownFileValid(const struct File *self)
+ert_ownFileValid(const struct Ert_File *self)
 {
     return self && -1 != self->mFd;
 }
 
 /* -------------------------------------------------------------------------- */
 void
-walkFileList(struct FileVisitor aVisitor)
+ert_walkFileList(struct Ert_FileVisitor aVisitor)
 {
     pthread_mutex_t *lock = lockMutex(&fileList_.mMutex);
     {
-        const struct File *filePtr;
+        const struct Ert_File *filePtr;
 
         LIST_FOREACH(filePtr, &fileList_.mHead, mList)
         {
-            if (callFileVisitor(aVisitor, filePtr))
+            if (ert_callFileVisitor(aVisitor, filePtr))
                 break;
         }
     }
@@ -589,12 +589,12 @@ walkFileList(struct FileVisitor aVisitor)
 
 /* -------------------------------------------------------------------------- */
 int
-duplicateFile(struct File *self, const struct File *aFile)
+ert_duplicateFile(struct Ert_File *self, const struct Ert_File *aFile)
 {
     int rc = -1;
 
     ERROR_IF(
-        createFile(self, ert_duplicateFd(aFile->mFd, -1)));
+        ert_createFile(self, ert_duplicateFd(aFile->mFd, -1)));
 
     rc = 0;
 
@@ -607,50 +607,50 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-nonBlockingFile(struct File *self, unsigned aNonBlocking)
+nonBlockingFile(struct Ert_File *self, unsigned aNonBlocking)
 {
     return ert_nonBlockingFd(self->mFd, aNonBlocking);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ownFileNonBlocking(const struct File *self)
+ert_ownFileNonBlocking(const struct Ert_File *self)
 {
     return ert_ownFdNonBlocking(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-closeFileOnExec(struct File *self, unsigned aCloseOnExec)
+ert_closeFileOnExec(struct Ert_File *self, unsigned aCloseOnExec)
 {
     return ert_closeFdOnExec(self->mFd, aCloseOnExec);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ownFileCloseOnExec(const struct File *self)
+ert_ownFileCloseOnExec(const struct Ert_File *self)
 {
     return ert_ownFdCloseOnExec(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-lockFile(struct File *self, struct Ert_LockType ert_aLockType)
+ert_lockFile(struct Ert_File *self, struct Ert_LockType ert_aLockType)
 {
     return ert_lockFd(self->mFd, ert_aLockType);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-unlockFile(struct File *self)
+ert_unlockFile(struct Ert_File *self)
 {
     return ert_unlockFd(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-lockFileRegion(
-    struct File *self,
+ert_lockFileRegion(
+    struct Ert_File *self,
     struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen)
 {
     return ert_lockFdRegion(self->mFd, ert_aLockType, aPos, aLen);
@@ -658,21 +658,21 @@ lockFileRegion(
 
 /* -------------------------------------------------------------------------- */
 int
-unlockFileRegion(struct File *self, off_t aPos, off_t aLen)
+ert_unlockFileRegion(struct Ert_File *self, off_t aPos, off_t aLen)
 {
     return ert_unlockFdRegion(self->mFd, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
 struct Ert_LockType
-ownFileRegionLocked(const struct File *self, off_t aPos, off_t aLen)
+ert_ownFileRegionLocked(const struct Ert_File *self, off_t aPos, off_t aLen)
 {
     return ert_ownFdRegionLocked(self->mFd, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-writeFile(struct File *self,
+ert_writeFile(struct Ert_File *self,
           const char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return ert_writeFd(self->mFd, aBuf, aLen, aTimeout);
@@ -680,7 +680,7 @@ writeFile(struct File *self,
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-readFile(struct File *self,
+ert_readFile(struct Ert_File *self,
          char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return ert_readFd(self->mFd, aBuf, aLen, aTimeout);
@@ -688,7 +688,7 @@ readFile(struct File *self,
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-writeFileDeadline(struct File *self,
+ert_writeFileDeadline(struct Ert_File *self,
                   const char *aBuf, size_t aLen,
                   struct Ert_Deadline *aDeadline)
 {
@@ -697,7 +697,7 @@ writeFileDeadline(struct File *self,
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-readFileDeadline(struct File *self,
+ert_readFileDeadline(struct Ert_File *self,
                  char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return ert_readFdDeadline(self->mFd, aBuf, aLen, aDeadline);
@@ -705,35 +705,35 @@ readFileDeadline(struct File *self,
 
 /* -------------------------------------------------------------------------- */
 off_t
-lseekFile(struct File *self, off_t aOffset, struct Ert_WhenceType aWhenceType)
+ert_lseekFile(struct Ert_File *self, off_t aOffset, struct Ert_WhenceType aWhenceType)
 {
     return ert_lseekFd(self->mFd, aOffset, aWhenceType);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-fstatFile(struct File *self, struct stat *aStat)
+ert_fstatFile(struct Ert_File *self, struct stat *aStat)
 {
     return fstat(self->mFd, aStat);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-fcntlFileGetFlags(struct File *self)
+ert_fcntlFileGetFlags(struct Ert_File *self)
 {
     return fcntl(self->mFd, F_GETFL);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ftruncateFile(struct File *self, off_t aLength)
+ert_ftruncateFile(struct Ert_File *self, off_t aLength)
 {
     return ftruncate(self->mFd, aLength);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-waitFileWriteReady(const struct File     *self,
+ert_waitFileWriteReady(const struct Ert_File     *self,
                    const struct Duration *aTimeout)
 {
     return ert_waitFdWriteReady(self->mFd, aTimeout);
@@ -741,7 +741,7 @@ waitFileWriteReady(const struct File     *self,
 
 /* -------------------------------------------------------------------------- */
 int
-waitFileReadReady(const struct File     *self,
+ert_waitFileReadReady(const struct Ert_File     *self,
                   const struct Duration *aTimeout)
 {
     return ert_waitFdReadReady(self->mFd, aTimeout);

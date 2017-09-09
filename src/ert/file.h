@@ -38,14 +38,17 @@
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
-struct File;
+struct Ert_File;
 ERT_END_C_SCOPE;
 
 #define ERT_METHOD_DEFINITION
 #define ERT_METHOD_RETURN_FileVisitor    int
 #define ERT_METHOD_CONST_FileVisitor
-#define ERT_METHOD_ARG_LIST_FileVisitor  (const struct File *aFile_)
+#define ERT_METHOD_ARG_LIST_FileVisitor  (const struct Ert_File *aFile_)
 #define ERT_METHOD_CALL_LIST_FileVisitor (aFile_)
+
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
 
 #define ERT_METHOD_NAME      FileVisitor
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_FileVisitor
@@ -54,10 +57,10 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_FileVisitor
 #include "ert/method.h"
 
-#define FileVisitor(Object_, Method_)          \
+#define Ert_FileVisitor(Object_, Method_)          \
     ERT_METHOD_TRAMPOLINE(                         \
-        Object_, Method_,                      \
-        FileVisitor_,                          \
+        Object_, Method_,                          \
+        Ert_FileVisitor_,                          \
         ERT_METHOD_RETURN_FileVisitor,             \
         ERT_METHOD_CONST_FileVisitor,              \
         ERT_METHOD_ARG_LIST_FileVisitor,           \
@@ -72,104 +75,106 @@ struct ucred;
 
 struct Duration;
 
-struct File
+struct Ert_File
 {
-    int              mFd;
-    LIST_ENTRY(File) mList;
+    int                  mFd;
+    LIST_ENTRY(Ert_File) mList;
 };
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-temporaryFile(struct File *self);
+ert_temporaryFile(struct Ert_File *self);
 
 ERT_CHECKED int
-createFile(struct File *self, int aFd);
+ert_createFile(struct Ert_File *self, int aFd);
 
 ERT_CHECKED int
-detachFile(struct File *self);
+ert_detachFile(struct Ert_File *self);
 
-ERT_CHECKED struct File *
-closeFile(struct File *self);
+ERT_CHECKED struct Ert_File *
+ert_closeFile(struct Ert_File *self);
 
 void
-walkFileList(struct FileVisitor aVisitor);
+ert_walkFileList(struct Ert_FileVisitor aVisitor);
 
 ERT_CHECKED int
-duplicateFile(struct File *self, const struct File *aOther);
+ert_duplicateFile(struct Ert_File *self, const struct Ert_File *aOther);
 
 ERT_CHECKED int
-nonBlockingFile(struct File *self, unsigned aNonBlocking);
+nonBlockingFile(struct Ert_File *self, unsigned aNonBlocking);
 
 ERT_CHECKED int
-ownFileNonBlocking(const struct File *self);
+ert_ownFileNonBlocking(const struct Ert_File *self);
 
 ERT_CHECKED int
-closeFileOnExec(struct File *self, unsigned aCloseOnExec);
+ert_closeFileOnExec(struct Ert_File *self, unsigned aCloseOnExec);
 
 ERT_CHECKED int
-ownFileCloseOnExec(const struct File *self);
+ert_ownFileCloseOnExec(const struct Ert_File *self);
 
 ERT_CHECKED off_t
-lseekFile(struct File *self, off_t aOffset, struct Ert_WhenceType aWhenceType);
+ert_lseekFile(struct Ert_File *self,
+              off_t aOffset, struct Ert_WhenceType aWhenceType);
 
 ERT_CHECKED int
-fstatFile(struct File *self, struct stat *aStat);
+ert_fstatFile(struct Ert_File *self, struct stat *aStat);
 
 ERT_CHECKED int
-fcntlFileGetFlags(struct File *self);
+ert_fcntlFileGetFlags(struct Ert_File *self);
 
 ERT_CHECKED int
-ftruncateFile(struct File *self, off_t aLength);
+ert_ftruncateFile(struct Ert_File *self, off_t aLength);
 
 bool
-ownFileValid(const struct File *self);
+ert_ownFileValid(const struct Ert_File *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-writeFile(struct File *self,
+ert_writeFile(struct Ert_File *self,
           const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-readFile(struct File *self,
+ert_readFile(struct Ert_File *self,
          char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-writeFileDeadline(struct File *self,
+ert_writeFileDeadline(struct Ert_File *self,
                   const char *aBuf, size_t aLen,
                   struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED ssize_t
-readFileDeadline(struct File *self,
+ert_readFileDeadline(struct Ert_File *self,
                  char *aBuf, size_t aLen,
                  struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-waitFileWriteReady(const struct File     *self,
+ert_waitFileWriteReady(const struct Ert_File     *self,
                    const struct Duration *aTimeout);
 
 ERT_CHECKED int
-waitFileReadReady(const struct File     *self,
+ert_waitFileReadReady(const struct Ert_File     *self,
                   const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-lockFile(struct File *self, struct Ert_LockType ert_aLockType);
+ert_lockFile(struct Ert_File *self, struct Ert_LockType ert_aLockType);
 
 ERT_CHECKED int
-unlockFile(struct File *self);
+ert_unlockFile(struct Ert_File *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-lockFileRegion(
-    struct File *self, struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen);
+ert_lockFileRegion(
+    struct Ert_File *self,
+    struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen);
 
 ERT_CHECKED int
-unlockFileRegion(struct File *self, off_t aPos, off_t aLen);
+ert_unlockFileRegion(struct Ert_File *self, off_t aPos, off_t aLen);
 
 struct Ert_LockType
-ownFileRegionLocked(const struct File *self, off_t aPos, off_t aLen);
+ert_ownFileRegionLocked(const struct Ert_File *self, off_t aPos, off_t aLen);
 
 /* -------------------------------------------------------------------------- */
 
