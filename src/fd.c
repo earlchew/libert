@@ -45,7 +45,7 @@ static const char devNullPath_[] = DEVNULLPATH;
 
 /* -------------------------------------------------------------------------- */
 int
-openFd(const char *aPath, int aFlags, mode_t aMode)
+ert_openFd(const char *aPath, int aFlags, mode_t aMode)
 {
     int rc = -1;
 
@@ -83,16 +83,16 @@ openBlockedFd_(int aSelector, int aFd)
     int selected   = 0 + aSelector;
     int unselected = 1 - aSelector;
 
-    pipefd[unselected] = closeFd(pipefd[unselected]);
+    pipefd[unselected] = ert_closeFd(pipefd[unselected]);
 
     if (aFd != pipefd[selected])
     {
         fd = pipefd[selected];
 
         ERROR_IF(
-            aFd != duplicateFd(fd, aFd));
+            aFd != ert_duplicateFd(fd, aFd));
 
-        fd = closeFd(fd);
+        fd = ert_closeFd(fd);
     }
 
     rc = 0;
@@ -101,7 +101,7 @@ Finally:
 
     FINALLY
     ({
-        fd = closeFd(fd);
+        fd = ert_closeFd(fd);
     });
 
     return rc;
@@ -120,7 +120,7 @@ openBlockedOutput_(int aFd)
 }
 
 int
-openStdFds(void)
+ert_openStdFds(void)
 {
     int rc = -1;
 
@@ -133,17 +133,17 @@ openStdFds(void)
 
     int validStdin;
     ERROR_IF(
-        (validStdin = ownFdValid(STDIN_FILENO),
+        (validStdin = ert_ownFdValid(STDIN_FILENO),
          -1 == validStdin));
 
     int validStdout;
     ERROR_IF(
-        (validStdout = ownFdValid(STDOUT_FILENO),
+        (validStdout = ert_ownFdValid(STDOUT_FILENO),
          -1 == validStdout));
 
     int validStderr;
     ERROR_IF(
-        (validStderr = ownFdValid(STDERR_FILENO),
+        (validStderr = ert_ownFdValid(STDERR_FILENO),
          -1 == validStderr));
 
     if ( ! validStdin)
@@ -155,7 +155,7 @@ openStdFds(void)
         ERROR_IF(
             openBlockedOutput_(STDOUT_FILENO));
         ERROR_IF(
-            STDERR_FILENO != duplicateFd(STDOUT_FILENO, STDERR_FILENO));
+            STDERR_FILENO != ert_duplicateFd(STDOUT_FILENO, STDERR_FILENO));
     }
     else if ( ! validStdout)
         ERROR_IF(
@@ -175,7 +175,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-closeFd(int aFd)
+ert_closeFd(int aFd)
 {
     if (-1 != aFd)
     {
@@ -242,10 +242,10 @@ closeFdWhiteListVisitor_(
         int valid;
 
         ERROR_IF(
-            (valid = ownFdValid(fd),
+            (valid = ert_ownFdValid(fd),
              -1 == valid));
 
-        while (valid && closeFd(fd))
+        while (valid && ert_closeFd(fd))
             break;
     }
 
@@ -261,7 +261,7 @@ Finally:
 }
 
 int
-closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet)
+ert_closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet)
 {
     int rc = -1;
 
@@ -318,10 +318,10 @@ closeFdBlackListVisitor_(
         int valid;
 
         ERROR_IF(
-            (valid = ownFdValid(fd),
+            (valid = ert_ownFdValid(fd),
              -1 == valid));
 
-        while (valid && closeFd(fd))
+        while (valid && ert_closeFd(fd))
             break;
 
         if (fd == aRange.mRhs)
@@ -343,7 +343,7 @@ Finally:
 }
 
 int
-closeFdOnlyBlackList(const struct Ert_FdSet *aFdSet)
+ert_closeFdOnlyBlackList(const struct Ert_FdSet *aFdSet)
 {
     int rc = -1;
 
@@ -379,7 +379,7 @@ rankFd_(const void *aLhs, const void *aRhs)
 }
 
 int
-closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
+ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
 {
     int rc = -1;
 
@@ -422,10 +422,10 @@ closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
 
                     int valid;
                     ERROR_IF(
-                        (valid = ownFdValid(fd),
+                        (valid = ert_ownFdValid(fd),
                          -1 == valid));
 
-                    while (valid && closeFd(fd))
+                    while (valid && ert_closeFd(fd))
                         break;
                 }
                 else
@@ -458,14 +458,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 bool
-stdFd(int aFd)
+ert_stdFd(int aFd)
 {
     return STDIN_FILENO == aFd || STDOUT_FILENO == aFd || STDERR_FILENO == aFd;
 }
 
 /* -------------------------------------------------------------------------- */
 int
-closeFdOnExec(int aFd, unsigned aCloseOnExec)
+ert_closeFdOnExec(int aFd, unsigned aCloseOnExec)
 {
     int rc = -1;
 
@@ -507,7 +507,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-duplicateFd(int aFd, int aTargetFd)
+ert_duplicateFd(int aFd, int aTargetFd)
 {
     /* Strangely dup() and dup2() do not preserve FD_CLOEXEC when duplicating
      * the file descriptor. This function interrogates the source file
@@ -519,7 +519,7 @@ duplicateFd(int aFd, int aTargetFd)
 
     int cloexec;
     ERROR_IF(
-        (cloexec = ownFdCloseOnExec(aFd),
+        (cloexec = ert_ownFdCloseOnExec(aFd),
          -1 == cloexec));
 
     if (-1 == aTargetFd)
@@ -552,7 +552,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-nullifyFd(int aFd)
+ert_nullifyFd(int aFd)
 {
     int rc = -1;
 
@@ -560,21 +560,21 @@ nullifyFd(int aFd)
 
     int closeExec;
     ERROR_IF(
-        (closeExec = ownFdCloseOnExec(aFd),
+        (closeExec = ert_ownFdCloseOnExec(aFd),
          -1 == closeExec));
 
     if (closeExec)
         closeExec = O_CLOEXEC;
 
     ERROR_IF(
-        (fd = openFd(devNullPath_, O_WRONLY | closeExec, 0),
+        (fd = ert_openFd(devNullPath_, O_WRONLY | closeExec, 0),
          -1 == fd));
 
     if (fd == aFd)
         fd = -1;
     else
         ERROR_IF(
-            aFd != duplicateFd(fd, aFd));
+            aFd != ert_duplicateFd(fd, aFd));
 
     rc = 0;
 
@@ -582,7 +582,7 @@ Finally:
 
     FINALLY
     ({
-        fd = closeFd(fd);
+        fd = ert_closeFd(fd);
     });
 
     return rc;
@@ -590,7 +590,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-nonBlockingFd(int aFd, unsigned aNonBlocking)
+ert_nonBlockingFd(int aFd, unsigned aNonBlocking)
 {
     int rc = -1;
 
@@ -650,7 +650,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ownFdNonBlocking(int aFd)
+ert_ownFdNonBlocking(int aFd)
 {
     int rc = -1;
 
@@ -670,7 +670,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ownFdCloseOnExec(int aFd)
+ert_ownFdCloseOnExec(int aFd)
 {
     int rc = -1;
 
@@ -690,7 +690,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ownFdFlags(int aFd)
+ert_ownFdFlags(int aFd)
 {
     int rc = -1;
 
@@ -711,14 +711,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ownFdValid(int aFd)
+ert_ownFdValid(int aFd)
 {
     int rc = -1;
 
     int valid = 1;
 
     ERROR_IF(
-        (-1 == ownFdFlags(aFd) && (valid = 0, EBADF != errno)));
+        (-1 == ert_ownFdFlags(aFd) && (valid = 0, EBADF != errno)));
 
     rc = valid;
 
@@ -731,7 +731,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ioctlFd(int aFd, int aReq, void *aArg)
+ert_ioctlFd(int aFd, int aReq, void *aArg)
 {
     int rc;
 
@@ -745,7 +745,7 @@ ioctlFd(int aFd, int aReq, void *aArg)
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags)
+ert_spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags)
 {
     int rc = -1;
 
@@ -898,20 +898,21 @@ Finally:
 }
 
 int
-waitFdWriteReady(int aFd, const struct Duration *aTimeout)
+ert_waitFdWriteReady(int aFd, const struct Duration *aTimeout)
 {
     return waitFdReady_(aFd, POLLOUT, aTimeout);
 }
 
 int
-waitFdReadReady(int aFd, const struct Duration *aTimeout)
+ert_waitFdReadReady(int aFd, const struct Duration *aTimeout)
 {
     return waitFdReady_(aFd, POLLPRI | POLLIN, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-waitFdReadyDeadline_(int aFd, unsigned aPollMask, struct Ert_Deadline *aDeadline)
+waitFdReadyDeadline_(
+    int aFd, unsigned aPollMask, struct Ert_Deadline *aDeadline)
 {
     int rc = -1;
 
@@ -968,13 +969,13 @@ Finally:
 }
 
 int
-waitFdWriteReadyDeadline(int aFd, struct Ert_Deadline *aDeadline)
+ert_waitFdWriteReadyDeadline(int aFd, struct Ert_Deadline *aDeadline)
 {
     return waitFdReadyDeadline_(aFd, POLLOUT, aDeadline);
 }
 
 int
-waitFdReadReadyDeadline(int aFd, struct Ert_Deadline *aDeadline)
+ert_waitFdReadReadyDeadline(int aFd, struct Ert_Deadline *aDeadline)
 {
     return waitFdReadyDeadline_(aFd, POLLPRI | POLLIN, aDeadline);
 }
@@ -1004,7 +1005,7 @@ readFdDeadline_(int aFd,
                         LAMBDA(
                             int, (int *fd),
                             {
-                                return waitFdReadReady(*fd, &ZeroDuration);
+                                return ert_waitFdReadReady(*fd, &ZeroDuration);
                             })),
                     Ert_DeadlineWaitMethod(
                         &aFd,
@@ -1012,7 +1013,7 @@ readFdDeadline_(int aFd,
                             int, (int *fd,
                                   const struct Duration *aTimeout),
                             {
-                                return waitFdReadReady(*fd, aTimeout);
+                                return ert_waitFdReadReady(*fd, aTimeout);
                             }))),
                  -1 == ready && bufPtr == aBuf));
 
@@ -1043,7 +1044,7 @@ readFdDeadline_(int aFd,
             {
                 int rdReady;
                 ERROR_IF(
-                    (rdReady = waitFdReadReadyDeadline(aFd, aDeadline),
+                    (rdReady = ert_waitFdReadReadyDeadline(aFd, aDeadline),
                      -1 == rdReady && bufPtr == aBuf));
 
                 if (0 <= rdReady)
@@ -1066,8 +1067,8 @@ Finally:
 }
 
 ssize_t
-readFdDeadline(int aFd,
-               char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
+ert_readFdDeadline(int aFd,
+                   char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return readFdDeadline_(aFd, aBuf, aLen, aDeadline, read);
 }
@@ -1097,7 +1098,7 @@ writeFdDeadline_(int aFd,
                         LAMBDA(
                             int, (int *fd),
                             {
-                                return waitFdWriteReady(*fd, &ZeroDuration);
+                                return ert_waitFdWriteReady(*fd, &ZeroDuration);
                             })),
                     Ert_DeadlineWaitMethod(
                         &aFd,
@@ -1105,7 +1106,7 @@ writeFdDeadline_(int aFd,
                             int, (int *fd,
                                   const struct Duration *aTimeout),
                             {
-                                return waitFdWriteReady(*fd, aTimeout);
+                                return ert_waitFdWriteReady(*fd, aTimeout);
                             }))),
                  -1 == ready && bufPtr == aBuf));
 
@@ -1136,7 +1137,7 @@ writeFdDeadline_(int aFd,
             {
                 int wrReady;
                 ERROR_IF(
-                    (wrReady = waitFdWriteReadyDeadline(aFd, aDeadline),
+                    (wrReady = ert_waitFdWriteReadyDeadline(aFd, aDeadline),
                      -1 == wrReady && bufPtr == aBuf));
 
                 if (0 <= wrReady)
@@ -1159,8 +1160,9 @@ Finally:
 }
 
 ssize_t
-writeFdDeadline(int aFd,
-                const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
+ert_writeFdDeadline(
+    int aFd,
+    const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return writeFdDeadline_(aFd, aBuf, aLen, aDeadline, &write);
 }
@@ -1196,15 +1198,15 @@ Finally:
 }
 
 ssize_t
-readFd(int aFd,
-       char *aBuf, size_t aLen, const struct Duration *aTimeout)
+ert_readFd(int aFd,
+           char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return readFd_(aFd, aBuf, aLen, aTimeout, read);
 }
 
 ssize_t
-readFdRaw(int aFd,
-          char *aBuf, size_t aLen, const struct Duration *aTimeout)
+ert_readFdRaw(int aFd,
+              char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return readFd_(aFd, aBuf, aLen, aTimeout, read_raw);
 }
@@ -1240,22 +1242,22 @@ Finally:
 }
 
 ssize_t
-writeFd(int aFd,
-        const char *aBuf, size_t aLen, const struct Duration *aTimeout)
+ert_writeFd(int aFd,
+            const char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return writeFd_(aFd, aBuf, aLen, aTimeout, write);
 }
 
 ssize_t
-writeFdRaw(int aFd,
-           const char *aBuf, size_t aLen, const struct Duration *aTimeout)
+ert_writeFdRaw(int aFd,
+               const char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return writeFd_(aFd, aBuf, aLen, aTimeout, write_raw);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-readFdFully(int aFd, char **aBuf, size_t aBufSize)
+ert_readFdFully(int aFd, char **aBuf, size_t aBufSize)
 {
     ssize_t rc = -1;
 
@@ -1285,7 +1287,7 @@ readFdFully(int aFd, char **aBuf, size_t aBufSize)
 
         ssize_t rdlen;
         ERROR_IF(
-            (rdlen = readFd(aFd, end, avail, 0),
+            (rdlen = ert_readFd(aFd, end, avail, 0),
              -1 == rdlen));
         if ( ! rdlen)
             break;
@@ -1314,7 +1316,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 off_t
-lseekFd(int aFd, off_t aOffset, struct WhenceType aWhenceType)
+ert_lseekFd(int aFd, off_t aOffset, struct Ert_WhenceType aWhenceType)
 {
     off_t rc = -1;
 
@@ -1324,15 +1326,15 @@ lseekFd(int aFd, off_t aOffset, struct WhenceType aWhenceType)
     default:
         ensure(0);
 
-    case WhenceTypeStart_:
+    case Ert_WhenceTypeStart_:
         whenceType = SEEK_SET;
         break;
 
-    case WhenceTypeHere_:
+    case Ert_WhenceTypeHere_:
         whenceType = SEEK_CUR;
         break;
 
-    case WhenceTypeEnd_:
+    case Ert_WhenceTypeEnd_:
         whenceType = SEEK_END;
         break;
     }
@@ -1348,7 +1350,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-lockFd(int aFd, struct LockType aLockType)
+ert_lockFd(int aFd, struct Ert_LockType aLockType)
 {
     int rc = -1;
 
@@ -1358,11 +1360,11 @@ lockFd(int aFd, struct LockType aLockType)
     default:
         ensure(0);
 
-    case LockTypeWrite_:
+    case Ert_LockTypeWrite_:
         lockType = LOCK_EX;
         break;
 
-    case LockTypeRead_:
+    case Ert_LockTypeRead_:
         lockType = LOCK_SH;
         break;
     }
@@ -1385,7 +1387,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-unlockFd(int aFd)
+ert_unlockFd(int aFd)
 {
     int rc = -1;
 
@@ -1403,7 +1405,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-lockFdRegion(int aFd, struct LockType aLockType, off_t aPos, off_t aLen)
+ert_lockFdRegion(
+    int aFd, struct Ert_LockType aLockType, off_t aPos, off_t aLen)
 {
     int rc = -1;
 
@@ -1413,11 +1416,11 @@ lockFdRegion(int aFd, struct LockType aLockType, off_t aPos, off_t aLen)
     default:
         ensure(0);
 
-    case LockTypeWrite_:
+    case Ert_LockTypeWrite_:
         lockType = F_WRLCK;
         break;
 
-    case LockTypeRead_:
+    case Ert_LockTypeRead_:
         lockType = F_RDLCK;
         break;
     }
@@ -1449,7 +1452,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-unlockFdRegion(int aFd, off_t aPos, off_t aLen)
+ert_unlockFdRegion(int aFd, off_t aPos, off_t aLen)
 {
     int rc = -1;
 
@@ -1474,12 +1477,12 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct LockType
-ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
+struct Ert_LockType
+ert_ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
 {
     int rc = -1;
 
-    struct LockType lockType = LockTypeUnlocked;
+    struct Ert_LockType lockType = Ert_LockTypeUnlocked;
 
     struct flock lockRegion =
     {
@@ -1506,12 +1509,12 @@ ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
 
     case F_RDLCK:
         if (lockRegion.l_pid != ownProcessId().mPid)
-            lockType = LockTypeRead;
+            lockType = Ert_LockTypeRead;
         break;
 
     case F_WRLCK:
         if (lockRegion.l_pid != ownProcessId().mPid)
-            lockType = LockTypeWrite;
+            lockType = Ert_LockTypeWrite;
         break;
     }
 
@@ -1521,7 +1524,7 @@ Finally:
 
     FINALLY({});
 
-    return rc ? LockTypeError : lockType;
+    return rc ? Ert_LockTypeError : lockType;
 }
 
 /* -------------------------------------------------------------------------- */

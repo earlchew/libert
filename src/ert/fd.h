@@ -42,164 +42,173 @@ struct Duration;
 struct Ert_FdSet;
 
 /* -------------------------------------------------------------------------- */
-struct LockType
+struct Ert_LockType
 {
     enum
     {
-        LockTypeError_    = -1,
-        LockTypeUnlocked_ = 0,
-        LockTypeRead_     = 1,
-        LockTypeWrite_    = 2,
+        Ert_LockTypeError_    = -1,
+        Ert_LockTypeUnlocked_ = 0,
+        Ert_LockTypeRead_     = 1,
+        Ert_LockTypeWrite_    = 2,
     } mType;
 };
 
 #ifdef __cplusplus
-#define LockTypeError_    LockType::LockTypeError_
-#define LockTypeUnlocked_ LockType::LockTypeUnlocked_
-#define LockTypeRead_     LockType::LockTypeRead_
-#define LockTypeWrite_    LockType::LockTypeWrite_
+#define Ert_LockTypeError_    Ert_LockType::Ert_LockTypeError_
+#define Ert_LockTypeUnlocked_ Ert_LockType::Ert_LockTypeUnlocked_
+#define Ert_LockTypeRead_     Ert_LockType::Ert_LockTypeRead_
+#define Ert_LockTypeWrite_    Ert_LockType::Ert_LockTypeWrite_
 #endif
 
-#define LockTypeError    ((struct LockType) { mType : LockTypeError_ })
-#define LockTypeUnlocked ((struct LockType) { mType : LockTypeUnlocked_ })
-#define LockTypeRead     ((struct LockType) { mType : LockTypeRead_ })
-#define LockTypeWrite    ((struct LockType) { mType : LockTypeWrite_ })
+#define Ert_LockType_(Value_) ((struct Ert_LockType) { mType: (Value_) })
+
+#define Ert_LockTypeError    (Ert_LockType_(Ert_LockTypeError_))
+#define Ert_LockTypeUnlocked (Ert_LockType_(Ert_LockTypeUnlocked_))
+#define Ert_LockTypeRead     (Ert_LockType_(Ert_LockTypeRead_))
+#define Ert_LockTypeWrite    (Ert_LockType_(Ert_LockTypeWrite_))
 
 /* -------------------------------------------------------------------------- */
-struct WhenceType
+struct Ert_WhenceType
 {
     enum
     {
-        WhenceTypeStart_,
-        WhenceTypeHere_,
-        WhenceTypeEnd_,
+        Ert_WhenceTypeStart_,
+        Ert_WhenceTypeHere_,
+        Ert_WhenceTypeEnd_,
     } mType;
 };
 
 #ifdef __cplusplus
-#define WhenceTypeStart_ WhenceType::WhenceTypeStart_
-#define WhenceTypeHere_  WhenceType::WhenceTypeHere_
-#define WhenceTypeEnd_   WhenceType::WhenceTypeEnd_
+#define Ert_WhenceTypeStart_ Ert_WhenceType::Ert_WhenceTypeStart_
+#define Ert_WhenceTypeHere_  Ert_WhenceType::Ert_WhenceTypeHere_
+#define Ert_WhenceTypeEnd_   Ert_WhenceType::Ert_WhenceTypeEnd_
 #endif
 
-#define WhenceTypeStart ((struct WhenceType) { mType : WhenceTypeStart_ })
-#define WhenceTypeHere  ((struct WhenceType) { mType : WhenceTypeHere_ })
-#define WhenceTypeEnd   ((struct WhenceType) { mType : WhenceTypeEnd_ })
+#define Ert_WhenceType_(Value_) ((struct Ert_WhenceType) { mType: (Value_) })
+
+#define Ert_WhenceTypeStart (Ert_WhenceType_(Ert_WhenceTypeStart_))
+#define Ert_WhenceTypeHere  (Ert_WhenceType_(Ert_WhenceTypeHere_))
+#define Ert_WhenceTypeEnd   (Ert_WhenceType_(Ert_WhenceTypeEnd_))
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-openFd(const char *aPathName, int aFlags, mode_t aMode);
+ert_openFd(const char *aPathName, int aFlags, mode_t aMode);
 
 ERT_CHECKED int
-openStdFds(void);
+ert_openStdFds(void);
 
 ERT_CHECKED int
-closeFd(int aFd);
+ert_closeFd(int aFd);
 
 ERT_CHECKED int
-closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen);
+ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen);
 
 ERT_CHECKED int
-closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet);
+ert_closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet);
 
 ERT_CHECKED int
-closeFdOnlyBlackList(const struct Ert_FdSet *aFdSet);
+ert_closeFdOnlyBlackList(const struct Ert_FdSet *aFdSet);
 
 bool
-stdFd(int aFd);
+ert_stdFd(int aFd);
 
 ERT_CHECKED int
-duplicateFd(int aFd, int aTargetFd);
+ert_duplicateFd(int aFd, int aTargetFd);
 
 ERT_CHECKED int
-nullifyFd(int aFd);
+ert_nullifyFd(int aFd);
 
 ERT_CHECKED int
-nonBlockingFd(int aFd, unsigned aNonBlocking);
+ert_nonBlockingFd(int aFd, unsigned aNonBlocking);
 
 ERT_CHECKED int
-ownFdNonBlocking(int aFd);
+ert_ownFdNonBlocking(int aFd);
 
 ERT_CHECKED int
-ownFdValid(int aFd);
+ert_ownFdValid(int aFd);
 
 ERT_CHECKED int
-ownFdFlags(int aFd);
+ert_ownFdFlags(int aFd);
 
 ERT_CHECKED int
-closeFdOnExec(int aFd, unsigned aCloseOnExec);
+ert_closeFdOnExec(int aFd, unsigned aCloseOnExec);
 
 ERT_CHECKED int
-ownFdCloseOnExec(int aFd);
+ert_ownFdCloseOnExec(int aFd);
 
 ERT_CHECKED int
-ioctlFd(int aFd, int aReq, void *aArg);
+ert_ioctlFd(int aFd, int aReq, void *aArg);
 
 ERT_CHECKED ssize_t
-spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags);
+ert_spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags);
 
 ERT_CHECKED off_t
-lseekFd(int aFd, off_t aOffset, struct WhenceType aWhenceType);
+ert_lseekFd(int aFd, off_t aOffset, struct Ert_WhenceType aWhenceType);
 
 ERT_CHECKED ssize_t
-readFdFully(int aFd, char **aBuf, size_t aBufSize);
+ert_readFdFully(int aFd, char **aBuf, size_t aBufSize);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-writeFd(int aFd,
-        const char *aBuf, size_t aLen, const struct Duration *aTimeout);
+ert_writeFd(int aFd,
+            const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-writeFdRaw(int aFd,
-           const char *aBuf, size_t aLen, const struct Duration *aTimeout);
+ert_writeFdRaw(int aFd,
+               const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-readFd(int aFd,
-       char *aBuf, size_t aLen, const struct Duration *aTimeout);
+ert_readFd(int aFd,
+           char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-readFdRaw(int aFd,
-          char *aBuf, size_t aLen, const struct Duration *aTimeout);
+ert_readFdRaw(int aFd,
+              char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-writeFdDeadline(int aFd,
-                const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
+ert_writeFdDeadline(
+    int aFd,
+    const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED ssize_t
-readFdDeadline(int aFd,
-               char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
+ert_readFdDeadline(
+    int aFd,
+    char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-lockFd(int aFd, struct LockType aLockType);
+ert_lockFd(int aFd, struct Ert_LockType ert_aLockType);
 
 ERT_CHECKED int
-unlockFd(int aFd);
+ert_unlockFd(int aFd);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-lockFdRegion(int aFd, struct LockType aLockType, off_t aPos, off_t aLen);
+ert_lockFdRegion(
+    int aFd, struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen);
 
 ERT_CHECKED int
-unlockFdRegion(int aFd, off_t aPos, off_t aLen);
+ert_unlockFdRegion(
+    int aFd, off_t aPos, off_t aLen);
 
-struct LockType
-ownFdRegionLocked(int aFd, off_t aPos, off_t aLen);
+struct Ert_LockType
+ert_ownFdRegionLocked(
+    int aFd, off_t aPos, off_t aLen);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-waitFdWriteReady(int aFd, const struct Duration *aTimeout);
+ert_waitFdWriteReady(int aFd, const struct Duration *aTimeout);
 
 ERT_CHECKED int
-waitFdReadReady(int aFd, const struct Duration *aTimeout);
+ert_waitFdReadReady(int aFd, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-waitFdWriteReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
+ert_waitFdWriteReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED int
-waitFdReadReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
+ert_waitFdReadReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 
