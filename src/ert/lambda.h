@@ -33,39 +33,39 @@
 
 #ifdef __cplusplus
 
-#define LAMBDA(Return_, Signature_, ...) \
-    LAMBDA_1_(ERT_COUNTER, Return_, Signature_, __VA_ARGS__)
+#define ERT_LAMBDA(Return_, Signature_, ...) \
+    ERT_LAMBDA_1_(ERT_COUNTER, Return_, Signature_, __VA_ARGS__)
 
-#define LAMBDA_1_(Counter_, Return_, Signature_, ...)  \
-    LAMBDA_2_(Counter_, Return_, Signature_, __VA_ARGS__)
+#define ERT_LAMBDA_1_(Counter_, Return_, Signature_, ...)  \
+    ERT_LAMBDA_2_(Counter_, Return_, Signature_, __VA_ARGS__)
 
-#define LAMBDA_2_(Counter_, Return_, Signature_, ...)           \
-({                                                              \
-    struct Method_ ## Counter_ ## _                             \
-    {                                                           \
-        static Return_ Call_ Signature_                         \
-        __VA_ARGS__                                             \
-    };                                                          \
-                                                                \
-    & Method_ ## Counter_ ## _ :: Call_;                        \
+#define ERT_LAMBDA_2_(Counter_, Return_, Signature_, ...)           \
+({                                                                  \
+    struct Method_ ## Counter_ ## _                                 \
+    {                                                               \
+        static Return_ Call_ Signature_                             \
+        __VA_ARGS__                                                 \
+    };                                                              \
+                                                                    \
+    & Method_ ## Counter_ ## _ :: Call_;                            \
 })
 
 #else
 
-#define LAMBDA(Return_, Signature_, ...) \
-    LAMBDA_1_(ERT_COUNTER, Return_, Signature_, __VA_ARGS__)
+#define ERT_LAMBDA(Return_, Signature_, ...) \
+    ERT_LAMBDA_1_(ERT_COUNTER, Return_, Signature_, __VA_ARGS__)
 
-#define LAMBDA_1_(Counter_, Return_, Signature_, ...)  \
-    LAMBDA_2_(Counter_, Return_, Signature_, __VA_ARGS__)
+#define ERT_LAMBDA_1_(Counter_, Return_, Signature_, ...)  \
+    ERT_LAMBDA_2_(Counter_, Return_, Signature_, __VA_ARGS__)
 
-#define LAMBDA_2_(Counter_, Return_, Signature_, ...)   \
-({                                                      \
-    auto Return_ Method_ ## Counter_ ## _ Signature_;   \
-                                                        \
-    Return_ Method_ ## Counter_ ## _ Signature_         \
-    __VA_ARGS__                                         \
-                                                        \
-    & Method_ ## Counter_ ## _;                         \
+#define ERT_LAMBDA_2_(Counter_, Return_, Signature_, ...)   \
+({                                                          \
+    auto Return_ Method_ ## Counter_ ## _ Signature_;       \
+                                                            \
+    Return_ Method_ ## Counter_ ## _ Signature_             \
+    __VA_ARGS__                                             \
+                                                            \
+    & Method_ ## Counter_ ## _;                             \
 })
 
 #endif
