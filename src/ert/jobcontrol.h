@@ -36,7 +36,7 @@
 ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
-struct JobControl
+struct Ert_JobControl
 {
     struct
     {
@@ -62,39 +62,39 @@ struct JobControl
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createJobControl(struct JobControl *self);
+ert_createJobControl(struct Ert_JobControl *self);
 
-ERT_CHECKED struct JobControl *
-closeJobControl(struct JobControl *self);
+ERT_CHECKED struct Ert_JobControl *
+ert_closeJobControl(struct Ert_JobControl *self);
 
 ERT_CHECKED int
-watchJobControlSignals(struct JobControl              *self,
+ert_watchJobControlSignals(struct Ert_JobControl              *self,
                        struct WatchProcessSignalMethod aRaiseMethod);
 
 ERT_CHECKED int
-unwatchJobControlSignals(struct JobControl *self);
+ert_unwatchJobControlSignals(struct Ert_JobControl *self);
 
 ERT_CHECKED int
-watchJobControlDone(struct JobControl        *self,
+ert_watchJobControlDone(struct Ert_JobControl        *self,
                     struct WatchProcessMethod aReapMethod);
 
 ERT_CHECKED int
-unwatchJobControlDone(struct JobControl *self);
+ert_unwatchJobControlDone(struct Ert_JobControl *self);
 
 ERT_CHECKED int
-watchJobControlStop(struct JobControl        *self,
+ert_watchJobControlStop(struct Ert_JobControl        *self,
                     struct WatchProcessMethod aPauseMethod,
                     struct WatchProcessMethod aResumeMethod);
 
 ERT_CHECKED int
-unwatchJobControlStop(struct JobControl *self);
+ert_unwatchJobControlStop(struct Ert_JobControl *self);
 
 ERT_CHECKED int
-watchJobControlContinue(struct JobControl        *self,
+ert_watchJobControlContinue(struct Ert_JobControl        *self,
                         struct WatchProcessMethod aContinueMethod);
 
 ERT_CHECKED int
-unwatchJobControlContinue(struct JobControl *self);
+ert_unwatchJobControlContinue(struct Ert_JobControl *self);
 
 /* -------------------------------------------------------------------------- */
 

@@ -33,7 +33,7 @@
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-reapJobControl_(struct JobControl *self)
+ert_reapJobControl_(struct Ert_JobControl *self)
 {
     int rc = -1;
 
@@ -52,8 +52,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-raiseJobControlSignal_(
-    struct JobControl *self, int aSigNum, struct Pid aPid, struct Uid aUid)
+ert_raiseJobControlSignal_(
+    struct Ert_JobControl *self, int aSigNum, struct Pid aPid, struct Uid aUid)
 {
     int rc = -1;
 
@@ -73,7 +73,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-raiseJobControlSigStop_(struct JobControl *self)
+ert_raiseJobControlSigStop_(struct Ert_JobControl *self)
 {
     int rc = -1;
 
@@ -105,7 +105,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-raiseJobControlSigCont_(struct JobControl *self)
+ert_raiseJobControlSigCont_(struct Ert_JobControl *self)
 {
     int rc = -1;
 
@@ -124,7 +124,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-createJobControl(struct JobControl *self)
+ert_createJobControl(struct Ert_JobControl *self)
 {
     int rc = -1;
 
@@ -144,8 +144,8 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct JobControl *
-closeJobControl(struct JobControl *self)
+struct Ert_JobControl *
+ert_closeJobControl(struct Ert_JobControl *self)
 {
     if (self)
     {
@@ -160,7 +160,7 @@ closeJobControl(struct JobControl *self)
 
 /* -------------------------------------------------------------------------- */
 int
-watchJobControlSignals(struct JobControl              *self,
+ert_watchJobControlSignals(struct Ert_JobControl              *self,
                        struct WatchProcessSignalMethod aRaiseMethod)
 {
     int rc = -1;
@@ -181,7 +181,7 @@ watchJobControlSignals(struct JobControl              *self,
 
     ERROR_IF(
         watchProcessSignals(
-            WatchProcessSignalMethod(self, raiseJobControlSignal_)),
+            WatchProcessSignalMethod(self, ert_raiseJobControlSignal_)),
         {
             self->mRaise.mMethod = WatchProcessSignalMethodNil();
         });
@@ -197,7 +197,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-unwatchJobControlSignals(struct JobControl *self)
+ert_unwatchJobControlSignals(struct Ert_JobControl *self)
 {
     int rc = -1;
 
@@ -223,7 +223,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-watchJobControlDone(struct JobControl        *self,
+ert_watchJobControlDone(struct Ert_JobControl        *self,
                     struct WatchProcessMethod aReapMethod)
 {
     int rc = -1;
@@ -243,7 +243,7 @@ watchJobControlDone(struct JobControl        *self,
     self->mReap.mMethod = aReapMethod;
 
     ERROR_IF(
-        watchProcessChildren(WatchProcessMethod(self, reapJobControl_)),
+        watchProcessChildren(WatchProcessMethod(self, ert_reapJobControl_)),
         {
             self->mReap.mMethod = WatchProcessMethodNil();
         });
@@ -259,7 +259,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-unwatchJobControlDone(struct JobControl *self)
+ert_unwatchJobControlDone(struct Ert_JobControl *self)
 {
     int rc = -1;
 
@@ -285,7 +285,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-watchJobControlStop(struct JobControl        *self,
+ert_watchJobControlStop(struct Ert_JobControl        *self,
                     struct WatchProcessMethod aPauseMethod,
                     struct WatchProcessMethod aResumeMethod)
 {
@@ -310,7 +310,7 @@ watchJobControlStop(struct JobControl        *self,
 
     ERROR_IF(
         watchProcessSigStop(
-            WatchProcessMethod(self, raiseJobControlSigStop_)),
+            WatchProcessMethod(self, ert_raiseJobControlSigStop_)),
         {
             self->mStop.mPauseMethod  = WatchProcessMethodNil();
             self->mStop.mResumeMethod = WatchProcessMethodNil();
@@ -327,7 +327,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-unwatchJobControlStop(struct JobControl *self)
+ert_unwatchJobControlStop(struct Ert_JobControl *self)
 {
     int rc = -1;
 
@@ -355,7 +355,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-watchJobControlContinue(struct JobControl        *self,
+ert_watchJobControlContinue(struct Ert_JobControl        *self,
                         struct WatchProcessMethod aContinueMethod)
 {
     int rc = -1;
@@ -376,7 +376,7 @@ watchJobControlContinue(struct JobControl        *self,
 
     ERROR_IF(
         watchProcessSigCont(
-            WatchProcessMethod(self, raiseJobControlSigCont_)),
+            WatchProcessMethod(self, ert_raiseJobControlSigCont_)),
         {
             self->mContinue.mMethod = WatchProcessMethodNil();
         });
@@ -392,7 +392,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-unwatchJobControlContinue(struct JobControl *self)
+ert_unwatchJobControlContinue(struct Ert_JobControl *self)
 {
     int rc = -1;
 
