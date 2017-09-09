@@ -34,8 +34,8 @@
 
 int main(int argc, char **argv)
 {
-    initOptions(
-        &(struct Options)
+    ert_initOptions(
+        &(struct Ert_Options)
         {
         .mTest = TestLevelRace,
         });

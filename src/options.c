@@ -29,11 +29,11 @@
 
 #include "ert/options.h"
 
-struct Options gErtOptions_;
+struct Ert_Options gErtOptions_;
 
 /* -------------------------------------------------------------------------- */
 void
-initOptions(const struct Options *aOpts)
+ert_initOptions(const struct Ert_Options *aOpts)
 {
     gErtOptions_ = *aOpts;
 }
