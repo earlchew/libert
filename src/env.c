@@ -118,7 +118,7 @@ ert_getEnvInt(const char *aName, int *aValue)
         ert_getEnvString(aName, &env));
 
     ERROR_IF(
-        parseInt(env, aValue));
+        ert_parseInt(env, aValue));
 
     rc = 0;
 
@@ -166,7 +166,7 @@ ert_getEnvUInt(const char *aName, unsigned *aValue)
         ert_getEnvString(aName, &env));
 
     ERROR_IF(
-        parseUInt(env, aValue));
+        ert_parseUInt(env, aValue));
 
     rc = 0;
 
@@ -214,7 +214,7 @@ ert_getEnvUInt64(const char *aName, uint64_t *aValue)
         ert_getEnvString(aName, &env));
 
     ERROR_IF(
-        parseUInt64(env, aValue));
+        ert_parseUInt64(env, aValue));
 
     rc = 0;
 
@@ -262,7 +262,7 @@ ert_getEnvPid(const char *aName, struct Pid *aValue)
         ert_getEnvString(aName, &env));
 
     ERROR_IF(
-        parsePid(env, aValue));
+        ert_parsePid(env, aValue));
 
     rc = 0;
 

@@ -35,14 +35,14 @@
 
 TEST(ParseTest, ArgListCopy)
 {
-    struct ParseArgList  argList_;
-    struct ParseArgList *argList = 0;
+    struct Ert_ParseArgList  argList_;
+    struct Ert_ParseArgList *argList = 0;
 
-    EXPECT_EQ(0, createParseArgListCopy(&argList_, 0));
+    EXPECT_EQ(0, ert_createParseArgListCopy(&argList_, 0));
     argList = &argList_;
     EXPECT_EQ(0U, argList->mArgc);
     EXPECT_FALSE(argList->mArgv);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
     {
         const char * argv[] =
@@ -50,11 +50,11 @@ TEST(ParseTest, ArgListCopy)
             0
         };
 
-        EXPECT_EQ(0, createParseArgListCopy(&argList_, argv));
+        EXPECT_EQ(0, ert_createParseArgListCopy(&argList_, argv));
         argList = &argList_;
         EXPECT_EQ(0U, argList->mArgc);
         EXPECT_FALSE(argList->mArgv[0]);
-        argList = closeParseArgList(argList);
+        argList = ert_closeParseArgList(argList);
     }
 
     {
@@ -64,12 +64,12 @@ TEST(ParseTest, ArgListCopy)
             0
         };
 
-        EXPECT_EQ(0, createParseArgListCopy(&argList_, argv));
+        EXPECT_EQ(0, ert_createParseArgListCopy(&argList_, argv));
         argList = &argList_;
         EXPECT_EQ(1U, argList->mArgc);
         EXPECT_EQ(std::string("a"), argList->mArgv[0]);
         EXPECT_FALSE(argList->mArgv[1]);
-        argList = closeParseArgList(argList);
+        argList = ert_closeParseArgList(argList);
     }
 
     {
@@ -80,147 +80,147 @@ TEST(ParseTest, ArgListCopy)
             0
         };
 
-        EXPECT_EQ(0, createParseArgListCopy(&argList_, argv));
+        EXPECT_EQ(0, ert_createParseArgListCopy(&argList_, argv));
         argList = &argList_;
         EXPECT_EQ(2U, argList->mArgc);
         EXPECT_EQ(std::string("a"), argList->mArgv[0]);
         EXPECT_EQ(std::string("b"), argList->mArgv[1]);
         EXPECT_FALSE(argList->mArgv[2]);
-        argList = closeParseArgList(argList);
+        argList = ert_closeParseArgList(argList);
     }
 }
 
 TEST(ParseTest, ArgListCSV)
 {
-    struct ParseArgList  argList_;
-    struct ParseArgList *argList = 0;
+    struct Ert_ParseArgList  argList_;
+    struct Ert_ParseArgList *argList = 0;
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, 0));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, 0));
     argList = &argList_;
     EXPECT_EQ(0U, argList->mArgc);
     EXPECT_FALSE(argList->mArgv);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, ""));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, ""));
     argList = &argList_;
     EXPECT_EQ(0U, argList->mArgc);
     EXPECT_FALSE(argList->mArgv[0]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, " "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, " "));
     argList = &argList_;
     EXPECT_EQ(0U, argList->mArgc);
     EXPECT_FALSE(argList->mArgv[0]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "  "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "  "));
     argList = &argList_;
     EXPECT_EQ(0U, argList->mArgc);
     EXPECT_FALSE(argList->mArgv[0]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "a"));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "a"));
     argList = &argList_;
     EXPECT_EQ(1U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_FALSE(argList->mArgv[1]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, " a"));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, " a"));
     argList = &argList_;
     EXPECT_EQ(1U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_FALSE(argList->mArgv[1]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "a "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "a "));
     argList = &argList_;
     EXPECT_EQ(1U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_FALSE(argList->mArgv[1]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, " a "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, " a "));
     argList = &argList_;
     EXPECT_EQ(1U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_FALSE(argList->mArgv[1]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, ","));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, ","));
     argList = &argList_;
     EXPECT_EQ(2U, argList->mArgc);
     EXPECT_EQ(std::string(""), argList->mArgv[0]);
     EXPECT_EQ(std::string(""), argList->mArgv[1]);
     EXPECT_FALSE(argList->mArgv[2]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "  ,  "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "  ,  "));
     argList = &argList_;
     EXPECT_EQ(2U, argList->mArgc);
     EXPECT_EQ(std::string(""), argList->mArgv[0]);
     EXPECT_EQ(std::string(""), argList->mArgv[1]);
     EXPECT_FALSE(argList->mArgv[2]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "a,"));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "a,"));
     argList = &argList_;
     EXPECT_EQ(2U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_EQ(std::string(""), argList->mArgv[1]);
     EXPECT_FALSE(argList->mArgv[2]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, ",b"));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, ",b"));
     argList = &argList_;
     EXPECT_EQ(2U, argList->mArgc);
     EXPECT_EQ(std::string(""), argList->mArgv[0]);
     EXPECT_EQ(std::string("b"), argList->mArgv[1]);
     EXPECT_FALSE(argList->mArgv[2]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "a,b"));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "a,b"));
     argList = &argList_;
     EXPECT_EQ(2U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_EQ(std::string("b"), argList->mArgv[1]);
     EXPECT_FALSE(argList->mArgv[2]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "  a  ,  b  "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "  a  ,  b  "));
     argList = &argList_;
     EXPECT_EQ(2U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_EQ(std::string("b"), argList->mArgv[1]);
     EXPECT_FALSE(argList->mArgv[2]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, ",,"));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, ",,"));
     argList = &argList_;
     EXPECT_EQ(3U, argList->mArgc);
     EXPECT_EQ(std::string(""), argList->mArgv[0]);
     EXPECT_EQ(std::string(""), argList->mArgv[1]);
     EXPECT_EQ(std::string(""), argList->mArgv[2]);
     EXPECT_FALSE(argList->mArgv[3]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "  ,  ,  "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "  ,  ,  "));
     argList = &argList_;
     EXPECT_EQ(3U, argList->mArgc);
     EXPECT_EQ(std::string(""), argList->mArgv[0]);
     EXPECT_EQ(std::string(""), argList->mArgv[1]);
     EXPECT_EQ(std::string(""), argList->mArgv[2]);
     EXPECT_FALSE(argList->mArgv[3]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 
-    EXPECT_EQ(0,  createParseArgListCSV(&argList_, "  a  ,  b  ,  c  "));
+    EXPECT_EQ(0,  ert_createParseArgListCSV(&argList_, "  a  ,  b  ,  c  "));
     argList = &argList_;
     EXPECT_EQ(3U, argList->mArgc);
     EXPECT_EQ(std::string("a"), argList->mArgv[0]);
     EXPECT_EQ(std::string("b"), argList->mArgv[1]);
     EXPECT_EQ(std::string("c"), argList->mArgv[2]);
     EXPECT_FALSE(argList->mArgv[3]);
-    argList = closeParseArgList(argList);
+    argList = ert_closeParseArgList(argList);
 }
 
 #include "../googletest/src/gtest_main.cc"
