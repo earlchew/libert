@@ -35,26 +35,26 @@
 
 TEST(FileTest, TemporaryFile)
 {
-    struct File  file_;
-    struct File *file = 0;
+    struct Ert_File  file_;
+    struct Ert_File *file = 0;
 
-    ASSERT_EQ(0, temporaryFile(&file_));
+    ASSERT_EQ(0, ert_temporaryFile(&file_));
     file = &file_;
 
-    EXPECT_EQ(1, writeFile(file, "A", 1, 0));
+    EXPECT_EQ(1, ert_writeFile(file, "A", 1, 0));
 
-    EXPECT_EQ(0, lseekFile(file, 0, Ert_WhenceTypeStart));
+    EXPECT_EQ(0, ert_lseekFile(file, 0, Ert_WhenceTypeStart));
 
     char buf[1];
-    EXPECT_EQ(1, readFile(file, buf, 1, 0));
+    EXPECT_EQ(1, ert_readFile(file, buf, 1, 0));
 
     EXPECT_EQ('A', buf[0]);
 
-    file = closeFile(file);
+    file = ert_closeFile(file);
 }
 
 struct Ert_LockType
-checkLock(struct File *aFile)
+checkLock(struct Ert_File *aFile)
 {
     struct Pid checkPid =
         forkProcessChild(ForkProcessInheritProcessGroup,
@@ -62,7 +62,7 @@ checkLock(struct File *aFile)
                          PreForkProcessMethod(
                              aFile,
                              LAMBDA(
-                                 int, (struct File                 *self,
+                                 int, (struct Ert_File                 *self,
                                        const struct PreForkProcess *aPreFork),
                                  {
                                      return ert_insertFdSetFile(
@@ -73,10 +73,10 @@ checkLock(struct File *aFile)
                          ForkProcessMethod(
                              aFile,
                              LAMBDA(
-                                 int, (struct File *self),
+                                 int, (struct Ert_File *self),
                                  {
                                      struct Ert_LockType lockType =
-                                         ownFileRegionLocked(self, 0, 1);
+                                         ert_ownFileRegionLocked(self, 0, 1);
 
                                      int rc = 0;
 
@@ -115,15 +115,15 @@ checkLock(struct File *aFile)
 
 TEST(FileTest, LockFileRegion)
 {
-    struct File  file_;
-    struct File *file = 0;
+    struct Ert_File  file_;
+    struct Ert_File *file = 0;
 
     {
         unsigned optTest = gErtOptions_.mTest;
 
         gErtOptions_.mTest = TestLevelRace;
 
-        ASSERT_EQ(0, temporaryFile(&file_));
+        ASSERT_EQ(0, ert_temporaryFile(&file_));
         file = &file_;
 
         gErtOptions_.mTest = optTest;
@@ -134,73 +134,81 @@ TEST(FileTest, LockFileRegion)
     // process will see the region as locked.
 
     EXPECT_EQ(
-        Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+        Ert_LockTypeUnlocked.mType, ert_ownFileRegionLocked(file, 0, 0).mType);
     EXPECT_EQ(
         Ert_LockTypeUnlocked.mType, checkLock(file).mType);
 
     {
-        EXPECT_EQ(0, lockFileRegion(file, Ert_LockTypeWrite, 0, 0));
+        EXPECT_EQ(0, ert_lockFileRegion(file, Ert_LockTypeWrite, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeWrite.mType, checkLock(file).mType);
 
-        EXPECT_EQ(0, unlockFileRegion(file, 0, 0));
+        EXPECT_EQ(0, ert_unlockFileRegion(file, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeUnlocked.mType, checkLock(file).mType);
     }
 
     {
-        EXPECT_EQ(0, lockFileRegion(file, Ert_LockTypeRead, 0, 0));
+        EXPECT_EQ(0, ert_lockFileRegion(file, Ert_LockTypeRead, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeRead.mType, checkLock(file).mType);
 
-        EXPECT_EQ(0, unlockFileRegion(file, 0, 0));
+        EXPECT_EQ(0, ert_unlockFileRegion(file, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeUnlocked.mType, checkLock(file).mType);
     }
 
     {
-        EXPECT_EQ(0, lockFileRegion(file, Ert_LockTypeWrite, 0, 0));
+        EXPECT_EQ(0, ert_lockFileRegion(file, Ert_LockTypeWrite, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeWrite.mType, checkLock(file).mType);
 
-        EXPECT_EQ(0, lockFileRegion(file, Ert_LockTypeRead, 0, 0));
+        EXPECT_EQ(0, ert_lockFileRegion(file, Ert_LockTypeRead, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeRead.mType, checkLock(file).mType);
 
-        EXPECT_EQ(0, lockFileRegion(file, Ert_LockTypeWrite, 0, 0));
+        EXPECT_EQ(0, ert_lockFileRegion(file, Ert_LockTypeWrite, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeWrite.mType, checkLock(file).mType);
 
-        EXPECT_EQ(0, unlockFileRegion(file, 0, 0));
+        EXPECT_EQ(0, ert_unlockFileRegion(file, 0, 0));
 
         EXPECT_EQ(
-            Ert_LockTypeUnlocked.mType, ownFileRegionLocked(file, 0, 0).mType);
+            Ert_LockTypeUnlocked.mType,
+            ert_ownFileRegionLocked(file, 0, 0).mType);
         EXPECT_EQ(
             Ert_LockTypeUnlocked.mType, checkLock(file).mType);
     }
 
-    file = closeFile(file);
+    file = ert_closeFile(file);
 }
 
 #include "../googletest/src/gtest_main.cc"

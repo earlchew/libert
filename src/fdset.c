@@ -295,14 +295,14 @@ ert_removeFdSet(struct Ert_FdSet *self, int aFd)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_insertFdSetFile(struct Ert_FdSet *self, const struct File *aFile)
+ert_insertFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile)
 {
     return ert_insertFdSetRange(self, Ert_FdRange(aFile->mFd, aFile->mFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_removeFdSetFile(struct Ert_FdSet *self, const struct File *aFile)
+ert_removeFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile)
 {
     return ert_removeFdSetRange(self, Ert_FdRange(aFile->mFd, aFile->mFd));
 }

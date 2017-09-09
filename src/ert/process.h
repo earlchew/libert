@@ -428,7 +428,7 @@ destroyProcessAppLock(struct ProcessAppLock *self);
 unsigned
 ownProcessAppLockCount(void);
 
-const struct File *
+const struct Ert_File *
 ownProcessAppLockFile(const struct ProcessAppLock *self);
 
 /* -------------------------------------------------------------------------- */

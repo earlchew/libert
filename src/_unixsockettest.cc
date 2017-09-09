@@ -133,7 +133,7 @@ TEST(UnixSocketTest, AbstractServer)
 
     closePipeReader(pipe);
     buf[0] = 'A';
-    EXPECT_EQ(1, writeFile(pipe->mWrFile, buf, sizeof(buf), 0));
+    EXPECT_EQ(1, ert_writeFile(pipe->mWrFile, buf, sizeof(buf), 0));
     buf[0] = 0;
     EXPECT_EQ(1, ert_waitFdReadReady(fd, 0));
     EXPECT_EQ(1, ert_readFd(fd, buf, sizeof(buf), 0));

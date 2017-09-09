@@ -93,7 +93,7 @@ ert_createFileEventQueue(struct Ert_FileEventQueue *self, int aQueueSize)
     self->mQueueSize = aQueueSize;
 
     ERROR_IF(
-        createFile(
+        ert_createFile(
             &self->mFile_,
             epoll_create1(EPOLL_CLOEXEC)));
     self->mFile = &self->mFile_;
@@ -165,7 +165,7 @@ ert_closeFileEventQueue(struct Ert_FileEventQueue *self)
         ensure( ! self->mNumArmed);
         ensure( ! self->mNumPending);
 
-        self->mFile = closeFile(self->mFile);
+        self->mFile = ert_closeFile(self->mFile);
 
         free(self->mQueue);
         self->mQueue        = 0;
@@ -297,8 +297,8 @@ Finally:
 /* -------------------------------------------------------------------------- */
 int
 ert_createFileEventQueueActivity(struct Ert_FileEventQueueActivity *self,
-                             struct Ert_FileEventQueue         *aQueue,
-                             struct File                   *aFile)
+                                 struct Ert_FileEventQueue         *aQueue,
+                                 struct Ert_File                   *aFile)
 {
     int rc = -1;
 

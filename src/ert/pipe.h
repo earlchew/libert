@@ -36,10 +36,10 @@ ERT_BEGIN_C_SCOPE;
 
 struct Pipe
 {
-    struct File  mRdFile_;
-    struct File *mRdFile;
-    struct File  mWrFile_;
-    struct File *mWrFile;
+    struct Ert_File  mRdFile_;
+    struct Ert_File *mRdFile;
+    struct Ert_File  mWrFile_;
+    struct Ert_File *mWrFile;
 };
 
 /* -------------------------------------------------------------------------- */

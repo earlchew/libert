@@ -67,13 +67,13 @@ createPipe(struct Pipe *self, unsigned aFlags)
     ensure( ! ert_stdFd(fd[1]));
 
     ERROR_IF(
-        createFile(&self->mRdFile_, fd[0]));
+        ert_createFile(&self->mRdFile_, fd[0]));
     self->mRdFile = &self->mRdFile_;
 
     fd[0] = -1;
 
     ERROR_IF(
-        createFile(&self->mWrFile_, fd[1]));
+        ert_createFile(&self->mWrFile_, fd[1]));
     self->mWrFile = &self->mWrFile_;
 
     fd[1] = -1;
@@ -89,8 +89,8 @@ Finally:
 
         if (rc)
         {
-            self->mRdFile = closeFile(self->mRdFile);
-            self->mWrFile = closeFile(self->mWrFile);
+            self->mRdFile = ert_closeFile(self->mRdFile);
+            self->mWrFile = ert_closeFile(self->mWrFile);
         }
     });
 
@@ -104,7 +104,7 @@ detachPipeReader(struct Pipe *self)
     int rc = -1;
 
     ERROR_IF(
-        detachFile(self->mRdFile));
+        ert_detachFile(self->mRdFile));
 
     self->mRdFile = 0;
 
@@ -124,7 +124,7 @@ detachPipeWriter(struct Pipe *self)
     int rc = -1;
 
     ERROR_IF(
-        detachFile(self->mWrFile));
+        ert_detachFile(self->mWrFile));
 
     self->mWrFile = 0;
 
@@ -141,14 +141,14 @@ Finally:
 void
 closePipeReader(struct Pipe *self)
 {
-    self->mRdFile = closeFile(self->mRdFile);
+    self->mRdFile = ert_closeFile(self->mRdFile);
 }
 
 /* -------------------------------------------------------------------------- */
 void
 closePipeWriter(struct Pipe *self)
 {
-    self->mWrFile = closeFile(self->mWrFile);
+    self->mWrFile = ert_closeFile(self->mWrFile);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -158,9 +158,9 @@ closePipeOnExec(struct Pipe *self, unsigned aCloseOnExec)
     int rc = -1;
 
     ERROR_IF(
-        closeFileOnExec(self->mRdFile, aCloseOnExec));
+        ert_closeFileOnExec(self->mRdFile, aCloseOnExec));
     ERROR_IF(
-        closeFileOnExec(self->mWrFile, aCloseOnExec));
+        ert_closeFileOnExec(self->mWrFile, aCloseOnExec));
 
     rc = 0;
 

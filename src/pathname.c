@@ -66,7 +66,7 @@ createPathName(struct PathName *self, const char *aFileName)
 
     do
     {
-        if (createFile(
+        if (ert_createFile(
                 &self->mDirFile_,
                 ert_openFd(self->mDirName, O_RDONLY | O_CLOEXEC, 0)))
         {
@@ -100,7 +100,7 @@ closePathName(struct PathName *self)
 {
     if (self)
     {
-        self->mDirFile = closeFile(self->mDirFile);
+        self->mDirFile = ert_closeFile(self->mDirFile);
 
         free(self->mFileName);
         free(self->mBaseName_);

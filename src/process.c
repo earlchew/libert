@@ -47,8 +47,8 @@
 
 struct ProcessLock
 {
-    struct File            mFile_;
-    struct File           *mFile;
+    struct Ert_File            mFile_;
+    struct Ert_File           *mFile;
     const struct Ert_LockType *mLock;
 };
 
@@ -1240,7 +1240,7 @@ createProcessLock_(struct ProcessLock *self)
     self->mLock = 0;
 
     ERROR_IF(
-        temporaryFile(&self->mFile_));
+        ert_temporaryFile(&self->mFile_));
     self->mFile = &self->mFile_;
 
     rc = 0;
@@ -1257,7 +1257,7 @@ static void
 closeProcessLock_(struct ProcessLock *self)
 {
     if (self)
-        self->mFile = closeFile(self->mFile);
+        self->mFile = ert_closeFile(self->mFile);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1269,7 +1269,7 @@ lockProcessLock_(struct ProcessLock *self)
     ensure( ! self->mLock);
 
     ERROR_IF(
-        lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
+        ert_lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
 
     self->mLock = &Ert_LockTypeWrite;
 
@@ -1289,7 +1289,7 @@ unlockProcessLock_(struct ProcessLock *self)
     ensure(self->mLock);
 
     ABORT_IF(
-        unlockFileRegion(self->mFile, 0, 0));
+        ert_unlockFileRegion(self->mFile, 0, 0));
 
     self->mLock = 0;
 }
@@ -1301,9 +1301,9 @@ forkProcessLock_(struct ProcessLock *self)
     if (self->mLock)
     {
         ABORT_IF(
-            unlockFileRegion(self->mFile, 0, 0));
+            ert_unlockFileRegion(self->mFile, 0, 0));
         ABORT_IF(
-            lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
+            ert_lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
     }
 }
 
@@ -1403,7 +1403,7 @@ ownProcessAppLockCount(void)
 }
 
 /* -------------------------------------------------------------------------- */
-const struct File *
+const struct Ert_File *
 ownProcessAppLockFile(const struct ProcessAppLock *self)
 {
     ensure(&processAppLock_ == self);
@@ -1787,7 +1787,7 @@ includeForkProcessChannelFdSet_(
 {
     int rc = -1;
 
-    struct File *filelist[] =
+    struct Ert_File *filelist[] =
     {
         self->mResultPipe->mRdFile,
         self->mResultPipe->mWrFile,
@@ -1823,7 +1823,7 @@ excludeForkProcessChannelFdSet_(
 {
     int rc = -1;
 
-    struct File *filelist[] =
+    struct Ert_File *filelist[] =
     {
         self->mResultPipe->mRdFile,
         self->mResultPipe->mWrFile,
@@ -1860,7 +1860,7 @@ sendForkProcessChannelResult_(
     int rc = -1;
 
     ERROR_IF(
-        sizeof(*aResult) != writeFile(
+        sizeof(*aResult) != ert_writeFile(
             self->mResultPipe->mWrFile, (char *) aResult, sizeof(*aResult), 0));
 
     ERROR_IF(
@@ -1886,7 +1886,7 @@ recvForkProcessChannelResult_(
         ert_waitBellSocketPairParent(self->mResultSocket, 0));
 
     ERROR_IF(
-        sizeof(*aResult) != readFile(
+        sizeof(*aResult) != ert_readFile(
             self->mResultPipe->mRdFile, (char *) aResult, sizeof(*aResult), 0));
 
     rc = 0;
@@ -2995,15 +2995,16 @@ purgeProcessOrphanedFds(void)
 
     unsigned numFds = NUMBEROF(stdfds);
 
-    walkFileList(FileVisitor(
-                     &numFds,
-                     LAMBDA(
-                         int, (unsigned *aNumFds, const struct File *aFile),
-                         {
-                             ++(*aNumFds);
+    ert_walkFileList(
+        Ert_FileVisitor(
+            &numFds,
+            LAMBDA(
+                int, (unsigned *aNumFds, const struct Ert_File *aFile),
+                {
+                    ++(*aNumFds);
 
-                             return 0;
-                         })));
+                    return 0;
+                })));
 
     /* Create the whitelist of file descriptors by copying the fds
      * from each of the explicitly created file descriptors. */
@@ -3025,12 +3026,12 @@ purgeProcessOrphanedFds(void)
         for (unsigned jx = 0; NUMBEROF(stdfds) > jx; ++jx)
             fdWhiteList.mList[fdWhiteList.mLen++] = stdfds[jx];
 
-        walkFileList(
-            FileVisitor(
+        ert_walkFileList(
+            Ert_FileVisitor(
                 &fdWhiteList,
                 LAMBDA(
                     int, (struct ProcessFdWhiteList *aWhiteList,
-                          const struct File         *aFile),
+                          const struct Ert_File         *aFile),
                     {
                         aWhiteList->mList[aWhiteList->mLen++] = aFile->mFd;
 

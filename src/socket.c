@@ -38,7 +38,7 @@ struct Socket *
 closeSocket(struct Socket *self)
 {
     if (self)
-        self->mFile = closeFile(self->mFile);
+        self->mFile = ert_closeFile(self->mFile);
 
     return 0;
 }
@@ -52,7 +52,7 @@ createSocket(struct Socket *self, int aFd)
     self->mFile = 0;
 
     ERROR_IF(
-        createFile(&self->mFile_, aFd));
+        ert_createFile(&self->mFile_, aFd));
     self->mFile = &self->mFile_;
 
     rc = 0;
@@ -68,7 +68,7 @@ Finally:
 bool
 ownSocketValid(const struct Socket *self)
 {
-    return ownFileValid(self->mFile);
+    return ert_ownFileValid(self->mFile);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -76,7 +76,7 @@ ssize_t
 writeSocket(struct Socket *self,
             const char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
-    return writeFile(self->mFile, aBuf, aLen, aTimeout);
+    return ert_writeFile(self->mFile, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -84,7 +84,7 @@ ssize_t
 readSocket(struct Socket *self,
            char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
-    return readFile(self->mFile, aBuf, aLen, aTimeout);
+    return ert_readFile(self->mFile, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -93,7 +93,7 @@ writeSocketDeadline(struct Socket *self,
                     const char *aBuf, size_t aLen,
                     struct Ert_Deadline *aDeadline)
 {
-    return writeFileDeadline(self->mFile, aBuf, aLen, aDeadline);
+    return ert_writeFileDeadline(self->mFile, aBuf, aLen, aDeadline);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -101,7 +101,7 @@ ssize_t
 readSocketDeadline(struct Socket *self,
                    char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
-    return readFileDeadline(self->mFile, aBuf, aLen, aDeadline);
+    return ert_readFileDeadline(self->mFile, aBuf, aLen, aDeadline);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -184,7 +184,7 @@ int
 waitSocketWriteReady(const struct Socket   *self,
                      const struct Duration *aTimeout)
 {
-    return waitFileWriteReady(self->mFile, aTimeout);
+    return ert_waitFileWriteReady(self->mFile, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -192,7 +192,7 @@ int
 waitSocketReadReady(const struct Socket   *self,
                     const struct Duration *aTimeout)
 {
-    return waitFileReadReady(self->mFile, aTimeout);
+    return ert_waitFileReadReady(self->mFile, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */

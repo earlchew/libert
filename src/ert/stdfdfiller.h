@@ -36,8 +36,8 @@ ERT_BEGIN_C_SCOPE;
 
 struct StdFdFiller
 {
-    struct File  mFile_[3];
-    struct File *mFile[3];
+    struct Ert_File  mFile_[3];
+    struct Ert_File *mFile[3];
 };
 
 /* -------------------------------------------------------------------------- */

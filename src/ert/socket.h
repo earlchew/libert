@@ -38,8 +38,8 @@ ERT_BEGIN_C_SCOPE;
 
 struct Socket
 {
-    struct File  mFile_;
-    struct File *mFile;
+    struct Ert_File  mFile_;
+    struct Ert_File *mFile;
 };
 
 /* -------------------------------------------------------------------------- */

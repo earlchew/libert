@@ -39,7 +39,7 @@
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
-struct File;
+struct Ert_File;
 struct Ert_FdRange;
 
 struct Ert_FdRange
@@ -137,10 +137,10 @@ ERT_CHECKED int
 ert_removeFdSet(struct Ert_FdSet *self, int aFd);
 
 ERT_CHECKED int
-ert_insertFdSetFile(struct Ert_FdSet *self, const struct File *aFile);
+ert_insertFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile);
 
 ERT_CHECKED int
-ert_removeFdSetFile(struct Ert_FdSet *self, const struct File *aFile);
+ert_removeFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile);
 
 ERT_CHECKED ssize_t
 ert_visitFdSet(const struct Ert_FdSet *self, struct Ert_FdSetVisitor aVisitor);

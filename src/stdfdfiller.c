@@ -63,17 +63,17 @@ createStdFdFiller(struct StdFdFiller *self)
     fd[1] = ert_closeFd(fd[1]);
 
     ERROR_IF(
-        createFile(&self->mFile_[0], fd[0]));
+        ert_createFile(&self->mFile_[0], fd[0]));
     self->mFile[0] = &self->mFile_[0];
 
     fd[0] = -1;
 
     ERROR_IF(
-        duplicateFile(&self->mFile_[1], &self->mFile_[0]));
+        ert_duplicateFile(&self->mFile_[1], &self->mFile_[0]));
     self->mFile[1] = &self->mFile_[1];
 
     ERROR_IF(
-        duplicateFile(&self->mFile_[2], &self->mFile_[0]));
+        ert_duplicateFile(&self->mFile_[2], &self->mFile_[0]));
     self->mFile[2] = &self->mFile_[2];
 
     rc = 0;
@@ -99,7 +99,7 @@ closeStdFdFiller(struct StdFdFiller *self)
     if (self)
     {
         for (unsigned ix = 0; NUMBEROF(self->mFile) > ix; ++ix)
-            self->mFile[ix] = closeFile(self->mFile[ix]);
+            self->mFile[ix] = ert_closeFile(self->mFile[ix]);
     }
 
     return 0;

@@ -42,7 +42,9 @@ TEST(EventPipeTest, ResetOnce)
 
     EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
-    EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        0,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -57,12 +59,16 @@ TEST(EventPipeTest, SetOnce)
 
     EXPECT_EQ(1, ert_setEventPipe(eventPipe));
 
-    EXPECT_EQ(1, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        1,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     char buf[1];
-    EXPECT_EQ(1, readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
+    EXPECT_EQ(1, ert_readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
 
-    EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        0,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -78,12 +84,16 @@ TEST(EventPipeTest, SetTwice)
     EXPECT_EQ(1, ert_setEventPipe(eventPipe));
     EXPECT_EQ(0, ert_setEventPipe(eventPipe));
 
-    EXPECT_EQ(1, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        1,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     char buf[1];
-    EXPECT_EQ(1, readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
+    EXPECT_EQ(1, ert_readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
 
-    EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        0,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -99,7 +109,9 @@ TEST(EventPipeTest, SetOnceResetOnce)
     EXPECT_EQ(1, ert_setEventPipe(eventPipe));
     EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
 
-    EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        0,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
@@ -118,7 +130,9 @@ TEST(EventPipeTest, SetOnceResetTwice)
     EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
     EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
-    EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        0,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
@@ -137,12 +151,16 @@ TEST(EventPipeTest, SetOnceResetOnceSetOnce)
     EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
     EXPECT_EQ(1, ert_setEventPipe(eventPipe));
 
-    EXPECT_EQ(1, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        1,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     char buf[1];
-    EXPECT_EQ(1, readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
+    EXPECT_EQ(1, ert_readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
 
-    EXPECT_EQ(0, waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+    EXPECT_EQ(
+        0,
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }

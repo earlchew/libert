@@ -44,8 +44,8 @@ struct PathName
     char *mBaseName_;
     char *mBaseName;
 
-    struct File  mDirFile_;
-    struct File *mDirFile;
+    struct Ert_File  mDirFile_;
+    struct Ert_File *mDirFile;
 };
 
 enum PathNameStatus

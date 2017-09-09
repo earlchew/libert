@@ -79,8 +79,8 @@ enum Ert_FileEventQueuePollTrigger
 /* -------------------------------------------------------------------------- */
 struct Ert_FileEventQueue
 {
-    struct File         mFile_;
-    struct File        *mFile;
+    struct Ert_File     mFile_;
+    struct Ert_File    *mFile;
     struct epoll_event *mQueue;
     int                 mQueueSize;
     int                 mQueuePending;
@@ -90,11 +90,11 @@ struct Ert_FileEventQueue
 
 struct Ert_FileEventQueueActivity
 {
-    struct Ert_FileEventQueue               *mQueue;
-    struct File                         *mFile;
-    struct epoll_event                  *mPending;
-    unsigned                             mArmed;
-    struct Ert_FileEventQueueActivityMethod  mMethod;
+    struct Ert_FileEventQueue              *mQueue;
+    struct Ert_File                        *mFile;
+    struct epoll_event                     *mPending;
+    unsigned                                mArmed;
+    struct Ert_FileEventQueueActivityMethod mMethod;
 };
 
 /* -------------------------------------------------------------------------- */
@@ -112,7 +112,7 @@ ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
 ERT_CHECKED int
 ert_createFileEventQueueActivity(struct Ert_FileEventQueueActivity *self,
                                  struct Ert_FileEventQueue         *aQueue,
-                                 struct File                       *aFile);
+                                 struct Ert_File                   *aFile);
 
 ERT_CHECKED int
 ert_armFileEventQueueActivity(
