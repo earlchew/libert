@@ -83,7 +83,7 @@ parseLongLong_(const char *aArg, long long *aValue)
 
 /* -------------------------------------------------------------------------- */
 int
-parseInt(const char *aArg, int *aValue)
+ert_parseInt(const char *aArg, int *aValue)
 {
     int rc = -1;
 
@@ -109,7 +109,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-parseUInt(const char *aArg, unsigned *aValue)
+ert_parseUInt(const char *aArg, unsigned *aValue)
 {
     int rc = -1;
 
@@ -135,7 +135,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-parseUInt64(const char *aArg, uint64_t *aValue)
+ert_parseUInt64(const char *aArg, uint64_t *aValue)
 {
     int rc = -1;
 
@@ -161,7 +161,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-parsePid(const char *aArg, struct Pid *aValue)
+ert_parsePid(const char *aArg, struct Pid *aValue)
 {
     int rc = -1;
 
@@ -187,7 +187,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-createParseArgListCSV(struct ParseArgList *self, const char *aArg)
+ert_createParseArgListCSV(struct Ert_ParseArgList *self, const char *aArg)
 {
     int rc = -1;
 
@@ -275,7 +275,7 @@ Finally:
     FINALLY
     ({
         if (rc)
-            self = closeParseArgList(self);
+            self = ert_closeParseArgList(self);
     });
 
     return rc;
@@ -283,7 +283,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-createParseArgListCopy(struct ParseArgList *self, const char * const *aArgv)
+ert_createParseArgListCopy(
+    struct Ert_ParseArgList *self, const char * const *aArgv)
 {
     int rc = -1;
 
@@ -323,7 +324,7 @@ Finally:
     FINALLY
     ({
         if (rc)
-            self = closeParseArgList(self);
+            self = ert_closeParseArgList(self);
 
         if (argv)
         {
@@ -344,14 +345,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 const char * const *
-ownParseArgListArgv(const struct ParseArgList *self)
+ert_ownParseArgListArgv(const struct Ert_ParseArgList *self)
 {
     return (void *) self->mArgv;
 }
 
 /* -------------------------------------------------------------------------- */
-struct ParseArgList *
-closeParseArgList(struct ParseArgList *self)
+struct Ert_ParseArgList *
+ert_closeParseArgList(struct Ert_ParseArgList *self)
 {
     if (self)
     {

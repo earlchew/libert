@@ -39,7 +39,7 @@ ERT_BEGIN_C_SCOPE;
 
 struct Pid;
 
-struct ParseArgList
+struct Ert_ParseArgList
 {
     unsigned  mArgc;
     char    **mArgv;
@@ -48,29 +48,30 @@ struct ParseArgList
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createParseArgListCopy(struct ParseArgList *self, const char * const *aArgv);
+ert_createParseArgListCopy(
+    struct Ert_ParseArgList *self, const char * const *aArgv);
 
 ERT_CHECKED int
-createParseArgListCSV(struct ParseArgList *self, const char *aArg);
+ert_createParseArgListCSV(struct Ert_ParseArgList *self, const char *aArg);
 
-ERT_CHECKED struct ParseArgList *
-closeParseArgList(struct ParseArgList *self);
+ERT_CHECKED struct Ert_ParseArgList *
+ert_closeParseArgList(struct Ert_ParseArgList *self);
 
 const char * const *
-ownParseArgListArgv(const struct ParseArgList *self);
+ert_ownParseArgListArgv(const struct Ert_ParseArgList *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-parseInt(const char *aArg, int *aValue);
+ert_parseInt(const char *aArg, int *aValue);
 
 ERT_CHECKED int
-parseUInt(const char *aArg, unsigned *aValue);
+ert_parseUInt(const char *aArg, unsigned *aValue);
 
 ERT_CHECKED int
-parseUInt64(const char *aArg, uint64_t *aValue);
+ert_parseUInt64(const char *aArg, uint64_t *aValue);
 
 ERT_CHECKED int
-parsePid(const char *aArg, struct Pid *aValue);
+ert_parsePid(const char *aArg, struct Pid *aValue);
 
 /* -------------------------------------------------------------------------- */
 
