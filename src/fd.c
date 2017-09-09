@@ -402,11 +402,11 @@ ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
 
         qsort(
             whiteList,
-            NUMBEROF(whiteList), sizeof(whiteList[0]), rankFd_);
+            ERT_NUMBEROF(whiteList), sizeof(whiteList[0]), rankFd_);
 
         unsigned purgedFds = 0;
 
-        for (int fd = 0, wx = 0; NUMBEROF(whiteList) > wx; )
+        for (int fd = 0, wx = 0; ERT_NUMBEROF(whiteList) > wx; )
         {
             if (0 > whiteList[wx])
             {
@@ -432,7 +432,7 @@ ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
                 {
                     debug(0, "not closing fd %d", fd);
 
-                    while (NUMBEROF(whiteList) > ++wx)
+                    while (ERT_NUMBEROF(whiteList) > ++wx)
                     {
                         if (whiteList[wx] != fd)
                             break;
@@ -835,7 +835,7 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
             int events;
 
             ERROR_IF(
-                (events = poll(pollfd, NUMBEROF(pollfd), 0),
+                (events = poll(pollfd, ERT_NUMBEROF(pollfd), 0),
                  -1 == events && EINTR != errno));
 
             if (0 > events)
@@ -869,7 +869,7 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
 
         int events;
         ERROR_IF(
-            (events = poll(pollfd, NUMBEROF(pollfd), timeout_ms),
+            (events = poll(pollfd, ERT_NUMBEROF(pollfd), timeout_ms),
              -1 == events && EINTR != errno));
 
         switch (events)

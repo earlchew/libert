@@ -38,7 +38,7 @@ createStdFdFiller(struct StdFdFiller *self)
 {
     int rc = -1;
 
-    for (unsigned ix = 0; NUMBEROF(self->mFile) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(self->mFile) > ix; ++ix)
         self->mFile[ix] = 0;
 
     int fd[2];
@@ -98,7 +98,7 @@ closeStdFdFiller(struct StdFdFiller *self)
 {
     if (self)
     {
-        for (unsigned ix = 0; NUMBEROF(self->mFile) > ix; ++ix)
+        for (unsigned ix = 0; ERT_NUMBEROF(self->mFile) > ix; ++ix)
             self->mFile[ix] = ert_closeFile(self->mFile[ix]);
     }
 

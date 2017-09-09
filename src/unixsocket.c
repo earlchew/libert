@@ -355,7 +355,7 @@ sendUnixSocketFd(struct UnixSocket *self, int aFd)
     msg.msg_name       = 0;
     msg.msg_namelen    = 0;
     msg.msg_iov        = iov;
-    msg.msg_iovlen     = NUMBEROF(iov);
+    msg.msg_iovlen     = ERT_NUMBEROF(iov);
     msg.msg_flags      = 0;
     msg.msg_control    = cmsgbuf;
     msg.msg_controllen = CMSG_LEN(sizeof(aFd));
@@ -499,7 +499,7 @@ recvUnixSocketFd(struct UnixSocket *self, unsigned aFlags)
     msg.msg_name    = 0;
     msg.msg_namelen = 0;
     msg.msg_iov     = iov;
-    msg.msg_iovlen  = NUMBEROF(iov);
+    msg.msg_iovlen  = ERT_NUMBEROF(iov);
     msg.msg_flags   = 0;
 
     msg.msg_control    = cmsgbuf;

@@ -954,7 +954,7 @@ initSystemCall(struct SystemCall *self)
 }
 
 /* -------------------------------------------------------------------------- */
-#define SYSCALL_ENTRY_(Name_) { STRINGIFY(Name_), }
+#define SYSCALL_ENTRY_(Name_) { ERT_STRINGIFY(Name_), }
 
 static struct SystemCall systemCall_[SYSTEMCALL_KINDS] =
 {
@@ -1015,7 +1015,7 @@ static struct SystemCall systemCall_[SYSTEMCALL_KINDS] =
 ERT_EARLY_INITIALISER(
     eintr_,
     ({
-        for (size_t sx = 0; NUMBEROF(systemCall_) > sx; ++sx)
+        for (size_t sx = 0; ERT_NUMBEROF(systemCall_) > sx; ++sx)
         {
             ABORT_UNLESS(
                 initSystemCall(&systemCall_[sx]));

@@ -187,7 +187,7 @@ daemonProcess_(struct DaemonState *self)
         self->mErrno = errno;
     else
     {
-        for (unsigned sx = 0; NUMBEROF(self->mSigMask) > sx; ++sx)
+        for (unsigned sx = 0; ERT_NUMBEROF(self->mSigMask) > sx; ++sx)
             self->mSigMask[sx] = sigismember(&sigMask, sx);
     }
 
@@ -284,7 +284,7 @@ TEST_F(ProcessTest, ProcessDaemon)
 
         EXPECT_EQ(0, pthread_sigmask(SIG_BLOCK, 0, &sigMask));
 
-        for (unsigned sx = 0; NUMBEROF(daemonState->mSigMask) > sx; ++sx)
+        for (unsigned sx = 0; ERT_NUMBEROF(daemonState->mSigMask) > sx; ++sx)
             EXPECT_EQ(
                 daemonState->mSigMask[sx], sigismember(&sigMask, sx))
                 << " failed at index " << sx;
@@ -881,7 +881,7 @@ TEST_F(ProcessTest, ProcessFork)
     forkArg.mStart    = false;
     forkArg.mMutex    = createMutex(&forkArg.mMutex_);
     forkArg.mCond     = createCond(&forkArg.mCond_);
-    forkArg.mNumForks = NUMBEROF(thread);
+    forkArg.mNumForks = ERT_NUMBEROF(thread);
 
     EXPECT_EQ(
         0, ert_createFdSet(&forkArg.mFdSet_));
@@ -891,7 +891,7 @@ TEST_F(ProcessTest, ProcessFork)
     pthread_mutex_t *lock = lockMutex(forkArg.mMutex);
     forkArg.mStart = false;
 
-    for (unsigned ix = 0; ix < NUMBEROF(thread); ++ix)
+    for (unsigned ix = 0; ix < ERT_NUMBEROF(thread); ++ix)
     {
         thread[ix] = createThread(&thread_[ix],
                                   threadName[ix],
@@ -927,7 +927,7 @@ TEST_F(ProcessTest, ProcessFork)
     forkArg.mStart = true;
     lock = unlockMutexBroadcast(lock, forkArg.mCond);
 
-    for (unsigned ix = 0; ix < NUMBEROF(thread); ++ix)
+    for (unsigned ix = 0; ix < ERT_NUMBEROF(thread); ++ix)
         thread[ix] = closeThread(thread[ix]);
 
     rawForkThread = closeThread(rawForkThread);

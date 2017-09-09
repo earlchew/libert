@@ -46,7 +46,7 @@ ERT_BEGIN_C_SCOPE;
     { }                                                 \
                                                         \
     explicit Struct_(Const_ void        *aObject,       \
-                     CONCAT(Struct_, T_) aMethod)       \
+                     ERT_CONCAT(Struct_, T_) aMethod)       \
     : mObject(aObject),                                 \
       mMethod(aMethod)                                  \
     { }
@@ -60,20 +60,20 @@ ERT_BEGIN_C_SCOPE;
                                                                          \
     Const_ void *ValidateObject_ = (Object_);                            \
                                                                          \
-    Return_ (*ValidateMethod_)(ObjectT_ ARGS ArgList_) = (Method_);      \
+    Return_ (*ValidateMethod_)(ObjectT_ ERT_ARGS ArgList_) = (Method_);      \
                                                                          \
     Name_(                                                               \
         (ValidateObject_),                                               \
         ( ! ValidateMethod_                                              \
           ? 0                                                            \
           : ERT_LAMBDA(                                                      \
-              Return_, (Const_ void *Self_ ARGS ArgList_),               \
+              Return_, (Const_ void *Self_ ERT_ARGS ArgList_),               \
               {                                                          \
                   Return_ (*method_)(                                    \
-                    ObjectT_ ARGS ArgList_) = (Method_);                 \
+                    ObjectT_ ERT_ARGS ArgList_) = (Method_);                 \
                                                                          \
                   return method_(                                        \
-                      (ObjectT_) Self_ ARGS CallList_);                  \
+                      (ObjectT_) Self_ ERT_ARGS CallList_);                  \
               })));                                                      \
 })
 
@@ -109,26 +109,26 @@ ERT_BEGIN_C_SCOPE;
 #define ERT_METHOD_FUNCTION_PREFIX
 #endif
 
-#define ERT_METHOD_NAME_ CONCAT(ERT_METHOD_TYPE_PREFIX, ERT_METHOD_NAME)
+#define ERT_METHOD_NAME_ ERT_CONCAT(ERT_METHOD_TYPE_PREFIX, ERT_METHOD_NAME)
 
-typedef ERT_METHOD_RETURN (*CONCAT(ERT_METHOD_NAME_, T_))(
-    ERT_METHOD_CONST void *self EXPAND(ARGS ERT_METHOD_ARG_LIST));
+typedef ERT_METHOD_RETURN (*ERT_CONCAT(ERT_METHOD_NAME_, T_))(
+    ERT_METHOD_CONST void *self ERT_EXPAND(ERT_ARGS ERT_METHOD_ARG_LIST));
 
 static __inline__ struct ERT_METHOD_NAME_
-CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
-                             CONCAT(ERT_METHOD_NAME_, T_) aMethod);
+ERT_CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
+                             ERT_CONCAT(ERT_METHOD_NAME_, T_) aMethod);
 
 struct ERT_METHOD_NAME_
 {
     ERT_METHOD_CTOR_(ERT_METHOD_CONST, ERT_METHOD_NAME_)
 
     ERT_METHOD_CONST void       *mObject;
-    CONCAT(ERT_METHOD_NAME_, T_) mMethod;
+    ERT_CONCAT(ERT_METHOD_NAME_, T_) mMethod;
 };
 
 static __inline__ struct ERT_METHOD_NAME_
-CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
-                             CONCAT(ERT_METHOD_NAME_, T_) aMethod)
+ERT_CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
+                             ERT_CONCAT(ERT_METHOD_NAME_, T_) aMethod)
 {
     ERT_METHOD_ENSURE_(aMethod || ! aObject);
 
@@ -144,28 +144,28 @@ CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
 }
 
 static __inline__ ERT_METHOD_RETURN
-CONCAT(
-    CONCAT(ERT_METHOD_FUNCTION_PREFIX, call), ERT_METHOD_NAME) (
+ERT_CONCAT(
+    ERT_CONCAT(ERT_METHOD_FUNCTION_PREFIX, call), ERT_METHOD_NAME) (
         struct ERT_METHOD_NAME_ self
-        EXPAND(ARGS ERT_METHOD_ARG_LIST))
+        ERT_EXPAND(ERT_ARGS ERT_METHOD_ARG_LIST))
 {
     ERT_METHOD_ENSURE_(self.mMethod);
 
-    return self.mMethod(self.mObject EXPAND(ARGS ERT_METHOD_CALL_LIST));
+    return self.mMethod(self.mObject ERT_EXPAND(ERT_ARGS ERT_METHOD_CALL_LIST));
 }
 
 static __inline__ bool
-CONCAT(
-    CONCAT(CONCAT(ERT_METHOD_FUNCTION_PREFIX, own), ERT_METHOD_NAME), Nil)(
+ERT_CONCAT(
+    ERT_CONCAT(ERT_CONCAT(ERT_METHOD_FUNCTION_PREFIX, own), ERT_METHOD_NAME), Nil)(
         struct ERT_METHOD_NAME_ self)
 {
     return ! self.mMethod;
 }
 
 static __inline__ struct ERT_METHOD_NAME_
-CONCAT(ERT_METHOD_NAME_, Nil)(void)
+ERT_CONCAT(ERT_METHOD_NAME_, Nil)(void)
 {
-    return CONCAT(ERT_METHOD_NAME_, _)(0, 0);
+    return ERT_CONCAT(ERT_METHOD_NAME_, _)(0, 0);
 }
 
 ERT_END_C_SCOPE;

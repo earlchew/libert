@@ -173,7 +173,7 @@ createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
      * will cause a recursive reference to createErrorFrameChunk_(). */
 
     size_t chunkSize =
-        ROUNDUP(sizeof(*self) + sizeof(self->mFrame_[0]), pageSize);
+        ERT_ROUNDUP(sizeof(*self) + sizeof(self->mFrame_[0]), pageSize);
 
     self = mmap(0, chunkSize,
                 PROT_READ | PROT_WRITE,
@@ -220,7 +220,7 @@ initErrorFrame_(void)
     {
         struct Ert_ErrorFrameChunk *parentChunk = 0;
 
-        for (unsigned ix = NUMBEROF(errorStack_.mStack_); ix--; )
+        for (unsigned ix = ERT_NUMBEROF(errorStack_.mStack_); ix--; )
         {
             errorStack_.mStack = &errorStack_.mStack_[ix];
 

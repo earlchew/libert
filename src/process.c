@@ -294,7 +294,7 @@ changeSigAction_(unsigned          aSigNum,
 {
     int rc = -1;
 
-    ensure(NUMBEROF(processSignals_.mVector) > aSigNum);
+    ensure(ERT_NUMBEROF(processSignals_.mVector) > aSigNum);
 
     struct RWMutexReader  sigVecLock_;
     struct RWMutexReader *sigVecLock = 0;
@@ -984,7 +984,7 @@ watchProcessSignals(struct WatchProcessSignalMethod aMethod)
 
     processWatchedSignalMethod_ = aMethod;
 
-    for (unsigned ix = 0; NUMBEROF(processWatchedSignals_) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(processWatchedSignals_) > ix; ++ix)
     {
         struct SignalWatch *watchedSig = processWatchedSignals_ + ix;
 
@@ -1006,7 +1006,7 @@ Finally:
     ({
         if (rc)
         {
-            for (unsigned ix = 0; NUMBEROF(processWatchedSignals_) > ix; ++ix)
+            for (unsigned ix = 0; ERT_NUMBEROF(processWatchedSignals_) > ix; ++ix)
             {
                 struct SignalWatch *watchedSig = processWatchedSignals_ + ix;
 
@@ -1042,7 +1042,7 @@ resetProcessSignalsWatch_(void)
     int rc  = 0;
     int err = 0;
 
-    for (unsigned ix = 0; NUMBEROF(processWatchedSignals_) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(processWatchedSignals_) > ix; ++ix)
     {
         struct SignalWatch *watchedSig = processWatchedSignals_ + ix;
 
@@ -1136,7 +1136,7 @@ formatProcessSignalName(struct ProcessSignalName *self, int aSigNum)
 {
     self->mSignalName = 0;
 
-    if (0 <= aSigNum && NUMBEROF(signalNames_) > aSigNum)
+    if (0 <= aSigNum && ERT_NUMBEROF(signalNames_) > aSigNum)
         self->mSignalName = signalNames_[aSigNum];
 
     if ( ! self->mSignalName)
@@ -1799,7 +1799,7 @@ includeForkProcessChannelFdSet_(
         self->mResultSocket->mSocketPair->mParentSocket->mSocket->mFile : 0,
     };
 
-    for (unsigned ix = 0; NUMBEROF(filelist) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(filelist) > ix; ++ix)
     {
         if (filelist[ix])
             ERROR_IF(
@@ -1835,7 +1835,7 @@ excludeForkProcessChannelFdSet_(
         self->mResultSocket->mSocketPair->mParentSocket->mSocket->mFile : 0,
     };
 
-    for (unsigned ix = 0; NUMBEROF(filelist) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(filelist) > ix; ++ix)
     {
         if (filelist[ix])
             ERROR_IF(
@@ -2086,7 +2086,7 @@ forkProcessChild_PostParent_(
                   .mAltFd = -1 },
             };
 
-            for (unsigned ix = 0; NUMBEROF(stdfdlist) > ix; ++ix)
+            for (unsigned ix = 0; ERT_NUMBEROF(stdfdlist) > ix; ++ix)
             {
                 int fd    = stdfdlist[ix].mFd;
                 int altFd = stdfdlist[ix].mAltFd;
@@ -2297,7 +2297,7 @@ forkProcessChild(enum ForkProcessOption             aOption,
         STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO,
     };
 
-    for (unsigned ix = 0; NUMBEROF(stdfdlist) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(stdfdlist) > ix; ++ix)
     {
         ERROR_IF(
             ert_insertFdSet(whitelistFds, stdfdlist[ix]) && EEXIST != errno);
@@ -2993,7 +2993,7 @@ purgeProcessOrphanedFds(void)
         STDERR_FILENO, STDERR_FILENO,
     };
 
-    unsigned numFds = NUMBEROF(stdfds);
+    unsigned numFds = ERT_NUMBEROF(stdfds);
 
     ert_walkFileList(
         Ert_FileVisitor(
@@ -3023,7 +3023,7 @@ purgeProcessOrphanedFds(void)
             .mLen  = 0,
         };
 
-        for (unsigned jx = 0; NUMBEROF(stdfds) > jx; ++jx)
+        for (unsigned jx = 0; ERT_NUMBEROF(stdfds) > jx; ++jx)
             fdWhiteList.mList[fdWhiteList.mLen++] = stdfds[jx];
 
         ert_walkFileList(
@@ -3042,7 +3042,7 @@ purgeProcessOrphanedFds(void)
     }
 
     ERROR_IF(
-        ert_closeFdDescriptors(whiteList, NUMBEROF(whiteList)));
+        ert_closeFdDescriptors(whiteList, ERT_NUMBEROF(whiteList)));
 
     rc = 0;
 

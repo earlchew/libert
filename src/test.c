@@ -118,7 +118,7 @@ testFinally(const struct Ert_ErrorFrame *aFrame)
                 { EIO,   "EIO" },
             };
 
-            unsigned choice = fetchRandomRange(NUMBEROF(errTable));
+            unsigned choice = fetchRandomRange(ERT_NUMBEROF(errTable));
 
             debug(0,
                   "inject %s into %s %s %u",

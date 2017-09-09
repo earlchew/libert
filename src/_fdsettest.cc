@@ -134,21 +134,21 @@ TEST(FdTest, Clear)
 
     int fdList[fdLimit.rlim_cur / 2 - 1];
 
-    for (unsigned ix = 0; NUMBEROF(fdList) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(fdList) > ix; ++ix)
         fdList[ix] = 2 * ix;
 
-    for (unsigned ix = 0; NUMBEROF(fdList) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(fdList) > ix; ++ix)
     {
-        unsigned jx = random() % (NUMBEROF(fdList) - ix) + ix;
+        unsigned jx = random() % (ERT_NUMBEROF(fdList) - ix) + ix;
 
-        SWAP(fdList[ix], fdList[jx]);
+        ERT_SWAP(fdList[ix], fdList[jx]);
     }
 
-    for (unsigned ix = 0; NUMBEROF(fdList) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(fdList) > ix; ++ix)
         EXPECT_EQ(0, ert_insertFdSetRange(fdset,
                                       Ert_FdRange(fdList[ix], fdList[ix])));
 
-    for (unsigned ix = 0; NUMBEROF(fdList) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(fdList) > ix; ++ix)
     {
         errno = 0;
         EXPECT_NE(0, ert_insertFdSetRange(fdset,
@@ -158,7 +158,7 @@ TEST(FdTest, Clear)
 
     ert_clearFdSet(fdset);
 
-    for (unsigned ix = 0; NUMBEROF(fdList) > ix; ++ix)
+    for (unsigned ix = 0; ERT_NUMBEROF(fdList) > ix; ++ix)
         EXPECT_EQ(0, ert_insertFdSetRange(fdset,
                                       Ert_FdRange(fdList[ix], fdList[ix])));
 

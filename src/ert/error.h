@@ -177,8 +177,8 @@ struct Ert_ErrorModule
         {                                                                     \
             Ert_Error_warn_(0,                                                \
                  "%" PRIs_Method                                              \
-                 IFEMPTY("", " ", CAR(__VA_ARGS__)) CAR(__VA_ARGS__),         \
-                 FMTs_Method(Self_, PrintfMethod_) CDR(__VA_ARGS__));         \
+                 ERT_IFEMPTY("", " ", ERT_CAR(__VA_ARGS__)) ERT_CAR(__VA_ARGS__), \
+                 FMTs_Method(Self_, PrintfMethod_) ERT_CDR(__VA_ARGS__));     \
         }                                                                     \
     } while (0)
 

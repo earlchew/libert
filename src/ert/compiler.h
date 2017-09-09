@@ -76,7 +76,7 @@ static __attribute__((__constructor__(101)))        \
 void Name_ ## _ctor_(void)                          \
 {                                                   \
     do                                              \
-        EXPAND Ctor_                                \
+        ERT_EXPAND Ctor_                                \
     while (0);                                      \
 }                                                   \
                                                     \
@@ -84,7 +84,7 @@ static __attribute__((__destructor__(101)))         \
 void Name_ ## _dtor_(void)                          \
 {                                                   \
     do                                              \
-        EXPAND Dtor_                                \
+        ERT_EXPAND Dtor_                                \
     while (0);                                      \
 }                                                   \
                                                     \
@@ -140,7 +140,7 @@ abort_(void)
 /* Assume the presence of an argument is a function declaration or
  * definition. This allows compiler headers to be parsed correctly. */
 
-#define abort(Arg_) IFEMPTY(abort_(), abort(Arg_), Arg_)
+#define abort(Arg_) ERT_IFEMPTY(abort_(), abort(Arg_), Arg_)
 
 /* -------------------------------------------------------------------------- */
 /* Type Introspection
