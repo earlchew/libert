@@ -43,7 +43,7 @@ TEST(LambdaTest, Construction)
         2,
         callLambda(
             1,
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (int aValue),
                 { return 1 + aValue; })));
 }

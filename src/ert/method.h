@@ -66,7 +66,7 @@ ERT_BEGIN_C_SCOPE;
         (ValidateObject_),                                               \
         ( ! ValidateMethod_                                              \
           ? 0                                                            \
-          : LAMBDA(                                                      \
+          : ERT_LAMBDA(                                                      \
               Return_, (Const_ void *Self_ ARGS ArgList_),               \
               {                                                          \
                   Return_ (*method_)(                                    \

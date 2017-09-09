@@ -2500,7 +2500,7 @@ forkProcessDaemonGuardian_(struct ForkProcessDaemon *self)
             Pgid(0),
             PreForkProcessMethod(
                 self,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ForkProcessDaemon    *self_,
                           const struct PreForkProcess *aPreFork),
                     {
@@ -2643,7 +2643,7 @@ forkProcessDaemon(struct PreForkProcessMethod        aPreForkMethod,
                 &daemonProcess, forkProcessDaemonGuardian_),
             PostForkParentProcessMethod(
                 &daemonProcess,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ForkProcessDaemon *self_,
                           struct Pid                aGuardianPid),
                     {
@@ -2998,7 +2998,7 @@ purgeProcessOrphanedFds(void)
     ert_walkFileList(
         Ert_FileVisitor(
             &numFds,
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (unsigned *aNumFds, const struct Ert_File *aFile),
                 {
                     ++(*aNumFds);
@@ -3029,7 +3029,7 @@ purgeProcessOrphanedFds(void)
         ert_walkFileList(
             Ert_FileVisitor(
                 &fdWhiteList,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessFdWhiteList *aWhiteList,
                           const struct Ert_File         *aFile),
                     {

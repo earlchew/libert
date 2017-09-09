@@ -59,7 +59,7 @@ random_(void)
 
     if (pthread_once(
             &once,
-            LAMBDA(
+            ERT_LAMBDA(
                 void, (void),
                 {
                     scrambleRandomSeed(getpid());

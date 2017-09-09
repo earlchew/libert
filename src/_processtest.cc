@@ -238,7 +238,7 @@ TEST_F(ProcessTest, ProcessDaemon)
     struct Pid daemonPid = forkProcessDaemon(
         PreForkProcessMethod(
             bellSocket,
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (struct Ert_BellSocketPair       *aBellSocket,
                       const struct PreForkProcess *aPreFork),
                 {
@@ -349,7 +349,7 @@ filterFds(struct ProcessForkArg *aArg,
         aArg->mFdSet,
         Ert_FdSetVisitor(
             aBlacklist,
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (struct Ert_FdSet  *aBlacklist_,
                       struct Ert_FdRange aRange),
                 {
@@ -401,7 +401,7 @@ processForkTest_CloseFds_(struct ProcessForkArg *aArg)
                          Pgid(0),
                          PreForkProcessMethod(
                              aArg,
-                             LAMBDA(
+                             ERT_LAMBDA(
                                  int, (struct ProcessForkArg       *aArg_,
                                        const struct PreForkProcess *aPreFork),
                                  {
@@ -469,7 +469,7 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
             Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
                         const struct PreForkProcess *aFork),
@@ -496,14 +496,14 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
                     })),
             PostForkChildProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         return 0;
                     })),
             PostForkParentProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
                           struct Pid              aChildPid),
                     {
@@ -515,7 +515,7 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
                     })),
             ForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         int rc = -1;
@@ -620,7 +620,7 @@ processForkTest_FailedPreFork_()
             Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
                         const struct PreForkProcess *aFork),
@@ -630,7 +630,7 @@ processForkTest_FailedPreFork_()
                     })),
             PostForkChildProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         abort();
@@ -640,7 +640,7 @@ processForkTest_FailedPreFork_()
                     })),
             PostForkParentProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
                           struct Pid              aChildPid),
                     {
@@ -651,7 +651,7 @@ processForkTest_FailedPreFork_()
                     })),
             ForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         abort();
@@ -699,7 +699,7 @@ processForkTest_FailedChildPostFork_()
             Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
                         const struct PreForkProcess *aFork),
@@ -708,14 +708,14 @@ processForkTest_FailedChildPostFork_()
                     })),
             PostForkChildProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         return processForkTest_Error_();
                     })),
             PostForkParentProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
                           struct Pid              aChildPid),
                     {
@@ -726,7 +726,7 @@ processForkTest_FailedChildPostFork_()
                     })),
             ForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         abort();
@@ -754,7 +754,7 @@ processForkTest_FailedParentPostFork_()
             Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
                         const struct PreForkProcess *aFork),
@@ -763,14 +763,14 @@ processForkTest_FailedParentPostFork_()
                     })),
             PostForkChildProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         return 0;
                     })),
             PostForkParentProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
                           struct Pid              aChildPid),
                     {
@@ -778,7 +778,7 @@ processForkTest_FailedParentPostFork_()
                     })),
             ForkProcessMethod(
                 &forkTest,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         abort();
@@ -898,7 +898,7 @@ TEST_F(ProcessTest, ProcessFork)
                                   0,
                                   ThreadMethod(
                                       &forkArg,
-                                      LAMBDA(
+                                      ERT_LAMBDA(
                                           int, (struct ProcessForkArg *self),
                                           {
                                               processForkTest_(self);
@@ -915,7 +915,7 @@ TEST_F(ProcessTest, ProcessFork)
                                  0,
                                  ThreadMethod(
                                      &forkArg,
-                                     LAMBDA(
+                                     ERT_LAMBDA(
                                          int, (struct ProcessForkArg *self),
                                          {
                                              processForkTest_Raw_(self);
@@ -954,7 +954,7 @@ runSlave(void)
                 Pgid(0),
                 PreForkProcessMethod(
                     (char *) "",
-                    LAMBDA(
+                    ERT_LAMBDA(
                         int, (char                        *self_,
                               const struct PreForkProcess *aPreFork),
                         {
@@ -989,7 +989,7 @@ TEST_F(ProcessTest, ProcessForkRecursiveParent)
         Pgid(0),
         PreForkProcessMethod(
             (char *) "",
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (char                        *self_,
                       const struct PreForkProcess *aPreFork),
                 {
@@ -999,7 +999,7 @@ TEST_F(ProcessTest, ProcessForkRecursiveParent)
         PostForkChildProcessMethodNil(),
         PostForkParentProcessMethod(
             (char *) "",
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (char      *self_,
                       struct Pid aChildPid),
                 {
@@ -1021,7 +1021,7 @@ TEST_F(ProcessTest, ProcessForkRecursiveChild)
         Pgid(0),
         PreForkProcessMethod(
             (char *) "",
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (char                        *self_,
                       const struct PreForkProcess *aPreFork),
                 {
@@ -1030,7 +1030,7 @@ TEST_F(ProcessTest, ProcessForkRecursiveChild)
                 })),
         PostForkChildProcessMethod(
             (char *) "",
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (char *self_),
                 {
                     return runSlave();

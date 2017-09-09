@@ -129,7 +129,7 @@ initErrorKey_(void)
 {
     if (pthread_once(
             &errorDtor_.mOnce,
-            LAMBDA(
+            ERT_LAMBDA(
                 void, (void),
                 {
                     if (pthread_key_create(

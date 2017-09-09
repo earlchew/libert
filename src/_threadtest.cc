@@ -178,7 +178,7 @@ TEST_F(ThreadTest, ThreadSharedMutex)
                     state->mMutex,
                     MutexRepairMethod(
                         state,
-                        LAMBDA(
+                        ERT_LAMBDA(
                             int, (struct SharedMutexTestState *),
                             {
                                 return -1;
@@ -208,7 +208,7 @@ TEST_F(ThreadTest, ThreadSharedMutex)
                     state->mMutex,
                     MutexRepairMethod(
                         state,
-                        LAMBDA(
+                        ERT_LAMBDA(
                             int, (struct SharedMutexTestState *self),
                             {
                                 self->mRepaired = true;

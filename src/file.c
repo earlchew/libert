@@ -398,7 +398,7 @@ temporaryFile_(const char *aDirName)
             Pgid(0),
             PreForkProcessMethod(
                 temporaryFileProcess,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self,
                           const struct PreForkProcess  *aFork),
                     {
@@ -406,7 +406,7 @@ temporaryFile_(const char *aDirName)
                     })),
             PostForkChildProcessMethod(
                 temporaryFileProcess,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self),
                     {
                         closeSocketPairParent(self->mSocketPair);
@@ -415,7 +415,7 @@ temporaryFile_(const char *aDirName)
                     })),
             PostForkParentProcessMethod(
                 temporaryFileProcess,
-                LAMBDA(
+                ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self,
                           struct Pid                    aChildPid),
                     {

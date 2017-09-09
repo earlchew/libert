@@ -111,7 +111,7 @@
         threadForkLockSentry_ ## Suffix_,                       \
         ({                                                      \
             void (*lock_)(void) =                               \
-                LAMBDA(                                         \
+                ERT_LAMBDA(                                         \
                     void, (void),                               \
                     {                                           \
                         while ((Lock_))                         \
@@ -119,7 +119,7 @@
                     });                                         \
                                                                 \
             void (*unlock_)(void) =                             \
-                LAMBDA(                                         \
+                ERT_LAMBDA(                                         \
                     void, (void),                               \
                     {                                           \
                         while ((Unlock_))                       \

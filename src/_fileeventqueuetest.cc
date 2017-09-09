@@ -44,7 +44,7 @@ armTestFileQueueActivity(struct Ert_FileEventQueueActivity *aActivity)
         Ert_FileEventQueuePollRead,
         Ert_FileEventQueueActivityMethod(
             (char *) 0,
-            LAMBDA(
+            ERT_LAMBDA(
                 int, (char *self_),
                 {
                     ++eventCount_;

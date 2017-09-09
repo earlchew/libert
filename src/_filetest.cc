@@ -61,7 +61,7 @@ checkLock(struct Ert_File *aFile)
                          Pgid(0),
                          PreForkProcessMethod(
                              aFile,
-                             LAMBDA(
+                             ERT_LAMBDA(
                                  int, (struct Ert_File                 *self,
                                        const struct PreForkProcess *aPreFork),
                                  {
@@ -72,7 +72,7 @@ checkLock(struct Ert_File *aFile)
                          PostForkParentProcessMethodNil(),
                          ForkProcessMethod(
                              aFile,
-                             LAMBDA(
+                             ERT_LAMBDA(
                                  int, (struct Ert_File *self),
                                  {
                                      struct Ert_LockType lockType =

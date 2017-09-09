@@ -937,7 +937,7 @@ waitFdReadyDeadline_(
                 aDeadline,
                 Ert_DeadlinePollMethod(
                     &readyDeadline,
-                    LAMBDA(
+                    ERT_LAMBDA(
                         int, (struct FdReadyDeadline *self_),
                         {
                             return waitFdReady_(
@@ -947,7 +947,7 @@ waitFdReadyDeadline_(
                         })),
                 Ert_DeadlineWaitMethod(
                     &readyDeadline,
-                    LAMBDA(
+                    ERT_LAMBDA(
                         int, (struct FdReadyDeadline *self_,
                               const struct Duration  *aTimeout),
                         {
@@ -1002,14 +1002,14 @@ readFdDeadline_(int aFd,
                     aDeadline,
                     Ert_DeadlinePollMethod(
                         &aFd,
-                        LAMBDA(
+                        ERT_LAMBDA(
                             int, (int *fd),
                             {
                                 return ert_waitFdReadReady(*fd, &ZeroDuration);
                             })),
                     Ert_DeadlineWaitMethod(
                         &aFd,
-                        LAMBDA(
+                        ERT_LAMBDA(
                             int, (int *fd,
                                   const struct Duration *aTimeout),
                             {
@@ -1095,14 +1095,14 @@ writeFdDeadline_(int aFd,
                     aDeadline,
                     Ert_DeadlinePollMethod(
                         &aFd,
-                        LAMBDA(
+                        ERT_LAMBDA(
                             int, (int *fd),
                             {
                                 return ert_waitFdWriteReady(*fd, &ZeroDuration);
                             })),
                     Ert_DeadlineWaitMethod(
                         &aFd,
-                        LAMBDA(
+                        ERT_LAMBDA(
                             int, (int *fd,
                                   const struct Duration *aTimeout),
                             {

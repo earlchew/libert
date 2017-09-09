@@ -65,7 +65,7 @@ TEST_F(DeadlineTest, ErrorReturn)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               errno = EPERM;
@@ -73,7 +73,7 @@ TEST_F(DeadlineTest, ErrorReturn)
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -89,14 +89,14 @@ TEST_F(DeadlineTest, ErrorReturn)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -126,7 +126,7 @@ TEST_F(DeadlineTest, SuccessReturn)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *self),
                           {
                               self->mResult = 1;
@@ -134,7 +134,7 @@ TEST_F(DeadlineTest, SuccessReturn)
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *self,
                                 const struct Duration *aTimeout),
                           {
@@ -152,14 +152,14 @@ TEST_F(DeadlineTest, SuccessReturn)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *self),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *self,
                                 const struct Duration *aTimeout),
                           {
@@ -191,14 +191,14 @@ TEST_F(DeadlineTest, InfiniteTimeout)
                       deadline,
                       Ert_DeadlinePollMethod(
                           fixture,
-                          LAMBDA(
+                          ERT_LAMBDA(
                               int, (class DeadlineTest *),
                               {
                                   return 0;
                               })),
                       Ert_DeadlineWaitMethod(
                           fixture,
-                          LAMBDA(
+                          ERT_LAMBDA(
                               int, (class DeadlineTest *,
                                     const struct Duration *aTimeout),
                               {
@@ -228,14 +228,14 @@ TEST_F(DeadlineTest, ZeroTimeout)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -249,14 +249,14 @@ TEST_F(DeadlineTest, ZeroTimeout)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -273,14 +273,14 @@ TEST_F(DeadlineTest, ZeroTimeout)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -312,14 +312,14 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -335,14 +335,14 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -359,14 +359,14 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 0;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -398,14 +398,14 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 1;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
@@ -424,14 +424,14 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
                   deadline,
                   Ert_DeadlinePollMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *),
                           {
                               return 1;
                           })),
                   Ert_DeadlineWaitMethod(
                       fixture,
-                      LAMBDA(
+                      ERT_LAMBDA(
                           int, (class DeadlineTest *,
                                 const struct Duration *aTimeout),
                           {
