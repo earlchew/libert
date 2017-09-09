@@ -40,16 +40,16 @@
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
 struct File;
-struct FdRange;
+struct Ert_FdRange;
 
-struct FdRange
-FdRange_(int aLhs, int aRhs);
+struct Ert_FdRange
+Ert_FdRange_(int aLhs, int aRhs);
 
-struct FdRange
+struct Ert_FdRange
 {
 #ifdef __cplusplus
-    FdRange(int aLhs, int aRhs)
-    { *this = FdRange_(aLhs, aRhs); }
+    Ert_FdRange(int aLhs, int aRhs)
+    { *this = Ert_FdRange_(aLhs, aRhs); }
 #endif
 
     int mLhs;
@@ -61,8 +61,11 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_DEFINITION
 #define ERT_METHOD_RETURN_FdSetVisitor    int
 #define ERT_METHOD_CONST_FdSetVisitor
-#define ERT_METHOD_ARG_LIST_FdSetVisitor  (struct FdRange aFdRange_)
+#define ERT_METHOD_ARG_LIST_FdSetVisitor  (struct Ert_FdRange aFdRange_)
 #define ERT_METHOD_CALL_LIST_FdSetVisitor (aFdRange_)
+
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
 
 #define ERT_METHOD_NAME      FdSetVisitor
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_FdSetVisitor
@@ -71,10 +74,10 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_FdSetVisitor
 #include "ert/method.h"
 
-#define FdSetVisitor(Object_, Method_)          \
+#define Ert_FdSetVisitor(Object_, Method_)      \
     ERT_METHOD_TRAMPOLINE(                      \
         Object_, Method_,                       \
-        FdSetVisitor_,                          \
+        Ert_FdSetVisitor_,                      \
         ERT_METHOD_RETURN_FdSetVisitor,         \
         ERT_METHOD_CONST_FdSetVisitor,          \
         ERT_METHOD_ARG_LIST_FdSetVisitor,       \
@@ -83,88 +86,88 @@ ERT_END_C_SCOPE;
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
 
-struct FdSetElement_
+struct Ert_FdSetElement_
 {
-    RB_ENTRY(FdSetElement_) mTree;
+    RB_ENTRY(Ert_FdSetElement_) mTree;
 
-    struct FdRange mRange;
+    struct Ert_FdRange mRange;
 };
 
-typedef RB_HEAD(FdSetTree_, FdSetElement_) FdSetTreeT_;
+typedef RB_HEAD(Ert_FdSetTree_, Ert_FdSetElement_) Ert_FdSetTreeT_;
 
-struct FdSet
+struct Ert_FdSet
 {
-    FdSetTreeT_ mRoot;
+    Ert_FdSetTreeT_ mRoot;
 
     size_t mSize;
 };
 
-#define FDSET_INITIALIZER(FdSet_) \
+#define ERT_FDSET_INITIALIZER(FdSet_) \
     { .mRoot = RB_INITIALIZER((FdSet_).mRoot) }
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createFdSet(struct FdSet *self);
+ert_createFdSet(struct Ert_FdSet *self);
 
-struct FdSet *
-closeFdSet(struct FdSet *self);
+struct Ert_FdSet *
+ert_closeFdSet(struct Ert_FdSet *self);
 
 int
-printFdSet(const struct FdSet *self, FILE *aFile);
+ert_printFdSet(const struct Ert_FdSet *self, FILE *aFile);
 
 void
-clearFdSet(struct FdSet *self);
+ert_clearFdSet(struct Ert_FdSet *self);
 
 ERT_CHECKED int
-invertFdSet(struct FdSet *self);
+ert_invertFdSet(struct Ert_FdSet *self);
 
 ERT_CHECKED int
-fillFdSet(struct FdSet *self);
+ert_fillFdSet(struct Ert_FdSet *self);
 
 ERT_CHECKED int
-insertFdSetRange(struct FdSet *self, struct FdRange aRange);
+ert_insertFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange);
 
 ERT_CHECKED int
-removeFdSetRange(struct FdSet *self, struct FdRange aRange);
+ert_removeFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange);
 
 ERT_CHECKED int
-insertFdSet(struct FdSet *self, int aFd);
+ert_insertFdSet(struct Ert_FdSet *self, int aFd);
 
 ERT_CHECKED int
-removeFdSet(struct FdSet *self, int aFd);
+ert_removeFdSet(struct Ert_FdSet *self, int aFd);
 
 ERT_CHECKED int
-insertFdSetFile(struct FdSet *self, const struct File *aFile);
+ert_insertFdSetFile(struct Ert_FdSet *self, const struct File *aFile);
 
 ERT_CHECKED int
-removeFdSetFile(struct FdSet *self, const struct File *aFile);
+ert_removeFdSetFile(struct Ert_FdSet *self, const struct File *aFile);
 
 ERT_CHECKED ssize_t
-visitFdSet(const struct FdSet *self, struct FdSetVisitor aVisitor);
+ert_visitFdSet(const struct Ert_FdSet *self, struct Ert_FdSetVisitor aVisitor);
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-static inline struct FdRange
-FdRange(int aLhs, int aRhs)
+static inline struct Ert_FdRange
+Ert_FdRange(int aLhs, int aRhs)
 {
-    return FdRange_(aLhs, aRhs);
+    return Ert_FdRange_(aLhs, aRhs);
 }
 #endif
 
 int
-containsFdRange(struct FdRange self, struct FdRange aOther);
+ert_containsFdRange(struct Ert_FdRange self, struct Ert_FdRange aOther);
 
 bool
-leftFdRangeOf(struct FdRange self, struct FdRange aOther);
+ert_leftFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther);
 
 bool
-rightFdRangeOf(struct FdRange self, struct FdRange aOther);
+ert_rightFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther);
 
 bool
-leftFdRangeNeighbour(struct FdRange self, struct FdRange aOther);
+ert_leftFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther);
 
 bool
-rightFdRangeNeighbour(struct FdRange self, struct FdRange aOther);
+ert_rightFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther);
 
 /* -------------------------------------------------------------------------- */
 

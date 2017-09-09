@@ -36,7 +36,8 @@
 
 /* -------------------------------------------------------------------------- */
 static int
-rankFdSetElement_(struct FdSetElement_ *aLhs, struct FdSetElement_ *aRhs)
+ert_rankFdSetElement_(
+    struct Ert_FdSetElement_ *aLhs, struct Ert_FdSetElement_ *aRhs)
 {
     int rank =
         ( (aLhs->mRange.mLhs > aRhs->mRange.mLhs) -
@@ -50,11 +51,12 @@ rankFdSetElement_(struct FdSetElement_ *aLhs, struct FdSetElement_ *aRhs)
     return rank;
 }
 
-RB_GENERATE_STATIC(FdSetTree_, FdSetElement_, mTree, rankFdSetElement_)
+RB_GENERATE_STATIC(
+    Ert_FdSetTree_, Ert_FdSetElement_, mTree, ert_rankFdSetElement_)
 
 /* -------------------------------------------------------------------------- */
 int
-printFdSet(const struct FdSet *self, FILE *aFile)
+ert_printFdSet(const struct Ert_FdSet *self, FILE *aFile)
 {
     int rc = -1;
 
@@ -63,8 +65,8 @@ printFdSet(const struct FdSet *self, FILE *aFile)
     ERROR_IF(
         PRINTF(printed, fprintf(aFile, "<fdset %p", self)));
 
-    struct FdSetElement_ *elem;
-    RB_FOREACH(elem, FdSetTree_, &((struct FdSet *) self)->mRoot)
+    struct Ert_FdSetElement_ *elem;
+    RB_FOREACH(elem, Ert_FdSetTree_, &((struct Ert_FdSet *) self)->mRoot)
     {
         ERROR_IF(
             PRINTF(
@@ -86,12 +88,12 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct FdSet *
-closeFdSet(struct FdSet *self)
+struct Ert_FdSet *
+ert_closeFdSet(struct Ert_FdSet *self)
 {
     if (self)
     {
-        clearFdSet(self);
+        ert_clearFdSet(self);
     }
 
     return 0;
@@ -99,7 +101,7 @@ closeFdSet(struct FdSet *self)
 
 /* -------------------------------------------------------------------------- */
 int
-createFdSet(struct FdSet *self)
+ert_createFdSet(struct Ert_FdSet *self)
 {
     int rc = -1;
 
@@ -117,9 +119,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-clearFdSet(struct FdSet *self)
+ert_clearFdSet(struct Ert_FdSet *self)
 {
-    struct FdSetElement_ *elem = RB_ROOT(&self->mRoot);
+    struct Ert_FdSetElement_ *elem = RB_ROOT(&self->mRoot);
 
     while (elem)
     {
@@ -127,8 +129,8 @@ clearFdSet(struct FdSet *self)
          * valid, and must be cleared. Clear the two subtrees before freeing
          * the root of the subtree. */
 
-        struct FdSetElement_ *lh = RB_LEFT(elem, mTree);
-        struct FdSetElement_ *rh = RB_RIGHT(elem, mTree);
+        struct Ert_FdSetElement_ *lh = RB_LEFT(elem, mTree);
+        struct Ert_FdSetElement_ *rh = RB_RIGHT(elem, mTree);
 
         if (lh)
         {
@@ -152,14 +154,14 @@ clearFdSet(struct FdSet *self)
              * rooted at elem have been cleared, leaving the root itself
              * to be freed. */
 
-            struct FdSetElement_ *parent = RB_PARENT(elem, mTree);
+            struct Ert_FdSetElement_ *parent = RB_PARENT(elem, mTree);
 
             free(elem);
 
             if (parent)
             {
-                struct FdSetElement_ *plhs = RB_LEFT(parent, mTree);
-                struct FdSetElement_ *prhs = RB_RIGHT(parent, mTree);
+                struct Ert_FdSetElement_ *plhs = RB_LEFT(parent, mTree);
+                struct Ert_FdSetElement_ *prhs = RB_RIGHT(parent, mTree);
 
                 if (elem == plhs && prhs)
                 {
@@ -182,11 +184,11 @@ clearFdSet(struct FdSet *self)
 
 /* -------------------------------------------------------------------------- */
 int
-invertFdSet(struct FdSet *self)
+ert_invertFdSet(struct Ert_FdSet *self)
 {
     int rc = -1;
 
-    struct FdSetElement_ *elem = 0;
+    struct Ert_FdSetElement_ *elem = 0;
 
     /* Inverting the set can be modelled as creating a new set of the gaps
      * between the ranges of the old set. If there are N ranges in the old
@@ -195,11 +197,11 @@ invertFdSet(struct FdSet *self)
     if (RB_EMPTY(&self->mRoot))
     {
         ERROR_IF(
-            insertFdSetRange(self, FdRange(0, INT_MAX)));
+            ert_insertFdSetRange(self, Ert_FdRange(0, INT_MAX)));
     }
     else
     {
-        struct FdSetElement_ *next = RB_MAX(FdSetTree_, &self->mRoot);
+        struct Ert_FdSetElement_ *next = RB_MAX(Ert_FdSetTree_, &self->mRoot);
 
         if (INT_MAX == next->mRange.mRhs)
         {
@@ -207,14 +209,14 @@ invertFdSet(struct FdSet *self)
             {
                 if ( ! next->mRange.mLhs)
                 {
-                    RB_REMOVE(FdSetTree_, &self->mRoot, next);
+                    RB_REMOVE(Ert_FdSetTree_, &self->mRoot, next);
                     free(next);
                     next = 0;
                 }
                 else
                 {
-                    struct FdSetElement_ *prev =
-                        RB_PREV(FdSetTree_, &self->mRoot, next);
+                    struct Ert_FdSetElement_ *prev =
+                        RB_PREV(Ert_FdSetTree_, &self->mRoot, next);
 
                     next->mRange.mRhs = next->mRange.mLhs - 1;
                     next->mRange.mLhs = prev ? prev->mRange.mRhs + 1 : 0;
@@ -225,17 +227,18 @@ invertFdSet(struct FdSet *self)
         }
         else
         {
-            struct FdSetElement_ *prev = RB_MIN(FdSetTree_, &self->mRoot);
+            struct Ert_FdSetElement_ *prev =
+                RB_MIN(Ert_FdSetTree_, &self->mRoot);
 
             if (prev->mRange.mLhs)
             {
                 ERROR_UNLESS(
                     elem = malloc(sizeof(*elem)));
 
-                elem->mRange = FdRange(0, prev->mRange.mLhs - 1);
+                elem->mRange = Ert_FdRange(0, prev->mRange.mLhs - 1);
 
                 ERROR_IF(
-                    RB_INSERT(FdSetTree_, &self->mRoot, elem),
+                    RB_INSERT(Ert_FdSetTree_, &self->mRoot, elem),
                     {
                         errno = EEXIST;
                     });
@@ -245,7 +248,7 @@ invertFdSet(struct FdSet *self)
 
             do
             {
-                next = RB_NEXT(FdSetTree_, &self->mRoot, prev);
+                next = RB_NEXT(Ert_FdSetTree_, &self->mRoot, prev);
 
                 prev->mRange.mLhs = prev->mRange.mRhs + 1;
                 prev->mRange.mRhs = next ? next->mRange.mLhs - 1 : INT_MAX;
@@ -270,49 +273,49 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-fillFdSet(struct FdSet *self)
+ert_fillFdSet(struct Ert_FdSet *self)
 {
-    clearFdSet(self);
-    return invertFdSet(self);
+    ert_clearFdSet(self);
+    return ert_invertFdSet(self);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-insertFdSet(struct FdSet *self, int aFd)
+ert_insertFdSet(struct Ert_FdSet *self, int aFd)
 {
-    return insertFdSetRange(self, FdRange(aFd, aFd));
+    return ert_insertFdSetRange(self, Ert_FdRange(aFd, aFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-removeFdSet(struct FdSet *self, int aFd)
+ert_removeFdSet(struct Ert_FdSet *self, int aFd)
 {
-    return removeFdSetRange(self, FdRange(aFd, aFd));
+    return ert_removeFdSetRange(self, Ert_FdRange(aFd, aFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-insertFdSetFile(struct FdSet *self, const struct File *aFile)
+ert_insertFdSetFile(struct Ert_FdSet *self, const struct File *aFile)
 {
-    return insertFdSetRange(self, FdRange(aFile->mFd, aFile->mFd));
+    return ert_insertFdSetRange(self, Ert_FdRange(aFile->mFd, aFile->mFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-removeFdSetFile(struct FdSet *self, const struct File *aFile)
+ert_removeFdSetFile(struct Ert_FdSet *self, const struct File *aFile)
 {
-    return removeFdSetRange(self, FdRange(aFile->mFd, aFile->mFd));
+    return ert_removeFdSetRange(self, Ert_FdRange(aFile->mFd, aFile->mFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-insertFdSetRange(struct FdSet *self, struct FdRange aRange)
+ert_insertFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange)
 {
     int rc = -1;
 
     bool inserted = false;
 
-    struct FdSetElement_ *elem = 0;
+    struct Ert_FdSetElement_ *elem = 0;
 
     ERROR_UNLESS(
         elem = malloc(sizeof(*elem)));
@@ -320,30 +323,32 @@ insertFdSetRange(struct FdSet *self, struct FdRange aRange)
     elem->mRange = aRange;
 
     ERROR_IF(
-        RB_INSERT(FdSetTree_, &self->mRoot, elem),
+        RB_INSERT(Ert_FdSetTree_, &self->mRoot, elem),
         {
             errno = EEXIST;
         });
     inserted = true;
 
-    struct FdSetElement_ *prev = RB_PREV(FdSetTree_, &self->mRoot, elem);
-    struct FdSetElement_ *next = RB_NEXT(FdSetTree_, &self->mRoot, elem);
+    struct Ert_FdSetElement_ *prev =
+        RB_PREV(Ert_FdSetTree_, &self->mRoot, elem);
+    struct Ert_FdSetElement_ *next =
+        RB_NEXT(Ert_FdSetTree_, &self->mRoot, elem);
 
     ERROR_UNLESS(
-        ! prev || leftFdRangeOf(elem->mRange, prev->mRange),
+        ! prev || ert_leftFdRangeOf(elem->mRange, prev->mRange),
         {
             errno = EEXIST;
         });
 
     ERROR_UNLESS(
-        ! next || rightFdRangeOf(elem->mRange, next->mRange),
+        ! next || ert_rightFdRangeOf(elem->mRange, next->mRange),
         {
             errno = EEXIST;
         });
 
-    if (prev && leftFdRangeNeighbour(elem->mRange, prev->mRange))
+    if (prev && ert_leftFdRangeNeighbour(elem->mRange, prev->mRange))
     {
-        RB_REMOVE(FdSetTree_, &self->mRoot, elem);
+        RB_REMOVE(Ert_FdSetTree_, &self->mRoot, elem);
 
         prev->mRange.mRhs = elem->mRange.mRhs;
         free(elem);
@@ -351,9 +356,9 @@ insertFdSetRange(struct FdSet *self, struct FdRange aRange)
         elem = prev;
     }
 
-    if (next && rightFdRangeNeighbour(elem->mRange, next->mRange))
+    if (next && ert_rightFdRangeNeighbour(elem->mRange, next->mRange))
     {
-        RB_REMOVE(FdSetTree_, &self->mRoot, elem);
+        RB_REMOVE(Ert_FdSetTree_, &self->mRoot, elem);
 
         next->mRange.mLhs = elem->mRange.mLhs;
         free(elem);
@@ -370,7 +375,7 @@ Finally:
     FINALLY
     ({
         if (inserted && elem)
-            RB_REMOVE(FdSetTree_, &self->mRoot, elem);
+            RB_REMOVE(Ert_FdSetTree_, &self->mRoot, elem);
 
         free(elem);
     });
@@ -380,14 +385,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-removeFdSetRange(struct FdSet *self, struct FdRange aRange)
+ert_removeFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange)
 {
     int rc = -1;
 
-    struct FdRange  fdRange_;
-    struct FdRange *fdRange = 0;
+    struct Ert_FdRange  fdRange_;
+    struct Ert_FdRange *fdRange = 0;
 
-    struct FdSetElement_ find =
+    struct Ert_FdSetElement_ find =
     {
         .mRange = aRange,
     };
@@ -398,23 +403,24 @@ removeFdSetRange(struct FdSet *self, struct FdRange aRange)
             errno = ENOENT;
         });
 
-    struct FdSetElement_ *elem = RB_NFIND(FdSetTree_, &self->mRoot, &find);
+    struct Ert_FdSetElement_ *elem = RB_NFIND(
+        Ert_FdSetTree_, &self->mRoot, &find);
 
     if ( ! elem)
-        elem = RB_MAX(FdSetTree_, &self->mRoot);
+        elem = RB_MAX(Ert_FdSetTree_, &self->mRoot);
 
-    int contained = containsFdRange(elem->mRange, aRange);
+    int contained = ert_containsFdRange(elem->mRange, aRange);
 
     if ( ! contained)
     {
         ERROR_UNLESS(
-            elem = RB_PREV(FdSetTree_, &self->mRoot, elem),
+            elem = RB_PREV(Ert_FdSetTree_, &self->mRoot, elem),
             {
                 errno = ENOENT;
             });
 
         ERROR_UNLESS(
-            contained = containsFdRange(elem->mRange, aRange),
+            contained = ert_containsFdRange(elem->mRange, aRange),
             {
                 errno = ENOENT;
             });
@@ -427,7 +433,7 @@ removeFdSetRange(struct FdSet *self, struct FdRange aRange)
         break;
 
     case 3:
-        RB_REMOVE(FdSetTree_, &self->mRoot, elem);
+        RB_REMOVE(Ert_FdSetTree_, &self->mRoot, elem);
         free(elem);
         break;
 
@@ -437,15 +443,18 @@ removeFdSetRange(struct FdSet *self, struct FdRange aRange)
 
     default:
         {
-          struct FdRange lhSide = FdRange(elem->mRange.mLhs,aRange.mLhs-1);
-          struct FdRange rhSide = FdRange(aRange.mRhs+1,    elem->mRange.mRhs);
+          struct Ert_FdRange lhSide = Ert_FdRange(
+              elem->mRange.mLhs,aRange.mLhs-1);
+
+          struct Ert_FdRange rhSide = Ert_FdRange(
+              aRange.mRhs+1,    elem->mRange.mRhs);
 
           fdRange_ = elem->mRange;
           fdRange  = &fdRange_;
 
           elem->mRange = lhSide;
           ERROR_IF(
-              insertFdSetRange(self, rhSide));
+              ert_insertFdSetRange(self, rhSide));
 
           fdRange = 0;
         }
@@ -467,18 +476,18 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-visitFdSet(const struct FdSet *self, struct FdSetVisitor aVisitor)
+ert_visitFdSet(const struct Ert_FdSet *self, struct Ert_FdSetVisitor aVisitor)
 {
     ssize_t rc = -1;
 
     ssize_t visited = 0;
 
-    struct FdSetElement_ *elem;
-    RB_FOREACH(elem, FdSetTree_, &((struct FdSet *) self)->mRoot)
+    struct Ert_FdSetElement_ *elem;
+    RB_FOREACH(elem, Ert_FdSetTree_, &((struct Ert_FdSet *) self)->mRoot)
     {
         int err;
         ERROR_IF(
-            (err = callFdSetVisitor(aVisitor, elem->mRange),
+            (err = ert_callFdSetVisitor(aVisitor, elem->mRange),
              -1 == err));
 
         ++visited;
@@ -497,12 +506,12 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct FdRange
-FdRange_(int aLhs, int aRhs)
+struct Ert_FdRange
+Ert_FdRange_(int aLhs, int aRhs)
 {
     ensure(0 <= aLhs && aLhs <= aRhs);
 
-    return (struct FdRange)
+    return (struct Ert_FdRange)
     {
         .mLhs = aLhs,
         .mRhs = aRhs,
@@ -511,19 +520,19 @@ FdRange_(int aLhs, int aRhs)
 
 /* -------------------------------------------------------------------------- */
 static inline bool
-containsFdRange_(struct FdRange self, int aFd)
+ert_containsFdRange_(struct Ert_FdRange self, int aFd)
 {
     return self.mLhs <= aFd && aFd <= self.mRhs;
 }
 
 /* -------------------------------------------------------------------------- */
 int
-containsFdRange(struct FdRange self, struct FdRange aOther)
+ert_containsFdRange(struct Ert_FdRange self, struct Ert_FdRange aOther)
 {
     int contained = 0;
 
-    if (containsFdRange_(self, aOther.mLhs) &&
-        containsFdRange_(self, aOther.mRhs) )
+    if (ert_containsFdRange_(self, aOther.mLhs) &&
+        ert_containsFdRange_(self, aOther.mRhs) )
     {
         int lhs = (self.mLhs == aOther.mLhs) << 0;
         int rhs = (self.mRhs == aOther.mRhs) << 1;
@@ -539,28 +548,28 @@ containsFdRange(struct FdRange self, struct FdRange aOther)
 
 /* -------------------------------------------------------------------------- */
 bool
-leftFdRangeOf(struct FdRange self, struct FdRange aOther)
+ert_leftFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther)
 {
     return aOther.mRhs < self.mLhs;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-rightFdRangeOf(struct FdRange self, struct FdRange aOther)
+ert_rightFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther)
 {
     return self.mRhs < aOther.mLhs;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-leftFdRangeNeighbour(struct FdRange self, struct FdRange aOther)
+ert_leftFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther)
 {
     return self.mLhs - 1 == aOther.mRhs;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-rightFdRangeNeighbour(struct FdRange self, struct FdRange aOther)
+ert_rightFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther)
 {
     return self.mRhs + 1 == aOther.mLhs;
 }
