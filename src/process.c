@@ -49,7 +49,7 @@ struct ProcessLock
 {
     struct File            mFile_;
     struct File           *mFile;
-    const struct LockType *mLock;
+    const struct Ert_LockType *mLock;
 };
 
 struct ProcessAppLock
@@ -1179,13 +1179,13 @@ fetchProcessState(struct Pid aPid)
                         processStatFileNameFmt_, processDirName.mDirName));
 
         ERROR_IF(
-            (statFd = openFd(processStatFileName, O_RDONLY, 0),
+            (statFd = ert_openFd(processStatFileName, O_RDONLY, 0),
              -1 == statFd));
     }
 
     ssize_t statlen;
     ERROR_IF(
-        (statlen = readFdFully(statFd, &statBuf, 0),
+        (statlen = ert_readFdFully(statFd, &statBuf, 0),
          -1 == statlen));
 
     char *statend = statBuf + statlen;
@@ -1222,7 +1222,7 @@ Finally:
 
     FINALLY
     ({
-        statFd = closeFd(statFd);
+        statFd = ert_closeFd(statFd);
 
         free(statBuf);
     });
@@ -1269,9 +1269,9 @@ lockProcessLock_(struct ProcessLock *self)
     ensure( ! self->mLock);
 
     ERROR_IF(
-        lockFileRegion(self->mFile, LockTypeWrite, 0, 0));
+        lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
 
-    self->mLock = &LockTypeWrite;
+    self->mLock = &Ert_LockTypeWrite;
 
     rc = 0;
 
@@ -1303,7 +1303,7 @@ forkProcessLock_(struct ProcessLock *self)
         ABORT_IF(
             unlockFileRegion(self->mFile, 0, 0));
         ABORT_IF(
-            lockFileRegion(self->mFile, LockTypeWrite, 0, 0));
+            lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
     }
 }
 
@@ -2098,14 +2098,14 @@ forkProcessChild_PostParent_(
 
                 if ( ! err && -1 != altFd)
                     ERROR_IF(
-                        fd != duplicateFd(altFd, fd));
+                        fd != ert_duplicateFd(altFd, fd));
             }
 
             stdFdFiller = closeStdFdFiller(stdFdFiller);
         }
 
         ERROR_IF(
-            closeFdOnlyBlackList(aBlacklistFds));
+            ert_closeFdOnlyBlackList(aBlacklistFds));
 
         ERROR_IF(
             sendForkProcessChannelAcknowledgement_(self));
@@ -2168,7 +2168,7 @@ forkProcessChild_PostChild_(
         includeForkProcessChannelFdSet_(self, aWhitelistFds));
 
     ERROR_IF(
-        closeFdExceptWhiteList(aWhitelistFds));
+        ert_closeFdExceptWhiteList(aWhitelistFds));
 
     ERROR_IF(
         ! ownPostForkChildProcessMethodNil(aPostForkChildMethod) &&
@@ -3041,7 +3041,7 @@ purgeProcessOrphanedFds(void)
     }
 
     ERROR_IF(
-        closeFdDescriptors(whiteList, NUMBEROF(whiteList)));
+        ert_closeFdDescriptors(whiteList, NUMBEROF(whiteList)));
 
     rc = 0;
 
@@ -3209,7 +3209,7 @@ Process_init(struct ProcessModule *self, const char *aArg0)
      * to prevent other files inadvertently taking on these personas. */
 
     ERROR_IF(
-        openStdFds());
+        ert_openStdFds());
 
     /* Ensure that the recorded time base is non-zero to allow it
      * to be distinguished from the case that it was not recorded

@@ -63,8 +63,8 @@ createPipe(struct Pipe *self, unsigned aFlags)
             errno = EINVAL;
         });
 
-    ensure( ! stdFd(fd[0]));
-    ensure( ! stdFd(fd[1]));
+    ensure( ! ert_stdFd(fd[0]));
+    ensure( ! ert_stdFd(fd[1]));
 
     ERROR_IF(
         createFile(&self->mRdFile_, fd[0]));
@@ -84,8 +84,8 @@ Finally:
 
     FINALLY
     ({
-        fd[0] = closeFd(fd[0]);
-        fd[1] = closeFd(fd[1]);
+        fd[0] = ert_closeFd(fd[0]);
+        fd[1] = ert_closeFd(fd[1]);
 
         if (rc)
         {

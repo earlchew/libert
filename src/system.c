@@ -52,12 +52,12 @@ fetchSystemIncarnation_(void)
     static const char procBootId[] = "/proc/sys/kernel/random/boot_id";
 
     ERROR_IF(
-        (fd = openFd(procBootId, O_RDONLY, 0),
+        (fd = ert_openFd(procBootId, O_RDONLY, 0),
          -1 == fd));
 
     ssize_t buflen;
     ERROR_IF(
-        (buflen = readFdFully(fd, &buf, 64),
+        (buflen = ert_readFdFully(fd, &buf, 64),
          -1 == buflen));
     ERROR_UNLESS(
         buflen,
@@ -86,7 +86,7 @@ Finally:
 
     FINALLY
     ({
-        fd = closeFd(fd);
+        fd = ert_closeFd(fd);
 
         free(buf);
     });

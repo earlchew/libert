@@ -129,17 +129,17 @@ TEST(UnixSocketTest, AbstractServer)
 
     int fd = recvUnixSocketFd(clientsock, O_CLOEXEC);
     EXPECT_LE(0, fd);
-    EXPECT_EQ(1, ownFdCloseOnExec(fd));
+    EXPECT_EQ(1, ert_ownFdCloseOnExec(fd));
 
     closePipeReader(pipe);
     buf[0] = 'A';
     EXPECT_EQ(1, writeFile(pipe->mWrFile, buf, sizeof(buf), 0));
     buf[0] = 0;
-    EXPECT_EQ(1, waitFdReadReady(fd, 0));
-    EXPECT_EQ(1, readFd(fd, buf, sizeof(buf), 0));
+    EXPECT_EQ(1, ert_waitFdReadReady(fd, 0));
+    EXPECT_EQ(1, ert_readFd(fd, buf, sizeof(buf), 0));
     EXPECT_EQ('A', buf[0]);
 
-    fd = closeFd(fd);
+    fd = ert_closeFd(fd);
     pipe = closePipe(pipe);
 
     clientsock = closeUnixSocket(clientsock);

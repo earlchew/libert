@@ -770,9 +770,9 @@ print_(
              * message lines, and also EINTR messages with later timestamps
              * printed before messages with earlier timestamps. */
 
-            if (printBuf_.mSize != writeFdRaw(STDERR_FILENO,
-                                              printBuf_.mBuf,
-                                              printBuf_.mSize, 0))
+            if (printBuf_.mSize != ert_writeFdRaw(STDERR_FILENO,
+                                                  printBuf_.mBuf,
+                                                  printBuf_.mSize, 0))
                 abortProcess();
         }
 

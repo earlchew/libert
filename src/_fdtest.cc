@@ -43,7 +43,7 @@ TEST(FdTest, ReadFully)
     {
         char *buf = 0;
 
-        EXPECT_EQ(-1, readFdFully(-1, &buf, 0));
+        EXPECT_EQ(-1, ert_readFdFully(-1, &buf, 0));
         EXPECT_EQ(0,  buf);
     }
 
@@ -59,7 +59,7 @@ TEST(FdTest, ReadFully)
 
         closePipeWriter(pipe);
 
-        EXPECT_EQ(0, readFdFully(pipe->mRdFile->mFd, &buf, 0));
+        EXPECT_EQ(0, ert_readFdFully(pipe->mRdFile->mFd, &buf, 0));
         EXPECT_EQ(0, buf);
 
         pipe = closePipe(pipe);
@@ -75,10 +75,10 @@ TEST(FdTest, ReadFully)
         EXPECT_EQ(0, createPipe(&pipe_, 0));
         pipe = &pipe_;
 
-        EXPECT_EQ(1, writeFd(pipe->mWrFile->mFd, "1", 1, 0));
+        EXPECT_EQ(1, ert_writeFd(pipe->mWrFile->mFd, "1", 1, 0));
         closePipeWriter(pipe);
 
-        EXPECT_EQ(1, readFdFully(pipe->mRdFile->mFd, &buf, 0));
+        EXPECT_EQ(1, ert_readFdFully(pipe->mRdFile->mFd, &buf, 0));
         EXPECT_EQ(0, strncmp("1", buf, 1));
 
         free(buf);
@@ -96,10 +96,10 @@ TEST(FdTest, ReadFully)
         EXPECT_EQ(0, createPipe(&pipe_, 0));
         pipe = &pipe_;
 
-        EXPECT_EQ(4, writeFd(pipe->mWrFile->mFd, "1234", 4, 0));
+        EXPECT_EQ(4, ert_writeFd(pipe->mWrFile->mFd, "1234", 4, 0));
         closePipeWriter(pipe);
 
-        EXPECT_EQ(4, readFdFully(pipe->mRdFile->mFd, &buf, 0));
+        EXPECT_EQ(4, ert_readFdFully(pipe->mRdFile->mFd, &buf, 0));
         EXPECT_EQ(0, strncmp("1234", buf, 4));
 
         free(buf);
@@ -117,10 +117,10 @@ TEST(FdTest, ReadFully)
         EXPECT_EQ(0, createPipe(&pipe_, 0));
         pipe = &pipe_;
 
-        EXPECT_EQ(5, writeFd(pipe->mWrFile->mFd, "12345", 5, 0));
+        EXPECT_EQ(5, ert_writeFd(pipe->mWrFile->mFd, "12345", 5, 0));
         closePipeWriter(pipe);
 
-        EXPECT_EQ(5, readFdFully(pipe->mRdFile->mFd, &buf, 0));
+        EXPECT_EQ(5, ert_readFdFully(pipe->mRdFile->mFd, &buf, 0));
         EXPECT_EQ(0, strncmp("12345", buf, 5));
 
         free(buf);
@@ -174,31 +174,31 @@ TEST(FdTest, CloseExceptWhiteList)
 
         do
         {
-            if (closeFdExceptWhiteList(fdset))
+            if (ert_closeFdExceptWhiteList(fdset))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
             }
 
-            if (ownFdValid(pipefd[0]))
+            if (ert_ownFdValid(pipefd[0]))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
             }
 
-            if ( ! ownFdValid(pipefd[1]))
+            if ( ! ert_ownFdValid(pipefd[1]))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
             }
 
-            if ( ! ownFdValid(pipefd[2]))
+            if ( ! ert_ownFdValid(pipefd[2]))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
             }
 
-            if (ownFdValid(pipefd[3]))
+            if (ert_ownFdValid(pipefd[3]))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
@@ -207,7 +207,7 @@ TEST(FdTest, CloseExceptWhiteList)
             unsigned numFds = 0;
             for (unsigned fd = 0; fd < fdLimit.rlim_cur; ++fd)
             {
-                if (ownFdValid(fd))
+                if (ert_ownFdValid(fd))
                     ++numFds;
             }
 
@@ -289,23 +289,23 @@ TEST(FdTest, CloseOnlyBlackList)
             unsigned openFds = 0;
             for (unsigned fd = 0; fd < fdLimit.rlim_cur; ++fd)
             {
-                if (ownFdValid(fd))
+                if (ert_ownFdValid(fd))
                     ++openFds;
             }
 
-            if (closeFdOnlyBlackList(fdset))
+            if (ert_closeFdOnlyBlackList(fdset))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
             }
 
-            if ( ! ownFdValid(pipefd[1]))
+            if ( ! ert_ownFdValid(pipefd[1]))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
             }
 
-            if (ownFdValid(pipefd[0]))
+            if (ert_ownFdValid(pipefd[0]))
             {
                 fprintf(stderr, "%u\n", __LINE__);
                 break;
@@ -314,7 +314,7 @@ TEST(FdTest, CloseOnlyBlackList)
             unsigned numFds = 0;
             for (unsigned fd = 0; fd < fdLimit.rlim_cur; ++fd)
             {
-                if (ownFdValid(fd))
+                if (ert_ownFdValid(fd))
                     ++numFds;
             }
 
@@ -356,7 +356,7 @@ checkChildCloseOnExec(int aFd, FILE *aErrFp)
 
     do
     {
-        if (1 != ownFdCloseOnExec(aFd))
+        if (1 != ert_ownFdCloseOnExec(aFd))
         {
             fprintf(aErrFp, "%u\n", __LINE__);
             break;
@@ -371,7 +371,7 @@ checkChildCloseOnExec(int aFd, FILE *aErrFp)
         {
             do
             {
-                int fd = duplicateFd(aFd, -1);
+                int fd = ert_duplicateFd(aFd, -1);
                 if (-1 == fd)
                 {
                     fprintf(aErrFp, "%u\n", __LINE__);
@@ -403,7 +403,7 @@ checkChildCloseOnExec(int aFd, FILE *aErrFp)
                     break;
                 }
 
-                if (-1 == duplicateFd(fd, 3))
+                if (-1 == ert_duplicateFd(fd, 3))
                 {
                     fprintf(stderr, "%u\n", __LINE__);
                     break;
@@ -543,19 +543,19 @@ TEST(FdTest, OpenStdFds)
                 break;
             }
 
-            if (ownFdCloseOnExec(STDIN_FILENO))
+            if (ert_ownFdCloseOnExec(STDIN_FILENO))
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
             }
 
-            if (ownFdCloseOnExec(STDOUT_FILENO))
+            if (ert_ownFdCloseOnExec(STDOUT_FILENO))
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
             }
 
-            if (ownFdCloseOnExec(STDERR_FILENO))
+            if (ert_ownFdCloseOnExec(STDERR_FILENO))
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
@@ -571,7 +571,7 @@ TEST(FdTest, OpenStdFds)
             close(STDOUT_FILENO);
             close(STDERR_FILENO);
 
-            if (openStdFds())
+            if (ert_openStdFds())
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
@@ -595,20 +595,20 @@ TEST(FdTest, OpenStdFds)
                 break;
             }
 
-            if ( ! ownFdValid(STDIN_FILENO) || read(STDIN_FILENO, buf, 1))
+            if ( ! ert_ownFdValid(STDIN_FILENO) || read(STDIN_FILENO, buf, 1))
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
             }
 
-            if ( ! ownFdValid(STDOUT_FILENO) ||
+            if ( ! ert_ownFdValid(STDOUT_FILENO) ||
                  -1 != write(STDOUT_FILENO, buf, 1) || EPIPE != errno)
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
             }
 
-            if ( ! ownFdValid(STDERR_FILENO) ||
+            if ( ! ert_ownFdValid(STDERR_FILENO) ||
                  -1 != write(STDERR_FILENO, buf, 1) || EPIPE != errno)
             {
                 fprintf(errfp, "%u\n", __LINE__);
@@ -626,7 +626,7 @@ TEST(FdTest, OpenStdFds)
 
             close(STDIN_FILENO);
 
-            if (openStdFds())
+            if (ert_openStdFds())
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
@@ -638,7 +638,7 @@ TEST(FdTest, OpenStdFds)
                 break;
             }
 
-            if ( ! ownFdValid(STDIN_FILENO) || read(STDIN_FILENO, buf, 1))
+            if ( ! ert_ownFdValid(STDIN_FILENO) || read(STDIN_FILENO, buf, 1))
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
@@ -655,13 +655,13 @@ TEST(FdTest, OpenStdFds)
 
             close(STDOUT_FILENO);
 
-            if (openStdFds())
+            if (ert_openStdFds())
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
             }
 
-            if ( ! ownFdValid(STDOUT_FILENO) ||
+            if ( ! ert_ownFdValid(STDOUT_FILENO) ||
                  -1 != write(STDOUT_FILENO, buf, 1) || EPIPE != errno)
             {
                 fprintf(errfp, "%u\n", __LINE__);
@@ -679,13 +679,13 @@ TEST(FdTest, OpenStdFds)
 
             close(STDERR_FILENO);
 
-            if (openStdFds())
+            if (ert_openStdFds())
             {
                 fprintf(errfp, "%u\n", __LINE__);
                 break;
             }
 
-            if ( ! ownFdValid(STDERR_FILENO) ||
+            if ( ! ert_ownFdValid(STDERR_FILENO) ||
                  -1 != write(STDERR_FILENO, buf, 1) || EPIPE != errno)
             {
                 fprintf(errfp, "%u\n", __LINE__);

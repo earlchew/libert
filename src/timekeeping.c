@@ -73,13 +73,13 @@ procUptime(struct Duration *aUptime, const char *aFileName)
     int   fd  = -1;
 
     ERROR_IF(
-        (fd = openFd(aFileName, O_RDONLY, 0),
+        (fd = ert_openFd(aFileName, O_RDONLY, 0),
          -1 == fd));
 
     ssize_t buflen;
 
     ERROR_IF(
-        (buflen = readFdFully(fd, &buf, 64),
+        (buflen = ert_readFdFully(fd, &buf, 64),
          -1 == buflen));
 
     ERROR_UNLESS(
@@ -174,7 +174,7 @@ Finally:
 
     FINALLY
     ({
-        fd = closeFd(fd);
+        fd = ert_closeFd(fd);
 
         free(buf);
     });

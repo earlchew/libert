@@ -322,8 +322,8 @@ Finally:
 
     FINALLY
     ({
-        fd[0] = closeFd(fd[0]);
-        fd[1] = closeFd(fd[1]);
+        fd[0] = ert_closeFd(fd[0]);
+        fd[1] = ert_closeFd(fd[1]);
 
         if (rc)
         {
@@ -463,7 +463,7 @@ Finally:
             if (fdPtr)
             {
                 for (size_t ix = 0; fdLen > ix; ++ix)
-                    fdPtr[ix] = closeFd(fdPtr[ix]);
+                    fdPtr[ix] = ert_closeFd(fdPtr[ix]);
             }
         }
     });
@@ -530,7 +530,7 @@ Finally:
 
     FINALLY
     ({
-        fd = closeFd(fd);
+        fd = ert_closeFd(fd);
     });
 
     return rc;

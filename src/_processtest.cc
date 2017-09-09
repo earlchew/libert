@@ -327,7 +327,7 @@ countFds(struct Ert_FdSet *aFdSet)
 
     for (unsigned fd = 0; fd < fdLimit.rlim_cur; ++fd)
     {
-        if (ownFdValid(fd))
+        if (ert_ownFdValid(fd))
         {
             if (aFdSet)
             {
@@ -522,19 +522,19 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
 
                         do
                         {
-                            if ( ! ownFdValid(STDIN_FILENO))
+                            if ( ! ert_ownFdValid(STDIN_FILENO))
                             {
                                 fprintf(stderr, "%u\n", __LINE__);
                                 break;
                             }
 
-                            if ( ! ownFdValid(STDOUT_FILENO))
+                            if ( ! ert_ownFdValid(STDOUT_FILENO))
                             {
                                 fprintf(stderr, "%u\n", __LINE__);
                                 break;
                             }
 
-                            if ( ! ownFdValid(STDERR_FILENO))
+                            if ( ! ert_ownFdValid(STDERR_FILENO))
                             {
                                 fprintf(stderr, "%u\n", __LINE__);
                                 break;
@@ -558,13 +558,13 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
                                 break;
                             }
 
-                            if (ownFdValid(self->mPipeFds[0]))
+                            if (ert_ownFdValid(self->mPipeFds[0]))
                             {
                                 fprintf(stderr, "%u\n", __LINE__);
                                 break;
                             }
 
-                            if (1 != writeFd(
+                            if (1 != ert_writeFd(
                                     self->mPipeFds[1],
                                     "X", 1, 0))
                             {
@@ -573,7 +573,7 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
                             }
 
                             self->mPipeFds[1] =
-                                closeFd(self->mPipeFds[1]);
+                                ert_closeFd(self->mPipeFds[1]);
 
                             rc = 0;
 
@@ -594,11 +594,11 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
     char buf[1] = { '@' };
 
     EXPECT_EQ(
-        1, readFd(forkTest.mPipeFds[0], buf, sizeof(buf), 0));
+        1, ert_readFd(forkTest.mPipeFds[0], buf, sizeof(buf), 0));
 
     EXPECT_EQ('X', buf[0]);
 
-    forkTest.mPipeFds[0] = closeFd(forkTest.mPipeFds[0]);
+    forkTest.mPipeFds[0] = ert_closeFd(forkTest.mPipeFds[0]);
 
     int status;
     EXPECT_EQ(0, reapProcessChild(childPid, &status));

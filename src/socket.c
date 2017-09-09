@@ -165,7 +165,7 @@ Finally:
     FINALLY
     ({
         if (-1 == rc)
-            fd = closeFd(fd);
+            fd = ert_closeFd(fd);
         appLock = destroyProcessAppLock(appLock);
     });
 

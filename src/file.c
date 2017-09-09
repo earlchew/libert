@@ -96,7 +96,7 @@ Finally:
     FINALLY
     ({
         if (rc && -1 != self->mFd)
-            self->mFd = closeFd(self->mFd);
+            self->mFd = ert_closeFd(self->mFd);
     });
 
     return rc;
@@ -154,7 +154,7 @@ temporaryFileCreate_(const char *aDirName)
 
     int dirFd;
     ERROR_IF(
-        (dirFd = openFd(aDirName, O_RDONLY | O_CLOEXEC, 0),
+        (dirFd = ert_openFd(aDirName, O_RDONLY | O_CLOEXEC, 0),
          -1 == dirFd));
 
     uint32_t rnd =
@@ -192,7 +192,7 @@ Finally:
 
     FINALLY
     ({
-        dirFd = closeFd(dirFd);
+        dirFd = ert_closeFd(dirFd);
     });
 
     return rc;
@@ -454,7 +454,7 @@ Finally:
         temporaryFileProcess = closeTemporaryFileProcess_(temporaryFileProcess);
 
         if (-1 != tmpFd)
-            tmpFd = closeFd(tmpFd);
+            tmpFd = ert_closeFd(tmpFd);
     });
 
     return rc;
@@ -488,9 +488,9 @@ temporaryFile(struct File *self)
         if ( ! testAction(TestLevelRace))
         {
             ERROR_IF(
-                (fd = openFd(tmpDir,
-                             O_TMPFILE | O_RDWR | O_DIRECTORY | O_CLOEXEC,
-                             S_IWUSR | S_IRUSR),
+                (fd = ert_openFd(tmpDir,
+                                 O_TMPFILE | O_RDWR | O_DIRECTORY | O_CLOEXEC,
+                                 S_IWUSR | S_IRUSR),
                  -1 == fd && EISDIR != errno && EOPNOTSUPP != errno));
 
             if (-1 != fd)
@@ -557,7 +557,7 @@ closeFile(struct File *self)
         }
         lock = unlockMutex(lock);
 
-        self->mFd = closeFd(self->mFd);
+        self->mFd = ert_closeFd(self->mFd);
     }
 
     return 0;
@@ -594,7 +594,7 @@ duplicateFile(struct File *self, const struct File *aFile)
     int rc = -1;
 
     ERROR_IF(
-        createFile(self, duplicateFd(aFile->mFd, -1)));
+        createFile(self, ert_duplicateFd(aFile->mFd, -1)));
 
     rc = 0;
 
@@ -609,64 +609,65 @@ Finally:
 int
 nonBlockingFile(struct File *self, unsigned aNonBlocking)
 {
-    return nonBlockingFd(self->mFd, aNonBlocking);
+    return ert_nonBlockingFd(self->mFd, aNonBlocking);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 ownFileNonBlocking(const struct File *self)
 {
-    return ownFdNonBlocking(self->mFd);
+    return ert_ownFdNonBlocking(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 closeFileOnExec(struct File *self, unsigned aCloseOnExec)
 {
-    return closeFdOnExec(self->mFd, aCloseOnExec);
+    return ert_closeFdOnExec(self->mFd, aCloseOnExec);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 ownFileCloseOnExec(const struct File *self)
 {
-    return ownFdCloseOnExec(self->mFd);
+    return ert_ownFdCloseOnExec(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-lockFile(struct File *self, struct LockType aLockType)
+lockFile(struct File *self, struct Ert_LockType ert_aLockType)
 {
-    return lockFd(self->mFd, aLockType);
+    return ert_lockFd(self->mFd, ert_aLockType);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 unlockFile(struct File *self)
 {
-    return unlockFd(self->mFd);
+    return ert_unlockFd(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 lockFileRegion(
-    struct File *self, struct LockType aLockType, off_t aPos, off_t aLen)
+    struct File *self,
+    struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen)
 {
-    return lockFdRegion(self->mFd, aLockType, aPos, aLen);
+    return ert_lockFdRegion(self->mFd, ert_aLockType, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 unlockFileRegion(struct File *self, off_t aPos, off_t aLen)
 {
-    return unlockFdRegion(self->mFd, aPos, aLen);
+    return ert_unlockFdRegion(self->mFd, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
-struct LockType
+struct Ert_LockType
 ownFileRegionLocked(const struct File *self, off_t aPos, off_t aLen)
 {
-    return ownFdRegionLocked(self->mFd, aPos, aLen);
+    return ert_ownFdRegionLocked(self->mFd, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -674,7 +675,7 @@ ssize_t
 writeFile(struct File *self,
           const char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
-    return writeFd(self->mFd, aBuf, aLen, aTimeout);
+    return ert_writeFd(self->mFd, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -682,7 +683,7 @@ ssize_t
 readFile(struct File *self,
          char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
-    return readFd(self->mFd, aBuf, aLen, aTimeout);
+    return ert_readFd(self->mFd, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -691,7 +692,7 @@ writeFileDeadline(struct File *self,
                   const char *aBuf, size_t aLen,
                   struct Ert_Deadline *aDeadline)
 {
-    return writeFdDeadline(self->mFd, aBuf, aLen, aDeadline);
+    return ert_writeFdDeadline(self->mFd, aBuf, aLen, aDeadline);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -699,14 +700,14 @@ ssize_t
 readFileDeadline(struct File *self,
                  char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
-    return readFdDeadline(self->mFd, aBuf, aLen, aDeadline);
+    return ert_readFdDeadline(self->mFd, aBuf, aLen, aDeadline);
 }
 
 /* -------------------------------------------------------------------------- */
 off_t
-lseekFile(struct File *self, off_t aOffset, struct WhenceType aWhenceType)
+lseekFile(struct File *self, off_t aOffset, struct Ert_WhenceType aWhenceType)
 {
-    return lseekFd(self->mFd, aOffset, aWhenceType);
+    return ert_lseekFd(self->mFd, aOffset, aWhenceType);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -735,7 +736,7 @@ int
 waitFileWriteReady(const struct File     *self,
                    const struct Duration *aTimeout)
 {
-    return waitFdWriteReady(self->mFd, aTimeout);
+    return ert_waitFdWriteReady(self->mFd, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -743,7 +744,7 @@ int
 waitFileReadReady(const struct File     *self,
                   const struct Duration *aTimeout)
 {
-    return waitFdReadReady(self->mFd, aTimeout);
+    return ert_waitFdReadReady(self->mFd, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */

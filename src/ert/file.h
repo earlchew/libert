@@ -110,7 +110,7 @@ ERT_CHECKED int
 ownFileCloseOnExec(const struct File *self);
 
 ERT_CHECKED off_t
-lseekFile(struct File *self, off_t aOffset, struct WhenceType aWhenceType);
+lseekFile(struct File *self, off_t aOffset, struct Ert_WhenceType aWhenceType);
 
 ERT_CHECKED int
 fstatFile(struct File *self, struct stat *aStat);
@@ -155,7 +155,7 @@ waitFileReadReady(const struct File     *self,
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-lockFile(struct File *self, struct LockType aLockType);
+lockFile(struct File *self, struct Ert_LockType ert_aLockType);
 
 ERT_CHECKED int
 unlockFile(struct File *self);
@@ -163,12 +163,12 @@ unlockFile(struct File *self);
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
 lockFileRegion(
-    struct File *self, struct LockType aLockType, off_t aPos, off_t aLen);
+    struct File *self, struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen);
 
 ERT_CHECKED int
 unlockFileRegion(struct File *self, off_t aPos, off_t aLen);
 
-struct LockType
+struct Ert_LockType
 ownFileRegionLocked(const struct File *self, off_t aPos, off_t aLen);
 
 /* -------------------------------------------------------------------------- */
