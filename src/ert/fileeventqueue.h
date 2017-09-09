@@ -35,7 +35,7 @@
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
-struct FileEventQueue;
+struct Ert_FileEventQueue;
 ERT_END_C_SCOPE;
 
 #define ERT_METHOD_DEFINITION
@@ -44,6 +44,9 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_ARG_LIST_FileEventQueueActivityMethod  ()
 #define ERT_METHOD_CALL_LIST_FileEventQueueActivityMethod ()
 
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
 #define ERT_METHOD_NAME      FileEventQueueActivityMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_FileEventQueueActivityMethod
 #define ERT_METHOD_CONST     ERT_METHOD_CONST_FileEventQueueActivityMethod
@@ -51,10 +54,10 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_FileEventQueueActivityMethod
 #include "ert/method.h"
 
-#define FileEventQueueActivityMethod(Object_, Method_)      \
+#define Ert_FileEventQueueActivityMethod(Object_, Method_)  \
     ERT_METHOD_TRAMPOLINE(                                  \
         Object_, Method_,                                   \
-        FileEventQueueActivityMethod_,                      \
+        Ert_FileEventQueueActivityMethod_,                  \
         ERT_METHOD_RETURN_FileEventQueueActivityMethod,     \
         ERT_METHOD_CONST_FileEventQueueActivityMethod,      \
         ERT_METHOD_ARG_LIST_FileEventQueueActivityMethod,   \
@@ -65,16 +68,16 @@ ERT_BEGIN_C_SCOPE;
 
 struct Duration;
 
-enum EventQueuePollTrigger
+enum Ert_FileEventQueuePollTrigger
 {
-    EventQueuePollDisconnect,
-    EventQueuePollRead,
-    EventQueuePollWrite,
-    EventQueuePollTriggers,
+    Ert_FileEventQueuePollDisconnect,
+    Ert_FileEventQueuePollRead,
+    Ert_FileEventQueuePollWrite,
+    Ert_FileEventQueuePollTriggers,
 };
 
 /* -------------------------------------------------------------------------- */
-struct FileEventQueue
+struct Ert_FileEventQueue
 {
     struct File         mFile_;
     struct File        *mFile;
@@ -85,39 +88,40 @@ struct FileEventQueue
     int                 mNumPending;
 };
 
-struct FileEventQueueActivity
+struct Ert_FileEventQueueActivity
 {
-    struct FileEventQueue               *mQueue;
+    struct Ert_FileEventQueue               *mQueue;
     struct File                         *mFile;
     struct epoll_event                  *mPending;
     unsigned                             mArmed;
-    struct FileEventQueueActivityMethod  mMethod;
+    struct Ert_FileEventQueueActivityMethod  mMethod;
 };
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createFileEventQueue(struct FileEventQueue *self, int aQueueSize);
+ert_createFileEventQueue(struct Ert_FileEventQueue *self, int aQueueSize);
 
-ERT_CHECKED struct FileEventQueue *
-closeFileEventQueue(struct FileEventQueue *self);
+ERT_CHECKED struct Ert_FileEventQueue *
+ert_closeFileEventQueue(struct Ert_FileEventQueue *self);
 
 ERT_CHECKED int
-pollFileEventQueueActivity(struct FileEventQueue *self,
-                           const struct Duration *aTimeout);
+ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
+                               const struct Duration     *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createFileEventQueueActivity(struct FileEventQueueActivity *self,
-                             struct FileEventQueue         *aQueue,
-                             struct File                   *aFile);
+ert_createFileEventQueueActivity(struct Ert_FileEventQueueActivity *self,
+                                 struct Ert_FileEventQueue         *aQueue,
+                                 struct File                       *aFile);
 
 ERT_CHECKED int
-armFileEventQueueActivity(struct FileEventQueueActivity      *self,
-                          enum EventQueuePollTrigger          aTrigger,
-                          struct FileEventQueueActivityMethod aMethod);
+ert_armFileEventQueueActivity(
+    struct Ert_FileEventQueueActivity      *self,
+    enum Ert_FileEventQueuePollTrigger      aTrigger,
+    struct Ert_FileEventQueueActivityMethod aMethod);
 
-ERT_CHECKED struct FileEventQueueActivity *
-closeFileEventQueueActivity(struct FileEventQueueActivity *self);
+ERT_CHECKED struct Ert_FileEventQueueActivity *
+ert_closeFileEventQueueActivity(struct Ert_FileEventQueueActivity *self);
 
 /* -------------------------------------------------------------------------- */
 
