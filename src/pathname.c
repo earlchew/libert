@@ -39,12 +39,12 @@
 #include <sys/stat.h>
 
 /* -------------------------------------------------------------------------- */
-enum PathNameStatus
-createPathName(struct PathName *self, const char *aFileName)
+enum Ert_PathNameStatus
+ert_createPathName(struct Ert_PathName *self, const char *aFileName)
 {
     int rc = -1;
 
-    enum PathNameStatus status = PathNameStatusOk;
+    enum Ert_PathNameStatus status = PathNameStatusOk;
 
     self->mFileName  = 0;
     self->mBaseName_ = 0;
@@ -88,15 +88,15 @@ Finally:
             status = PathNameStatusError;
 
         if (PathNameStatusOk != status)
-            self = closePathName(self);
+            self = ert_closePathName(self);
     });
 
     return status;
 }
 
 /* -------------------------------------------------------------------------- */
-struct PathName *
-closePathName(struct PathName *self)
+struct Ert_PathName *
+ert_closePathName(struct Ert_PathName *self)
 {
     if (self)
     {
@@ -121,21 +121,21 @@ closePathName(struct PathName *self)
 
 /* -------------------------------------------------------------------------- */
 int
-openPathName(struct PathName *self, int aFlags, mode_t aMode)
+ert_openPathName(struct Ert_PathName *self, int aFlags, mode_t aMode)
 {
     return openat(self->mDirFile->mFd, self->mBaseName, aFlags, aMode);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-unlinkPathName(struct PathName *self, int aFlags)
+ert_unlinkPathName(struct Ert_PathName *self, int aFlags)
 {
     return unlinkat(self->mDirFile->mFd, self->mBaseName, aFlags);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-fstatPathName(const struct PathName *self, struct stat *aStat, int aFlags)
+ert_fstatPathName(const struct Ert_PathName *self, struct stat *aStat, int aFlags)
 {
     return fstatat(self->mDirFile->mFd, self->mBaseName, aStat, aFlags);
 }

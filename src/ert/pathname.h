@@ -36,7 +36,7 @@ ERT_BEGIN_C_SCOPE;
 
 struct stat;
 
-struct PathName
+struct Ert_PathName
 {
     char *mFileName;
     char *mDirName_;
@@ -48,7 +48,7 @@ struct PathName
     struct Ert_File *mDirFile;
 };
 
-enum PathNameStatus
+enum Ert_PathNameStatus
 {
     PathNameStatusError        = -1,
     PathNameStatusOk           = 0,
@@ -56,20 +56,20 @@ enum PathNameStatus
 };
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED enum PathNameStatus
-createPathName(struct PathName *self, const char *aFileName);
+ERT_CHECKED enum Ert_PathNameStatus
+ert_createPathName(struct Ert_PathName *self, const char *aFileName);
 
-ERT_CHECKED struct PathName *
-closePathName(struct PathName *self);
-
-ERT_CHECKED int
-openPathName(struct PathName *self, int aFlags, mode_t aMode);
+ERT_CHECKED struct Ert_PathName *
+ert_closePathName(struct Ert_PathName *self);
 
 ERT_CHECKED int
-unlinkPathName(struct PathName *self, int aFlags);
+ert_openPathName(struct Ert_PathName *self, int aFlags, mode_t aMode);
 
 ERT_CHECKED int
-fstatPathName(const struct PathName *self, struct stat *aStat, int aFlags);
+ert_unlinkPathName(struct Ert_PathName *self, int aFlags);
+
+ERT_CHECKED int
+ert_fstatPathName(const struct Ert_PathName *self, struct stat *aStat, int aFlags);
 
 /* -------------------------------------------------------------------------- */
 
