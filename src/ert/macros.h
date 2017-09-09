@@ -29,63 +29,64 @@
 #ifndef ERT_MACROS_H
 #define ERT_MACROS_H
 
-#define NUMBEROF(Vector_) (sizeof((Vector_))/sizeof((Vector_)[0]))
+#define ERT_NUMBEROF(Vector_) (sizeof((Vector_))/sizeof((Vector_)[0]))
 
-#define STRINGIFY_(Text_) #Text_
-#define STRINGIFY(Text_)  STRINGIFY_(Text_)
+#define ERT_STRINGIFY_(Text_) #Text_
+#define ERT_STRINGIFY(Text_)  ERT_STRINGIFY_(Text_)
 
-#define ARGS(...)   , ## __VA_ARGS__
-#define EXPAND(...) __VA_ARGS__
+#define ERT_ARGS(...)   , ## __VA_ARGS__
+#define ERT_EXPAND(...) __VA_ARGS__
 
-#define CONCAT_(Lhs_, Rhs_) Lhs_ ## Rhs_
-#define CONCAT(Lhs_, Rhs_)  CONCAT_(Lhs_, Rhs_)
+#define ERT_CONCAT_(Lhs_, Rhs_) Lhs_ ## Rhs_
+#define ERT_CONCAT(Lhs_, Rhs_)  ERT_CONCAT_(Lhs_, Rhs_)
 
-#define CAR(...)        CAR_(__VA_ARGS__)
-#define CDR(...)        CDR_(__VA_ARGS__)
-#define CAR_(Car_, ...) Car_
-#define CDR_(Car_, ...) , ## __VA_ARGS__
+#define ERT_CAR(...)        ERT_CAR_(__VA_ARGS__)
+#define ERT_CDR(...)        ERT_CDR_(__VA_ARGS__)
+#define ERT_CAR_(Car_, ...) Car_
+#define ERT_CDR_(Car_, ...) , ## __VA_ARGS__
 
-#define IFEMPTY(True_, False_, ...)  IFEMPTY_(True_, False_, __VA_ARGS__)
-#define IFEMPTY_(True_, False_, ...) IFEMPTY_1_(IFEMPTY_COMMA_ \
-                                                __VA_ARGS__ (), True_, False_)
-#define IFEMPTY_COMMA_()             ,
-#define IFEMPTY_1_(A_, B_, C_)       IFEMPTY_2_(A_, B_, C_)
-#define IFEMPTY_2_(A_, B_, C_, ...)  C_
+#define ERT_IFEMPTY(True_, False_, ...)  \
+    ERT_IFEMPTY_(True_, False_, __VA_ARGS__)
+#define ERT_IFEMPTY_(True_, False_, ...) \
+    ERT_IFEMPTY_1_(ERT_IFEMPTY_COMMA_ __VA_ARGS__ (), True_, False_)
+#define ERT_IFEMPTY_COMMA_()             ,
+#define ERT_IFEMPTY_1_(A_, B_, C_)       ERT_IFEMPTY_2_(A_, B_, C_)
+#define ERT_IFEMPTY_2_(A_, B_, C_, ...)  C_
 
-#define SWAP(Lhs_, Rhs_)                        \
+#define ERT_SWAP(Lhs_, Rhs_)                    \
 do                                              \
 {                                               \
-    ERT_AUTO(swp_, Lhs_);                           \
+    ERT_AUTO(swp_, Lhs_);                       \
     Lhs_ = Rhs_;                                \
     Rhs_ = swp_;                                \
 } while (0)
 
-#define MIN(Lhs_, Rhs_)                         \
+#define ERT_MIN(Lhs_, Rhs_)                     \
 ({                                              \
-    ERT_AUTO(lhs_, (Lhs_));                         \
-    ERT_AUTO(rhs_, (Rhs_));                         \
+    ERT_AUTO(lhs_, (Lhs_));                     \
+    ERT_AUTO(rhs_, (Rhs_));                     \
                                                 \
     lhs_ < rhs_ ? lhs_ : rhs_;                  \
 })
 
-#define MAX(Lhs_, Rhs_)                         \
+#define ERT_MAX(Lhs_, Rhs_)                     \
 ({                                              \
-    ERT_AUTO(lhs_, (Lhs_));                         \
-    ERT_AUTO(rhs_, (Rhs_));                         \
+    ERT_AUTO(lhs_, (Lhs_));                     \
+    ERT_AUTO(rhs_, (Rhs_));                     \
                                                 \
     lhs_ < rhs_ ? rhs_ : lhs_;                  \
 })
 
-#define ROUNDUP(Value_, Alignment_)                             \
+#define ERT_ROUNDUP(Value_, Alignment_)                         \
 ({                                                              \
-    ERT_AUTO(alignment_, (Alignment_));                             \
+    ERT_AUTO(alignment_, (Alignment_));                         \
                                                                 \
     ( (Value_) + alignment_ - 1 ) / alignment_ * alignment_;    \
 })
 
-#define ROUNDDOWN(Value_, Alignment_)           \
+#define ERT_ROUNDDOWN(Value_, Alignment_)       \
 ({                                              \
-    ERT_AUTO(alignment_, (Alignment_));             \
+    ERT_AUTO(alignment_, (Alignment_));         \
                                                 \
     (Value_) / alignment_ * alignment_;         \
 })
