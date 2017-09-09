@@ -249,12 +249,12 @@ TEST_F(ProcessTest, ProcessDaemon)
                         struct SocketPair *socketPair =
                             aBellSocket->mSocketPair;
 
-                        if (insertFdSet(
+                        if (ert_insertFdSet(
                                 aPreFork->mWhitelistFds,
                                 socketPair->mParentSocket->mSocket->mFile->mFd))
                             break;
 
-                        if (insertFdSet(
+                        if (ert_insertFdSet(
                                 aPreFork->mWhitelistFds,
                                 socketPair->mChildSocket->mSocket->mFile->mFd))
                             break;
@@ -297,13 +297,13 @@ TEST_F(ProcessTest, ProcessDaemon)
 
 struct ProcessForkArg
 {
-    bool             mStart;
-    pthread_cond_t   mCond_;
-    pthread_cond_t  *mCond;
-    pthread_mutex_t  mMutex_;
-    pthread_mutex_t *mMutex;
-    struct FdSet     mFdSet_;
-    struct FdSet    *mFdSet;
+    bool              mStart;
+    pthread_cond_t    mCond_;
+    pthread_cond_t   *mCond;
+    pthread_mutex_t   mMutex_;
+    pthread_mutex_t  *mMutex;
+    struct Ert_FdSet  mFdSet_;
+    struct Ert_FdSet *mFdSet;
 
     unsigned mNumFds;
     unsigned mNumForks;
@@ -316,7 +316,7 @@ struct ProcessForkTest
 };
 
 static unsigned
-countFds(struct FdSet *aFdSet)
+countFds(struct Ert_FdSet *aFdSet)
 {
     struct rlimit fdLimit;
 
@@ -331,7 +331,7 @@ countFds(struct FdSet *aFdSet)
         {
             if (aFdSet)
             {
-                if (insertFdSet(aFdSet, fd))
+                if (ert_insertFdSet(aFdSet, fd))
                     abort();
             }
             ++numFds;
@@ -343,28 +343,29 @@ countFds(struct FdSet *aFdSet)
 
 static int
 filterFds(struct ProcessForkArg *aArg,
-          struct FdSet *aBlacklist)
+          struct Ert_FdSet *aBlacklist)
 {
-    return visitFdSet(aArg->mFdSet,
-                      FdSetVisitor(
-                          aBlacklist,
-                          LAMBDA(
-                              int, (struct FdSet  *aBlacklist_,
-                                    struct FdRange aRange),
-                              {
-                                  for (int fd = aRange.mLhs; ; ++fd)
-                                  {
-                                      if (removeFdSet(aBlacklist_, fd) &&
-                                          ENOENT != errno)
-                                      {
-                                          abort();
-                                      }
-                                      if (fd == aRange.mRhs)
-                                          break;
-                                  }
+    return ert_visitFdSet(
+        aArg->mFdSet,
+        Ert_FdSetVisitor(
+            aBlacklist,
+            LAMBDA(
+                int, (struct Ert_FdSet  *aBlacklist_,
+                      struct Ert_FdRange aRange),
+                {
+                    for (int fd = aRange.mLhs; ; ++fd)
+                    {
+                        if (ert_removeFdSet(aBlacklist_, fd) &&
+                            ENOENT != errno)
+                        {
+                            abort();
+                        }
+                        if (fd == aRange.mRhs)
+                            break;
+                    }
 
-                                  return 0;
-                              })));
+                    return 0;
+                })));
 }
 
 static void
@@ -408,18 +409,18 @@ processForkTest_CloseFds_(struct ProcessForkArg *aArg)
 
                                      do
                                      {
-                                         if (insertFdSetRange(
+                                         if (ert_insertFdSetRange(
                                                  aPreFork->mWhitelistFds,
-                                                 FdRange(0, INT_MAX)))
+                                                 Ert_FdRange(0, INT_MAX)))
                                          {
                                              fprintf(stderr, "%u 1\n",
                                                      __LINE__);
                                              break;
                                          }
 
-                                         if (insertFdSetRange(
+                                         if (ert_insertFdSetRange(
                                                  aPreFork->mBlacklistFds,
-                                                 FdRange(0, INT_MAX)))
+                                                 Ert_FdRange(0, INT_MAX)))
                                          {
                                              fprintf(stderr, "%u 2\n",
                                                      __LINE__);
@@ -481,13 +482,13 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
 
                         err = err
                             ? err
-                            : insertFdSet(
+                            : ert_insertFdSet(
                                 aFork->mBlacklistFds,
                                 self->mPipeFds[1]);
 
                         err = err
                             ? err
-                            : insertFdSet(
+                            : ert_insertFdSet(
                                 aFork->mWhitelistFds,
                                 self->mPipeFds[1]);
 
@@ -883,7 +884,7 @@ TEST_F(ProcessTest, ProcessFork)
     forkArg.mNumForks = NUMBEROF(thread);
 
     EXPECT_EQ(
-        0, createFdSet(&forkArg.mFdSet_));
+        0, ert_createFdSet(&forkArg.mFdSet_));
     forkArg.mFdSet  = &forkArg.mFdSet_;
     forkArg.mNumFds = countFds(forkArg.mFdSet);
 
@@ -935,7 +936,7 @@ TEST_F(ProcessTest, ProcessFork)
     EXPECT_EQ(-1, wait(&status));
     EXPECT_EQ(ECHILD, errno);
 
-    forkArg.mFdSet = closeFdSet(forkArg.mFdSet);
+    forkArg.mFdSet = ert_closeFdSet(forkArg.mFdSet);
     forkArg.mCond  = destroyCond(forkArg.mCond);
     forkArg.mMutex = destroyMutex(forkArg.mMutex);
 }
@@ -957,7 +958,7 @@ runSlave(void)
                         int, (char                        *self_,
                               const struct PreForkProcess *aPreFork),
                         {
-                            return fillFdSet(
+                            return ert_fillFdSet(
                                 aPreFork->mBlacklistFds);
                         })),
                 PostForkChildProcessMethodNil(),
@@ -992,7 +993,7 @@ TEST_F(ProcessTest, ProcessForkRecursiveParent)
                 int, (char                        *self_,
                       const struct PreForkProcess *aPreFork),
                 {
-                    return fillFdSet(
+                    return ert_fillFdSet(
                         aPreFork->mBlacklistFds);
                 })),
         PostForkChildProcessMethodNil(),
@@ -1024,7 +1025,7 @@ TEST_F(ProcessTest, ProcessForkRecursiveChild)
                 int, (char                        *self_,
                       const struct PreForkProcess *aPreFork),
                 {
-                    return fillFdSet(
+                    return ert_fillFdSet(
                         aPreFork->mBlacklistFds);
                 })),
         PostForkChildProcessMethod(

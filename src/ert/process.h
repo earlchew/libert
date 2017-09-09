@@ -44,12 +44,12 @@
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
 
-struct FdSet;
+struct Ert_FdSet;
 
 struct PreForkProcess
 {
-    struct FdSet *mBlacklistFds;
-    struct FdSet *mWhitelistFds;
+    struct Ert_FdSet *mBlacklistFds;
+    struct Ert_FdSet *mWhitelistFds;
 };
 
 ERT_END_C_SCOPE;

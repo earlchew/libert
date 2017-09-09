@@ -215,7 +215,7 @@ struct FdWhiteListVisitor_
 
 static int
 closeFdWhiteListVisitor_(
-    struct FdWhiteListVisitor_ *self, struct FdRange aRange)
+    struct FdWhiteListVisitor_ *self, struct Ert_FdRange aRange)
 {
     int rc = -1;
 
@@ -261,7 +261,7 @@ Finally:
 }
 
 int
-closeFdExceptWhiteList(const struct FdSet *aFdSet)
+closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet)
 {
     int rc = -1;
 
@@ -273,9 +273,9 @@ closeFdExceptWhiteList(const struct FdSet *aFdSet)
         getrlimit(RLIMIT_NOFILE, &whiteListVisitor.mFdLimit));
 
     ERROR_IF(
-        -1 == visitFdSet(
+        -1 == ert_visitFdSet(
             aFdSet,
-            FdSetVisitor(&whiteListVisitor, closeFdWhiteListVisitor_)));
+            Ert_FdSetVisitor(&whiteListVisitor, closeFdWhiteListVisitor_)));
 
     /* Cover off all the file descriptors from the end of the last
      * whitelisted range, to the end of the process file descriptor
@@ -284,7 +284,7 @@ closeFdExceptWhiteList(const struct FdSet *aFdSet)
     ERROR_UNLESS(
         1 == closeFdWhiteListVisitor_(
             &whiteListVisitor,
-            FdRange(
+            Ert_FdRange(
                 whiteListVisitor.mFdLimit.rlim_cur,
                 whiteListVisitor.mFdLimit.rlim_cur)));
 
@@ -305,7 +305,7 @@ struct FdBlackListVisitor_
 
 static int
 closeFdBlackListVisitor_(
-    struct FdBlackListVisitor_ *self, struct FdRange aRange)
+    struct FdBlackListVisitor_ *self, struct Ert_FdRange aRange)
 {
     int rc = -1;
 
@@ -343,7 +343,7 @@ Finally:
 }
 
 int
-closeFdOnlyBlackList(const struct FdSet *aFdSet)
+closeFdOnlyBlackList(const struct Ert_FdSet *aFdSet)
 {
     int rc = -1;
 
@@ -353,9 +353,9 @@ closeFdOnlyBlackList(const struct FdSet *aFdSet)
         getrlimit(RLIMIT_NOFILE, &blackListVisitor.mFdLimit));
 
     ERROR_IF(
-        -1 == visitFdSet(
+        -1 == ert_visitFdSet(
             aFdSet,
-            FdSetVisitor(&blackListVisitor, closeFdBlackListVisitor_)));
+            Ert_FdSetVisitor(&blackListVisitor, closeFdBlackListVisitor_)));
 
     rc = 0;
 

@@ -39,7 +39,7 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_Deadline;
 struct Duration;
-struct FdSet;
+struct Ert_FdSet;
 
 /* -------------------------------------------------------------------------- */
 struct LockType
@@ -100,10 +100,10 @@ ERT_CHECKED int
 closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen);
 
 ERT_CHECKED int
-closeFdExceptWhiteList(const struct FdSet *aFdSet);
+closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet);
 
 ERT_CHECKED int
-closeFdOnlyBlackList(const struct FdSet *aFdSet);
+closeFdOnlyBlackList(const struct Ert_FdSet *aFdSet);
 
 bool
 stdFd(int aFd);

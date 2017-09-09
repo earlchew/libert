@@ -1783,7 +1783,7 @@ Finally:
 static ERT_CHECKED int
 includeForkProcessChannelFdSet_(
     const struct ForkProcessChannel_ *self,
-    struct FdSet                     *aFdSet)
+    struct Ert_FdSet                     *aFdSet)
 {
     int rc = -1;
 
@@ -1803,7 +1803,7 @@ includeForkProcessChannelFdSet_(
     {
         if (filelist[ix])
             ERROR_IF(
-                insertFdSetFile(aFdSet, filelist[ix]) &&
+                ert_insertFdSetFile(aFdSet, filelist[ix]) &&
                 EEXIST != errno);
     }
 
@@ -1819,7 +1819,7 @@ Finally:
 static ERT_CHECKED int
 excludeForkProcessChannelFdSet_(
     const struct ForkProcessChannel_ *self,
-    struct FdSet                     *aFdSet)
+    struct Ert_FdSet                     *aFdSet)
 {
     int rc = -1;
 
@@ -1839,7 +1839,7 @@ excludeForkProcessChannelFdSet_(
     {
         if (filelist[ix])
             ERROR_IF(
-                removeFdSetFile(aFdSet, filelist[ix]) &&
+                ert_removeFdSetFile(aFdSet, filelist[ix]) &&
                 ENOENT != errno);
     }
 
@@ -1982,7 +1982,7 @@ forkProcessChild_PostParent_(
     struct Pid                         aChildPid,
     struct Pgid                        aChildPgid,
     struct PostForkParentProcessMethod aPostForkParentMethod,
-    struct FdSet                      *aBlacklistFds)
+    struct Ert_FdSet                      *aBlacklistFds)
 {
     int rc = -1;
 
@@ -2093,7 +2093,7 @@ forkProcessChild_PostParent_(
 
                 int err;
                 ERROR_IF(
-                    (err = removeFdSet(aBlacklistFds, fd),
+                    (err = ert_removeFdSet(aBlacklistFds, fd),
                      err && ENOENT != errno));
 
                 if ( ! err && -1 != altFd)
@@ -2129,7 +2129,7 @@ forkProcessChild_PostChild_(
     enum ForkProcessOption             aOption,
     struct Pgid                        aChildPgid,
     struct PostForkChildProcessMethod  aPostForkChildMethod,
-    struct FdSet                      *aWhitelistFds)
+    struct Ert_FdSet                      *aWhitelistFds)
 {
     int rc = -1;
 
@@ -2243,11 +2243,11 @@ forkProcessChild(enum ForkProcessOption             aOption,
 
     struct Pid childPid = Pid(-1);
 
-    struct FdSet  blacklistFds_;
-    struct FdSet *blacklistFds = 0;
+    struct Ert_FdSet  blacklistFds_;
+    struct Ert_FdSet *blacklistFds = 0;
 
-    struct FdSet  whitelistFds_;
-    struct FdSet *whitelistFds = 0;
+    struct Ert_FdSet  whitelistFds_;
+    struct Ert_FdSet *whitelistFds = 0;
 
     struct ForkProcessChannel_  forkChannel_;
     struct ForkProcessChannel_ *forkChannel = 0;
@@ -2262,11 +2262,11 @@ forkProcessChild(enum ForkProcessOption             aOption,
     ensure(ForkProcessSetProcessGroup == aOption || ! aPgid.mPgid);
 
     ERROR_IF(
-        createFdSet(&blacklistFds_));
+        ert_createFdSet(&blacklistFds_));
     blacklistFds = &blacklistFds_;
 
     ERROR_IF(
-        createFdSet(&whitelistFds_));
+        ert_createFdSet(&whitelistFds_));
     whitelistFds = &whitelistFds_;
 
     ERROR_IF(
@@ -2300,19 +2300,19 @@ forkProcessChild(enum ForkProcessOption             aOption,
     for (unsigned ix = 0; NUMBEROF(stdfdlist) > ix; ++ix)
     {
         ERROR_IF(
-            insertFdSet(whitelistFds, stdfdlist[ix]) && EEXIST != errno);
+            ert_insertFdSet(whitelistFds, stdfdlist[ix]) && EEXIST != errno);
 
         ERROR_IF(
-            removeFdSet(blacklistFds, stdfdlist[ix]) && ENOENT != errno);
+            ert_removeFdSet(blacklistFds, stdfdlist[ix]) && ENOENT != errno);
     }
 
     if (processLock_.mLock)
     {
         ERROR_IF(
-            insertFdSetFile(whitelistFds,
+            ert_insertFdSetFile(whitelistFds,
                             processLock_.mLock->mFile) && EEXIST != errno);
         ERROR_IF(
-            removeFdSetFile(blacklistFds,
+            ert_removeFdSetFile(blacklistFds,
                             processLock_.mLock->mFile) && ENOENT != errno);
     }
 
@@ -2380,8 +2380,8 @@ Finally:
     FINALLY
     ({
         forkChannel  = closeForkProcessChannel_(forkChannel);
-        blacklistFds = closeFdSet(blacklistFds);
-        whitelistFds = closeFdSet(whitelistFds);
+        blacklistFds = ert_closeFdSet(blacklistFds);
+        whitelistFds = ert_closeFdSet(whitelistFds);
 
         forkLock = releaseProcessForkChildLock_(forkLock);
 
@@ -2504,7 +2504,7 @@ forkProcessDaemonGuardian_(struct ForkProcessDaemon *self)
                     int, (struct ForkProcessDaemon    *self_,
                           const struct PreForkProcess *aPreFork),
                     {
-                        return fillFdSet(aPreFork->mWhitelistFds);
+                        return ert_fillFdSet(aPreFork->mWhitelistFds);
                     })),
             self->mChildMethod,
             PostForkParentProcessMethodNil(),
@@ -2570,25 +2570,25 @@ forkProcessDaemonPreparation_(struct ForkProcessDaemon    *self,
             callPreForkProcessMethod(self->mPreForkMethod, aPreFork));
 
     ERROR_IF(
-        removeFdSet(
+        ert_removeFdSet(
             aPreFork->mBlacklistFds,
             self->mSyncSocket->mParentSocket->mSocket->mFile->mFd) &&
         ENOENT != errno);
 
     ERROR_IF(
-        insertFdSet(
+        ert_insertFdSet(
             aPreFork->mWhitelistFds,
             self->mSyncSocket->mParentSocket->mSocket->mFile->mFd) &&
         EEXIST != errno);
 
     ERROR_IF(
-        removeFdSet(
+        ert_removeFdSet(
             aPreFork->mBlacklistFds,
             self->mSyncSocket->mChildSocket->mSocket->mFile->mFd) &&
         ENOENT != errno);
 
     ERROR_IF(
-        insertFdSet(
+        ert_insertFdSet(
             aPreFork->mWhitelistFds,
             self->mSyncSocket->mChildSocket->mSocket->mFile->mFd) &&
         EEXIST != errno);

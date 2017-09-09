@@ -305,12 +305,12 @@ prepareTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self,
             ThreadMethod(self, recvTemporaryFileProcessFd_)));
 
     ERROR_IF(
-        insertFdSetFile(
+        ert_insertFdSetFile(
             aFork->mWhitelistFds,
             self->mSocketPair->mParentSocket->mSocket->mFile));
 
     ERROR_IF(
-        insertFdSetFile(
+        ert_insertFdSetFile(
             aFork->mWhitelistFds,
             self->mSocketPair->mChildSocket->mSocket->mFile));
 
