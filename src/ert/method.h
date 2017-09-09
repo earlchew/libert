@@ -155,7 +155,9 @@ CONCAT(
 }
 
 static __inline__ bool
-CONCAT(CONCAT(own, ERT_METHOD_NAME_), Nil)(struct ERT_METHOD_NAME_ self)
+CONCAT(
+    CONCAT(CONCAT(ERT_METHOD_FUNCTION_PREFIX, own), ERT_METHOD_NAME), Nil)(
+        struct ERT_METHOD_NAME_ self)
 {
     return ! self.mMethod;
 }

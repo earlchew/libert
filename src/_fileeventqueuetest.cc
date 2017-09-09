@@ -37,12 +37,12 @@
 static int eventCount_;
 
 static int
-armTestFileQueueActivity(struct FileEventQueueActivity *aActivity)
+armTestFileQueueActivity(struct Ert_FileEventQueueActivity *aActivity)
 {
-    return armFileEventQueueActivity(
+    return ert_armFileEventQueueActivity(
         aActivity,
-        EventQueuePollRead,
-        FileEventQueueActivityMethod(
+        Ert_FileEventQueuePollRead,
+        Ert_FileEventQueueActivityMethod(
             (char *) 0,
             LAMBDA(
                 int, (char *self_),
@@ -56,7 +56,7 @@ class FileEventQueueTest : public ::testing::Test
 {
     void SetUp()
     {
-        ASSERT_EQ(0, createFileEventQueue(&mEventQueue_, 2));
+        ASSERT_EQ(0, ert_createFileEventQueue(&mEventQueue_, 2));
         mEventQueue = &mEventQueue_;
 
         ASSERT_EQ(0, ert_createBellSocketPair(&mTestSocket_, 0));
@@ -70,19 +70,19 @@ class FileEventQueueTest : public ::testing::Test
         ASSERT_EQ(0, mEventActivity);
 
         mTestSocket = ert_closeBellSocketPair(mTestSocket);
-        mEventQueue = closeFileEventQueue(mEventQueue);
+        mEventQueue = ert_closeFileEventQueue(mEventQueue);
     }
 
 protected:
 
-    struct FileEventQueue  mEventQueue_;
-    struct FileEventQueue *mEventQueue;
+    struct Ert_FileEventQueue  mEventQueue_;
+    struct Ert_FileEventQueue *mEventQueue;
 
     struct Ert_BellSocketPair  mTestSocket_;
     struct Ert_BellSocketPair *mTestSocket;
 
-    struct FileEventQueueActivity  mEventActivity_;
-    struct FileEventQueueActivity *mEventActivity;
+    struct Ert_FileEventQueueActivity  mEventActivity_;
+    struct Ert_FileEventQueueActivity *mEventActivity;
 };
 
 TEST_F(FileEventQueueTest, ArmReadyPollClose)
@@ -90,20 +90,20 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
     /* Create the event queue file, arm it, make it ready, and poll the
      * event queue. This is the expected life cycle of the event file. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
     mEventActivity = &mEventActivity_;
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
@@ -111,14 +111,14 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, 0));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, 0));
     EXPECT_EQ(1, eventCount_);
 
     /* Ensure that simply polling again will not result in additional
      * activity since event activity has not yet been re-armed. */
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     /* Now re-arm the event activity, and verify that polling results
@@ -126,17 +126,17 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, 0));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, 0));
     EXPECT_EQ(1, eventCount_);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -146,14 +146,14 @@ TEST_F(FileEventQueueTest, ReadyArmPollClose)
      * event queue. This is the alternate expected life cycle of the
      * event file. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
     mEventActivity = &mEventActivity_;
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
@@ -163,13 +163,13 @@ TEST_F(FileEventQueueTest, ReadyArmPollClose)
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(1, eventCount_);
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -179,30 +179,30 @@ TEST_F(FileEventQueueTest, ArmPollReadyClose)
      * make it ready. This is the alternate expected life cycle of the
      * event file. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
     mEventActivity = &mEventActivity_;
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -212,7 +212,7 @@ TEST_F(FileEventQueueTest, ArmClose)
      * Simply close the event queue file, and then verify that it has
      * taken itself off the event queue. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
@@ -220,10 +220,10 @@ TEST_F(FileEventQueueTest, ArmClose)
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -233,7 +233,7 @@ TEST_F(FileEventQueueTest, ArmReadyClose)
      * the event queue. Simply close the event queue file, and then verify
      * that it has taken itself off the event queue. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
@@ -245,10 +245,10 @@ TEST_F(FileEventQueueTest, ArmReadyClose)
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -258,7 +258,7 @@ TEST_F(FileEventQueueTest, ReadyArmClose)
      * the event queue. Simply close the event queue file, and then verify
      * that it has taken itself off the event queue. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
@@ -270,15 +270,15 @@ TEST_F(FileEventQueueTest, ReadyArmClose)
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, 0));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, 0));
     EXPECT_EQ(1, eventCount_);
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -287,16 +287,16 @@ TEST_F(FileEventQueueTest, Close)
     /* Create the event queue file, then immediately close it to
      * verify that it can be cleaned up. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
     mEventActivity = &mEventActivity_;
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -305,7 +305,7 @@ TEST_F(FileEventQueueTest, ReadyClose)
     /* Create the event queue file, make it ready, then close it to
      * verify that it can be cleaned up. */
 
-    EXPECT_EQ(0, createFileEventQueueActivity(
+    EXPECT_EQ(0, ert_createFileEventQueueActivity(
                   &mEventActivity_,
                   mEventQueue,
                   mTestSocket->mSocketPair->mParentSocket->mSocket->mFile));
@@ -315,10 +315,10 @@ TEST_F(FileEventQueueTest, ReadyClose)
     EXPECT_EQ(1, waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
-    mEventActivity = closeFileEventQueueActivity(mEventActivity);
+    mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
