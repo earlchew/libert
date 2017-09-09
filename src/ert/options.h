@@ -38,17 +38,17 @@
 ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
-struct Options
+struct Ert_Options
 {
     unsigned mDebug;
     unsigned mTest;
 };
 
-extern struct Options gErtOptions_;
+extern struct Ert_Options gErtOptions_;
 
 /* -------------------------------------------------------------------------- */
 void
-initOptions(const struct Options *aOpts);
+ert_initOptions(const struct Ert_Options *aOpts);
 
 /* -------------------------------------------------------------------------- */
 
