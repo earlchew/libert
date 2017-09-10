@@ -82,7 +82,7 @@ TEST_F(ProcessTest, ProcessSignalName)
 TEST_F(ProcessTest, ProcessState)
 {
     EXPECT_EQ(ProcessState::ProcessStateError,
-              fetchProcessState(Pid(-1)).mState);
+              fetchProcessState(Ert_Pid(-1)).mState);
 
     EXPECT_EQ(ProcessState::ProcessStateRunning,
               fetchProcessState(ownProcessId()).mState);
@@ -93,7 +93,7 @@ TEST_F(ProcessTest, ProcessStatus)
     EXPECT_EQ(ChildProcessState::ChildProcessStateError,
               monitorProcessChild(ownProcessId()).mChildState);
 
-    struct Pid childpid = Pid(fork());
+    struct Ert_Pid childpid = Ert_Pid(fork());
 
     EXPECT_NE(-1, childpid.mPid);
 
@@ -235,7 +235,7 @@ TEST_F(ProcessTest, ProcessDaemon)
     daemonState->mErrno      = ENOSYS;
     daemonState->mBellSocket = bellSocket;
 
-    struct Pid daemonPid = forkProcessDaemon(
+    struct Ert_Pid daemonPid = forkProcessDaemon(
         PreForkProcessMethod(
             bellSocket,
             ERT_LAMBDA(
@@ -312,7 +312,7 @@ struct ProcessForkArg
 struct ProcessForkTest
 {
     int        mPipeFds[2];
-    struct Pid mChildPid;
+    struct Ert_Pid mChildPid;
 };
 
 static unsigned
@@ -373,9 +373,9 @@ processForkTest_Trivial_()
 {
     /* Simple with no prefork or postfork methods */
 
-    struct Pid childPid =
+    struct Ert_Pid childPid =
         forkProcessChild(ForkProcessInheritProcessGroup,
-                         Pgid(0),
+                         Ert_Pgid(0),
                          PreForkProcessMethodNil(),
                          PostForkChildProcessMethodNil(),
                          PostForkParentProcessMethodNil(),
@@ -396,9 +396,9 @@ processForkTest_CloseFds_(struct ProcessForkArg *aArg)
 {
     /* Simple with no prefork or postfork methods */
 
-    struct Pid childPid =
+    struct Ert_Pid childPid =
         forkProcessChild(ForkProcessInheritProcessGroup,
-                         Pgid(0),
+                         Ert_Pgid(0),
                          PreForkProcessMethod(
                              aArg,
                              ERT_LAMBDA(
@@ -463,10 +463,10 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
 
     struct ProcessForkTest forkTest;
 
-    struct Pid childPid =
+    struct Ert_Pid childPid =
         forkProcessChild(
             ForkProcessInheritProcessGroup,
-            Pgid(0),
+            Ert_Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
@@ -505,7 +505,7 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
-                          struct Pid              aChildPid),
+                          struct Ert_Pid              aChildPid),
                     {
                         self->mChildPid = aChildPid;
 
@@ -614,10 +614,10 @@ processForkTest_FailedPreFork_()
 
     errno = 0;
 
-    struct Pid childPid =
+    struct Ert_Pid childPid =
         forkProcessChild(
             ForkProcessInheritProcessGroup,
-            Pgid(0),
+            Ert_Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
@@ -642,7 +642,7 @@ processForkTest_FailedPreFork_()
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
-                          struct Pid              aChildPid),
+                          struct Ert_Pid              aChildPid),
                     {
                         abort();
 
@@ -693,10 +693,10 @@ processForkTest_FailedChildPostFork_()
 
     errno = 0;
 
-    struct Pid childPid =
+    struct Ert_Pid childPid =
         forkProcessChild(
             ForkProcessInheritProcessGroup,
-            Pgid(0),
+            Ert_Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
@@ -717,7 +717,7 @@ processForkTest_FailedChildPostFork_()
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
-                          struct Pid              aChildPid),
+                          struct Ert_Pid              aChildPid),
                     {
                         abort();
 
@@ -748,10 +748,10 @@ processForkTest_FailedParentPostFork_()
 
     errno = 0;
 
-    struct Pid childPid =
+    struct Ert_Pid childPid =
         forkProcessChild(
             ForkProcessInheritProcessGroup,
-            Pgid(0),
+            Ert_Pgid(0),
             PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
@@ -772,7 +772,7 @@ processForkTest_FailedParentPostFork_()
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
-                          struct Pid              aChildPid),
+                          struct Ert_Pid              aChildPid),
                     {
                         return processForkTest_Error_();
                     })),
@@ -858,7 +858,7 @@ processForkTest_Raw_(struct ProcessForkArg *aArg)
         _exit(EXIT_FAILURE);
     }
 
-    struct Pid childPid = Pid(childpid);
+    struct Ert_Pid childPid = Ert_Pid(childpid);
 
     int status;
     EXPECT_EQ(0, reapProcessChild(childPid, &status));
@@ -948,10 +948,10 @@ runSlave(void)
 
     do
     {
-        struct Pid childPid =
+        struct Ert_Pid childPid =
             forkProcessChild(
                 ForkProcessInheritProcessGroup,
-                Pgid(0),
+                Ert_Pgid(0),
                 PreForkProcessMethod(
                     (char *) "",
                     ERT_LAMBDA(
@@ -984,9 +984,9 @@ runSlave(void)
 
 TEST_F(ProcessTest, ProcessForkRecursiveParent)
 {
-    struct Pid childPid = forkProcessChild(
+    struct Ert_Pid childPid = forkProcessChild(
         ForkProcessInheritProcessGroup,
-        Pgid(0),
+        Ert_Pgid(0),
         PreForkProcessMethod(
             (char *) "",
             ERT_LAMBDA(
@@ -1001,7 +1001,7 @@ TEST_F(ProcessTest, ProcessForkRecursiveParent)
             (char *) "",
             ERT_LAMBDA(
                 int, (char      *self_,
-                      struct Pid aChildPid),
+                      struct Ert_Pid aChildPid),
                 {
                     return runSlave();
                 })),
@@ -1016,9 +1016,9 @@ TEST_F(ProcessTest, ProcessForkRecursiveParent)
 
 TEST_F(ProcessTest, ProcessForkRecursiveChild)
 {
-    struct Pid childPid = forkProcessChild(
+    struct Ert_Pid childPid = forkProcessChild(
         ForkProcessInheritProcessGroup,
-        Pgid(0),
+        Ert_Pgid(0),
         PreForkProcessMethod(
             (char *) "",
             ERT_LAMBDA(

@@ -67,10 +67,10 @@ ERT_CHECKED int
 ert_getEnvString(const char *aName, const char **aValue);
 
 const char *
-ert_setEnvPid(const char *aName, struct Pid aValue);
+ert_setEnvPid(const char *aName, struct Ert_Pid aValue);
 
 ERT_CHECKED int
-ert_getEnvPid(const char *aName, struct Pid *aValue);
+ert_getEnvPid(const char *aName, struct Ert_Pid *aValue);
 
 /* -------------------------------------------------------------------------- */
 

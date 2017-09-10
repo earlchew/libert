@@ -482,7 +482,7 @@ uptime()
     EXPECT_EQ(0, createPipe(&pipe_, 0));
     pipe = &pipe_;
 
-    struct Pid pid = Pid(fork());
+    struct Ert_Pid pid = Ert_Pid(fork());
 
     EXPECT_NE(-1, pid.mPid);
 

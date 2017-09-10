@@ -161,14 +161,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ert_parsePid(const char *aArg, struct Pid *aValue)
+ert_parsePid(const char *aArg, struct Ert_Pid *aValue)
 {
     int rc = -1;
 
     unsigned long long value;
     ERROR_IF(
         parseUnsignedLongLong_(aArg, &value));
-    *aValue = Pid(value);
+    *aValue = Ert_Pid(value);
 
     ERROR_IF(
         aValue->mPid - value || 0 > aValue->mPid,

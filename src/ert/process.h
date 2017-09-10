@@ -82,7 +82,7 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_DEFINITION
 #define ERT_METHOD_RETURN_PostForkParentProcessMethod    int
 #define ERT_METHOD_CONST_PostForkParentProcessMethod
-#define ERT_METHOD_ARG_LIST_PostForkParentProcessMethod  (struct Pid aChildPid_)
+#define ERT_METHOD_ARG_LIST_PostForkParentProcessMethod  (struct Ert_Pid aChildPid_)
 #define ERT_METHOD_CALL_LIST_PostForkParentProcessMethod (aChildPid_)
 
 #define ERT_METHOD_NAME      PostForkParentProcessMethod
@@ -175,9 +175,9 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_RETURN_WatchProcessSignalMethod    int
 #define ERT_METHOD_CONST_WatchProcessSignalMethod
 #define ERT_METHOD_ARG_LIST_WatchProcessSignalMethod  (int aSigNum_,     \
-                                                       struct Pid aPid_, \
+                                                       struct Ert_Pid ert_aPid_, \
                                                        struct Uid aUid_)
-#define ERT_METHOD_CALL_LIST_WatchProcessSignalMethod (aSigNum_, aPid_, aUid_)
+#define ERT_METHOD_CALL_LIST_WatchProcessSignalMethod (aSigNum_, ert_aPid_, aUid_)
 
 #define ERT_METHOD_NAME      WatchProcessSignalMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_WatchProcessSignalMethod
@@ -298,7 +298,7 @@ const char *
 formatProcessSignalName(struct ProcessSignalName *self, int aSigNum);
 
 /* -------------------------------------------------------------------------- */
-#define PROCESS_DIRNAME_FMT_  "/proc/%" PRId_Pid
+#define PROCESS_DIRNAME_FMT_  "/proc/%" PRId_Ert_Pid
 
 struct ProcessDirName
 {
@@ -306,7 +306,7 @@ struct ProcessDirName
 };
 
 ERT_CHECKED int
-initProcessDirName(struct ProcessDirName *self, struct Pid aPid);
+initProcessDirName(struct ProcessDirName *self, struct Ert_Pid aPid);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
@@ -365,34 +365,34 @@ bool
 checkProcessSigContTracker(struct ProcessSigContTracker *self);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct Pid
+ERT_CHECKED struct Ert_Pid
 forkProcessChild(enum ForkProcessOption             aOption,
-                 struct Pgid                        aPgid,
+                 struct Ert_Pgid                    aPgid,
                  struct PreForkProcessMethod        aPreForkMethod,
                  struct PostForkChildProcessMethod  aPostForkChildMethod,
                  struct PostForkParentProcessMethod aPostForkParentMethod,
                  struct ForkProcessMethod           aMethod);
 
-ERT_CHECKED struct Pid
+ERT_CHECKED struct Ert_Pid
 forkProcessDaemon(struct PreForkProcessMethod        aPreForkMethod,
                   struct PostForkChildProcessMethod  aPostForkChildMethod,
                   struct PostForkParentProcessMethod aPostForkParentMethod,
                   struct ForkProcessMethod           aMethod);
 
 ERT_CHECKED int
-reapProcessChild(struct Pid aPid, int *aStatus);
+reapProcessChild(struct Ert_Pid aPid, int *aStatus);
 
 ERT_CHECKED struct ChildProcessState
-waitProcessChild(struct Pid aPid);
+waitProcessChild(struct Ert_Pid aPid);
 
 ERT_CHECKED struct ChildProcessState
-monitorProcessChild(struct Pid aPid);
+monitorProcessChild(struct Ert_Pid aPid);
 
-ERT_CHECKED struct Pid
+ERT_CHECKED struct Ert_Pid
 waitProcessChildren(void);
 
 struct ExitCode
-extractProcessExitStatus(int aStatus, struct Pid aPid);
+extractProcessExitStatus(int aStatus, struct Ert_Pid aPid);
 
 void
 execProcess(const char *aCmd, const char * const *aArgv);
@@ -401,7 +401,7 @@ void
 execShell(const char *aCmd);
 
 ERT_CHECKED int
-signalProcessGroup(struct Pgid aPgid, int aSignal);
+signalProcessGroup(struct Ert_Pgid aPgid, int aSignal);
 
 void
 exitProcess(int aStatus) ERT_NORETURN;
@@ -441,21 +441,21 @@ ownProcessBaseTime(void);
 const char*
 ownProcessName(void);
 
-struct Pid
+struct Ert_Pid
 ownProcessParentId(void);
 
-struct Pid
+struct Ert_Pid
 ownProcessId(void);
 
-struct Pgid
+struct Ert_Pgid
 ownProcessGroupId(void);
 
 /* -------------------------------------------------------------------------- */
 struct ProcessState
-fetchProcessState(struct Pid aPid);
+fetchProcessState(struct Ert_Pid aPid);
 
-struct Pgid
-fetchProcessGroupId(struct Pid aPid);
+struct Ert_Pgid
+fetchProcessGroupId(struct Ert_Pid aPid);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int

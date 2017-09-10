@@ -37,7 +37,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct Pid;
+struct Ert_Pid;
 
 struct Ert_ParseArgList
 {
@@ -71,7 +71,7 @@ ERT_CHECKED int
 ert_parseUInt64(const char *aArg, uint64_t *aValue);
 
 ERT_CHECKED int
-ert_parsePid(const char *aArg, struct Pid *aValue);
+ert_parsePid(const char *aArg, struct Ert_Pid *aValue);
 
 /* -------------------------------------------------------------------------- */
 

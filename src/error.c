@@ -501,8 +501,8 @@ dprint_(
     int                    aLockErr,
     int                    aErrCode,
     const char            *aErrText,
-    struct Pid             aPid,
-    struct Tid             aTid,
+    struct Ert_Pid         aPid,
+    struct Ert_Tid         aTid,
     const struct Duration *aElapsed,
     uint64_t               aElapsed_h,
     uint64_t               aElapsed_m,
@@ -525,16 +525,16 @@ dprint_(
                     STDERR_FILENO,
                     "%s: [%04" PRIu64 ":%02" PRIu64
                     ":%02" PRIu64
-                    ".%03" PRIu64 " %" PRId_Pid " %s %s:%u] ",
+                    ".%03" PRIu64 " %" PRId_Ert_Pid " %s %s:%u] ",
                     ownProcessName(),
                     aElapsed_h, aElapsed_m, aElapsed_s, aElapsed_ms,
-                    FMTd_Pid(aPid), aFunction, aFile, aLine);
+                    FMTd_Ert_Pid(aPid), aFunction, aFile, aLine);
             else
                 dprintf(
                     STDERR_FILENO,
-                    "%s: [%" PRId_Pid " %s %s:%u] ",
+                    "%s: [%" PRId_Ert_Pid " %s %s:%u] ",
                     ownProcessName(),
-                    FMTd_Pid(aPid), aFunction, aFile, aLine);
+                    FMTd_Ert_Pid(aPid), aFunction, aFile, aLine);
         }
         else
         {
@@ -543,16 +543,20 @@ dprint_(
                     STDERR_FILENO,
                     "%s: [%04" PRIu64 ":%02" PRIu64
                     ":%02" PRIu64
-                    ".%03" PRIu64 " %" PRId_Pid ":%" PRId_Tid " %s %s:%u] ",
+                    ".%03" PRIu64
+                    " %" PRId_Ert_Pid
+                    ":%" PRId_Ert_Tid " %s %s:%u] ",
                     ownProcessName(),
                     aElapsed_h, aElapsed_m, aElapsed_s, aElapsed_ms,
-                    FMTd_Pid(aPid), FMTd_Tid(aTid), aFunction, aFile, aLine);
+                    FMTd_Ert_Pid(aPid), FMTd_Ert_Tid(aTid),
+                    aFunction, aFile, aLine);
             else
                 dprintf(
                     STDERR_FILENO,
-                    "%s: [%" PRId_Pid ":%" PRId_Tid " %s %s:%u] ",
+                    "%s: [%" PRId_Ert_Pid ":%" PRId_Ert_Tid " %s %s:%u] ",
                     ownProcessName(),
-                    FMTd_Pid(aPid), FMTd_Tid(aTid), aFunction, aFile, aLine);
+                    FMTd_Ert_Pid(aPid), FMTd_Ert_Tid(aTid),
+                    aFunction, aFile, aLine);
         }
 
         if (EWOULDBLOCK != aLockErr)
@@ -572,8 +576,8 @@ static void
 dprintf_(
     int                    aErrCode,
     const char            *aErrText,
-    struct Pid             aPid,
-    struct Tid             aTid,
+    struct Ert_Pid         aPid,
+    struct Ert_Tid         aTid,
     const struct Duration *aElapsed,
     uint64_t               aElapsed_h,
     uint64_t               aElapsed_m,
@@ -629,8 +633,8 @@ print_(
 
     FINALLY
     ({
-        struct Pid pid = ownProcessId();
-        struct Tid tid = ownThreadId();
+        struct Ert_Pid pid = ownProcessId();
+        struct Ert_Tid tid = ownThreadId();
 
         /* The availability of buffered IO might be lost while a message
          * is being processed since this code might run in a thread
@@ -719,16 +723,16 @@ print_(
                             printBuf_.mFile,
                             "%s: [%04" PRIu64 ":%02" PRIu64
                             ":%02" PRIu64
-                            ".%03" PRIu64 " %" PRId_Pid " %s %s:%u] ",
+                            ".%03" PRIu64 " %" PRId_Ert_Pid " %s %s:%u] ",
                             ownProcessName(),
                             elapsed_h, elapsed_m, elapsed_s, elapsed_ms,
-                            FMTd_Pid(pid), aFunction, aFile, aLine);
+                            FMTd_Ert_Pid(pid), aFunction, aFile, aLine);
                     else
                         fprintf(
                             printBuf_.mFile,
-                            "%s: [%" PRId_Pid " %s %s:%u] ",
+                            "%s: [%" PRId_Ert_Pid " %s %s:%u] ",
                             ownProcessName(),
-                            FMTd_Pid(pid), aFunction, aFile, aLine);
+                            FMTd_Ert_Pid(pid), aFunction, aFile, aLine);
                 }
                 else
                 {
@@ -737,18 +741,20 @@ print_(
                             printBuf_.mFile,
                             "%s: [%04" PRIu64 ":%02" PRIu64
                             ":%02" PRIu64
-                            ".%03" PRIu64 " %" PRId_Pid ":%" PRId_Tid " "
+                            ".%03" PRIu64 " %" PRId_Ert_Pid
+                            ":%" PRId_Ert_Tid " "
                             "%s %s:%u] ",
                             ownProcessName(),
                             elapsed_h, elapsed_m, elapsed_s, elapsed_ms,
-                            FMTd_Pid(pid), FMTd_Tid(tid),
+                            FMTd_Ert_Pid(pid), FMTd_Ert_Tid(tid),
                             aFunction, aFile, aLine);
                     else
                         fprintf(
                             printBuf_.mFile,
-                            "%s: [%" PRId_Pid ":%" PRId_Tid " %s %s:%u] ",
+                            "%s: [%" PRId_Ert_Pid
+                            ":%" PRId_Ert_Tid " %s %s:%u] ",
                             ownProcessName(),
-                            FMTd_Pid(pid), FMTd_Tid(tid),
+                            FMTd_Ert_Pid(pid), FMTd_Ert_Tid(tid),
                             aFunction, aFile, aLine);
                 }
             }

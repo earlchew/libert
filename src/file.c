@@ -374,7 +374,7 @@ temporaryFile_(const char *aDirName)
 
     int tmpFd = -1;
 
-    struct Pid tempPid = Pid(-1);
+    struct Ert_Pid tempPid = Ert_Pid(-1);
 
     /* Because the of the inherent race in creating an anonymous
      * temporary file, try to minimise the chance of the littering
@@ -395,7 +395,7 @@ temporaryFile_(const char *aDirName)
     ERROR_IF(
         (tempPid = forkProcessChild(
             ForkProcessSetSessionLeader,
-            Pgid(0),
+            Ert_Pgid(0),
             PreForkProcessMethod(
                 temporaryFileProcess,
                 ERT_LAMBDA(
@@ -417,7 +417,7 @@ temporaryFile_(const char *aDirName)
                 temporaryFileProcess,
                 ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self,
-                          struct Pid                    aChildPid),
+                          struct Ert_Pid                    aChildPid),
                     {
                         closeSocketPairChild(self->mSocketPair);
 

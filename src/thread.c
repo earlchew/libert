@@ -95,10 +95,10 @@ timedLock_(void *aLock,
 }
 
 /* -------------------------------------------------------------------------- */
-struct Tid
+struct Ert_Tid
 ownThreadId(void)
 {
-    return Tid(syscall(SYS_gettid));
+    return Ert_Tid(syscall(SYS_gettid));
 }
 
 /* -------------------------------------------------------------------------- */

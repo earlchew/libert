@@ -80,8 +80,8 @@ static struct ProcessForkChildLock_
 {
     pthread_mutex_t  mMutex_;
     pthread_mutex_t *mMutex;
-    struct Pid       mProcess;
-    struct Tid       mThread;
+    struct Ert_Pid       mProcess;
+    struct Ert_Tid       mThread;
     unsigned         mCount;
 
     struct ForkProcessChannel_ *mChannelList;
@@ -95,7 +95,7 @@ static struct
 {
     pthread_mutex_t        mMutex_;
     pthread_mutex_t       *mMutex;
-    struct Pid             mParentPid;
+    struct Ert_Pid             mParentPid;
     struct RWMutexWriter   mSigVecLock_;
     struct RWMutexWriter  *mSigVecLock;
     struct ThreadSigMutex *mSigLock;
@@ -964,12 +964,12 @@ caughtSignal_(int aSigNum, siginfo_t *aSigInfo, void *aUContext_)
     {
         struct ProcessSignalName sigName;
 
-        struct Pid pid = Pid(aSigInfo->si_pid);
+        struct Ert_Pid pid = Ert_Pid(aSigInfo->si_pid);
         struct Uid uid = Uid(aSigInfo->si_uid);
 
-        debug(1, "observed %s pid %" PRId_Pid " uid %" PRId_Uid,
+        debug(1, "observed %s pid %" PRId_Ert_Pid " uid %" PRId_Uid,
               formatProcessSignalName(&sigName, aSigNum),
-              FMTd_Pid(pid),
+              FMTd_Ert_Pid(pid),
               FMTd_Uid(uid));
 
         callWatchProcessSignalMethod(
@@ -1114,12 +1114,12 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-initProcessDirName(struct ProcessDirName *self, struct Pid aPid)
+initProcessDirName(struct ProcessDirName *self, struct Ert_Pid aPid)
 {
     int rc = -1;
 
     ERROR_IF(
-        0 > sprintf(self->mDirName, PROCESS_DIRNAME_FMT_, FMTd_Pid(aPid)));
+        0 > sprintf(self->mDirName, PROCESS_DIRNAME_FMT_, FMTd_Ert_Pid(aPid)));
 
     rc = 0;
 
@@ -1156,7 +1156,7 @@ formatProcessSignalName(struct ProcessSignalName *self, int aSigNum)
 
 /* -------------------------------------------------------------------------- */
 struct ProcessState
-fetchProcessState(struct Pid aPid)
+fetchProcessState(struct Ert_Pid aPid)
 {
     struct ProcessState rc = { .mState = ProcessStateError };
 
@@ -1415,8 +1415,8 @@ ownProcessAppLockFile(const struct ProcessAppLock *self)
 static ERT_CHECKED struct ProcessForkChildLock_ *
 acquireProcessForkChildLock_(struct ProcessForkChildLock_ *self)
 {
-    struct Tid tid = ownThreadId();
-    struct Pid pid = ownProcessId();
+    struct Ert_Tid tid = ownThreadId();
+    struct Ert_Pid pid = ownProcessId();
 
     ensure( ! self->mProcess.mPid || self->mProcess.mPid == pid.mPid);
 
@@ -1445,8 +1445,8 @@ relinquishProcessForkChildLock_(struct ProcessForkChildLock_ *self,
 {
     if (self)
     {
-        struct Tid tid = ownThreadId();
-        struct Pid pid = ownProcessId();
+        struct Ert_Tid tid = ownThreadId();
+        struct Ert_Pid pid = ownProcessId();
 
         ensure(self->mCount);
         ensure(self->mMutex == &self->mMutex_);
@@ -1473,7 +1473,7 @@ relinquishProcessForkChildLock_(struct ProcessForkChildLock_ *self,
         {
             pthread_mutex_t *lock = self->mMutex;
 
-            self->mThread = Tid(0);
+            self->mThread = Ert_Tid(0);
             self->mMutex  = 0;
 
             lock = unlockMutex(lock);
@@ -1499,7 +1499,7 @@ resetProcessForkChildLock_(struct ProcessForkChildLock_ *self)
 
 /* -------------------------------------------------------------------------- */
 int
-reapProcessChild(struct Pid aPid, int *aStatus)
+reapProcessChild(struct Ert_Pid aPid, int *aStatus)
 {
     int rc = -1;
 
@@ -1551,7 +1551,7 @@ Finally:
 }
 
 struct ChildProcessState
-waitProcessChild(struct Pid aPid)
+waitProcessChild(struct Ert_Pid aPid)
 {
     struct ChildProcessState rc = { .mChildState = ChildProcessStateError };
 
@@ -1590,7 +1590,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct ChildProcessState
-monitorProcessChild(struct Pid aPid)
+monitorProcessChild(struct Ert_Pid aPid)
 {
     struct ChildProcessState rc = { .mChildState = ChildProcessStateError };
 
@@ -1643,12 +1643,12 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pid
+struct Ert_Pid
 waitProcessChildren()
 {
     int rc = -1;
 
-    struct Pid pid;
+    struct Ert_Pid pid;
 
     while (1)
     {
@@ -1664,11 +1664,11 @@ waitProcessChildren()
             continue;
 
         if (waitErr)
-            pid = Pid(0);
+            pid = Ert_Pid(0);
         else
         {
             ensure(siginfo.si_pid);
-            pid = Pid(siginfo.si_pid);
+            pid = Ert_Pid(siginfo.si_pid);
         }
 
         break;
@@ -1680,7 +1680,7 @@ Finally:
 
     FINALLY({});
 
-    return rc ? Pid(-1) : pid;
+    return rc ? Ert_Pid(-1) : pid;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1979,8 +1979,8 @@ static ERT_CHECKED int
 forkProcessChild_PostParent_(
     struct ForkProcessChannel_        *self,
     enum ForkProcessOption             aOption,
-    struct Pid                         aChildPid,
-    struct Pgid                        aChildPgid,
+    struct Ert_Pid                         aChildPid,
+    struct Ert_Pgid                        aChildPgid,
     struct PostForkParentProcessMethod aPostForkParentMethod,
     struct Ert_FdSet                      *aBlacklistFds)
 {
@@ -1998,7 +1998,7 @@ forkProcessChild_PostParent_(
             setpgid(aChildPid.mPid,
                     aChildPgid.mPgid ? aChildPgid.mPgid : aChildPid.mPid));
 
-    /* On Linux, struct PidSignature uses the process start
+    /* On Linux, struct Ert_PidSignature uses the process start
      * time from /proc/pid/stat, but that start time is measured
      * in _SC_CLK_TCK periods which limits the rate at which
      * processes can be forked without causing ambiguity. Although
@@ -2127,7 +2127,7 @@ static void
 forkProcessChild_PostChild_(
     struct ForkProcessChannel_        *self,
     enum ForkProcessOption             aOption,
-    struct Pgid                        aChildPgid,
+    struct Ert_Pgid                        aChildPgid,
     struct PostForkChildProcessMethod  aPostForkChildMethod,
     struct Ert_FdSet                      *aWhitelistFds)
 {
@@ -2231,9 +2231,9 @@ Finally:
     }
 }
 
-struct Pid
+struct Ert_Pid
 forkProcessChild(enum ForkProcessOption             aOption,
-                 struct Pgid                        aPgid,
+                 struct Ert_Pgid                    aPgid,
                  struct PreForkProcessMethod        aPreForkMethod,
                  struct PostForkChildProcessMethod  aPostForkChildMethod,
                  struct PostForkParentProcessMethod aPostForkParentMethod,
@@ -2241,7 +2241,7 @@ forkProcessChild(enum ForkProcessOption             aOption,
 {
     pid_t rc = -1;
 
-    struct Pid childPid = Pid(-1);
+    struct Ert_Pid childPid = Ert_Pid(-1);
 
     struct Ert_FdSet  blacklistFds_;
     struct Ert_FdSet *blacklistFds = 0;
@@ -2323,7 +2323,7 @@ forkProcessChild(enum ForkProcessOption             aOption,
 
     TEST_RACE
     ({
-        childPid = Pid(fork());
+        childPid = Ert_Pid(fork());
     });
 
     switch (childPid.mPid)
@@ -2399,7 +2399,7 @@ Finally:
         }
     });
 
-    return Pid(rc);
+    return Ert_Pid(rc);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -2421,16 +2421,16 @@ static ERT_CHECKED int
 forkProcessDaemonSignalHandler_(
     struct ForkProcessDaemonSigHandler *self,
     int                                 aSigNum,
-    struct Pid                          aPid,
+    struct Ert_Pid                          aPid,
     struct Uid                          aUid)
 {
     ++self->mHangUp;
 
     struct ProcessSignalName sigName;
     debug(1,
-          "daemon received %s pid %" PRId_Pid " uid %" PRId_Uid,
+          "daemon received %s pid %" PRId_Ert_Pid " uid %" PRId_Uid,
           formatProcessSignalName(&sigName, aSigNum),
-          FMTd_Pid(aPid),
+          FMTd_Ert_Pid(aPid),
           FMTd_Uid(aUid));
 
     return 0;
@@ -2441,7 +2441,7 @@ forkProcessDaemonChild_(struct ForkProcessDaemon *self)
 {
     int rc = -1;
 
-    struct Pid daemonPid = ownProcessId();
+    struct Ert_Pid daemonPid = ownProcessId();
 
     struct ForkProcessDaemonSigHandler sigHandler = { .mHangUp = 0 };
 
@@ -2493,11 +2493,11 @@ forkProcessDaemonGuardian_(struct ForkProcessDaemon *self)
 
     closeSocketPairParent(self->mSyncSocket);
 
-    struct Pid daemonPid;
+    struct Ert_Pid daemonPid;
     ERROR_IF(
         (daemonPid = forkProcessChild(
             ForkProcessSetProcessGroup,
-            Pgid(0),
+            Ert_Pgid(0),
             PreForkProcessMethod(
                 self,
                 ERT_LAMBDA(
@@ -2602,7 +2602,7 @@ Finally:
     return rc;
 }
 
-struct Pid
+struct Ert_Pid
 forkProcessDaemon(struct PreForkProcessMethod        aPreForkMethod,
                   struct PostForkChildProcessMethod  aPostForkChildMethod,
                   struct PostForkParentProcessMethod aPostForkParentMethod,
@@ -2632,11 +2632,11 @@ forkProcessDaemon(struct PreForkProcessMethod        aPreForkMethod,
         .mSyncSocket    = syncSocket,
     };
 
-    struct Pid serverPid;
+    struct Ert_Pid serverPid;
     ERROR_IF(
         (serverPid = forkProcessChild(
             ForkProcessInheritProcessGroup,
-            Pgid(0),
+            Ert_Pgid(0),
             PreForkProcessMethod(
                 &daemonProcess, forkProcessDaemonPreparation_),
             PostForkChildProcessMethod(
@@ -2645,7 +2645,7 @@ forkProcessDaemon(struct PreForkProcessMethod        aPreForkMethod,
                 &daemonProcess,
                 ERT_LAMBDA(
                     int, (struct ForkProcessDaemon *self_,
-                          struct Pid                aGuardianPid),
+                          struct Ert_Pid                aGuardianPid),
                     {
                         closeSocketPairChild(self_->mSyncSocket);
                         return 0;
@@ -2660,7 +2660,7 @@ forkProcessDaemon(struct PreForkProcessMethod        aPreForkMethod,
     ERROR_UNLESS(
         WIFEXITED(status) && ! WEXITSTATUS(status));
 
-    struct Pid daemonPid;
+    struct Ert_Pid daemonPid;
     ERROR_UNLESS(
         sizeof(daemonPid.mPid) == recvUnixSocket(syncSocket->mParentSocket,
                                                  (void *) &daemonPid.mPid,
@@ -2682,7 +2682,7 @@ Finally:
         sigMask = popThreadSigMask(sigMask);
     });
 
-    return Pid(rc);
+    return Ert_Pid(rc);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -2733,7 +2733,7 @@ exitProcess(int aStatus)
 
 /* -------------------------------------------------------------------------- */
 int
-signalProcessGroup(struct Pgid aPgid, int aSignal)
+signalProcessGroup(struct Ert_Pgid aPgid, int aSignal)
 {
     int rc = -1;
 
@@ -2742,9 +2742,9 @@ signalProcessGroup(struct Pgid aPgid, int aSignal)
     ensure(aPgid.mPgid);
 
     debug(0,
-          "sending %s to process group pgid %" PRId_Pgid,
+          "sending %s to process group pgid %" PRId_Ert_Pgid,
           formatProcessSignalName(&sigName, aSignal),
-          FMTd_Pgid(aPgid));
+          FMTd_Ert_Pgid(aPgid));
 
     ERROR_IF(
         killpg(aPgid.mPgid, aSignal));
@@ -2878,38 +2878,38 @@ ownProcessName(void)
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pid
+struct Ert_Pid
 ownProcessParentId(void)
 {
-    return Pid(getppid());
+    return Ert_Pid(getppid());
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pid
+struct Ert_Pid
 ownProcessId(void)
 {
-    return Pid(getpid());
+    return Ert_Pid(getpid());
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pgid
+struct Ert_Pgid
 ownProcessGroupId(void)
 {
-    return Pgid(getpgid(0));
+    return Ert_Pgid(getpgid(0));
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pgid
-fetchProcessGroupId(struct Pid aPid)
+struct Ert_Pgid
+fetchProcessGroupId(struct Ert_Pid aPid)
 {
     ensure(aPid.mPid);
 
-    return Pgid(getpgid(aPid.mPid));
+    return Ert_Pgid(getpgid(aPid.mPid));
 }
 
 /* -------------------------------------------------------------------------- */
 struct ExitCode
-extractProcessExitStatus(int aStatus, struct Pid aPid)
+extractProcessExitStatus(int aStatus, struct Ert_Pid aPid)
 {
     /* Taking guidance from OpenGroup:
      *
@@ -2931,8 +2931,8 @@ extractProcessExitStatus(int aStatus, struct Pid aPid)
 
         debug(
             0,
-            "process pid %" PRId_Pid " terminated by %s",
-            FMTd_Pid(aPid),
+            "process pid %" PRId_Ert_Pid " terminated by %s",
+            FMTd_Ert_Pid(aPid),
             formatProcessSignalName(&sigName, WTERMSIG(aStatus)));
 
         exitCode.mStatus = 128 + WTERMSIG(aStatus);
@@ -2941,8 +2941,8 @@ extractProcessExitStatus(int aStatus, struct Pid aPid)
     }
 
     debug(0,
-          "process pid %" PRId_Pid " exit code %" PRId_ExitCode,
-          FMTd_Pid(aPid),
+          "process pid %" PRId_Ert_Pid " exit code %" PRId_ExitCode,
+          FMTd_Ert_Pid(aPid),
           FMTd_ExitCode(exitCode));
 
     return exitCode;

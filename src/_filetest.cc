@@ -56,9 +56,9 @@ TEST(FileTest, TemporaryFile)
 struct Ert_LockType
 checkLock(struct Ert_File *aFile)
 {
-    struct Pid checkPid =
+    struct Ert_Pid checkPid =
         forkProcessChild(ForkProcessInheritProcessGroup,
-                         Pgid(0),
+                         Ert_Pgid(0),
                          PreForkProcessMethod(
                              aFile,
                              ERT_LAMBDA(

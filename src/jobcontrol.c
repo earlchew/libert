@@ -53,14 +53,14 @@ Finally:
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
 ert_raiseJobControlSignal_(
-    struct Ert_JobControl *self, int aSigNum, struct Pid aPid, struct Uid aUid)
+    struct Ert_JobControl *self, int aSigNum, struct Ert_Pid ert_aPid, struct Uid aUid)
 {
     int rc = -1;
 
     if ( ! ownWatchProcessSignalMethodNil(self->mRaise.mMethod))
         ERROR_IF(
             callWatchProcessSignalMethod(
-                self->mRaise.mMethod, aSigNum, aPid, aUid));
+                self->mRaise.mMethod, aSigNum, ert_aPid, aUid));
 
     rc = 0;
 
@@ -86,8 +86,8 @@ ert_raiseJobControlSigStop_(struct Ert_JobControl *self)
         {
             warn(
                 errno,
-                "Unable to stop process pid %" PRId_Pid,
-                FMTd_Pid(ownProcessId()));
+                "Unable to stop process pid %" PRId_Ert_Pid,
+                FMTd_Ert_Pid(ownProcessId()));
         });
 
     if ( ! ownWatchProcessMethodNil(self->mStop.mResumeMethod))
