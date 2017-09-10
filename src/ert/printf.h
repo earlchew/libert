@@ -42,6 +42,9 @@
 #define ERT_METHOD_ARG_LIST_PrintfMethod  (FILE *aFile_)
 #define ERT_METHOD_CALL_LIST_PrintfMethod (aFile_)
 
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
 #define ERT_METHOD_NAME      PrintfMethod_
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PrintfMethod
 #define ERT_METHOD_CONST     ERT_METHOD_CONST_PrintfMethod
@@ -49,10 +52,10 @@
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PrintfMethod
 #include "ert/method.h"
 
-#define PrintfMethod_(Object_, Method_)         \
+#define Ert_PrintfMethod_(Object_, Method_)     \
     ERT_METHOD_TRAMPOLINE(                      \
         Object_, Method_,                       \
-        PrintfMethod__,                         \
+        Ert_PrintfMethod__,                     \
         ERT_METHOD_RETURN_PrintfMethod,         \
         ERT_METHOD_CONST_PrintfMethod,          \
         ERT_METHOD_ARG_LIST_PrintfMethod,       \
@@ -63,19 +66,19 @@ ERT_BEGIN_C_SCOPE;
 
 struct Type;
 
-struct PrintfModule
+struct Ert_PrintfModule
 {
-    struct PrintfModule *mModule;
+    struct Ert_PrintfModule *mModule;
 };
 
 /* -------------------------------------------------------------------------- */
-extern const struct Type * const printfMethodType_;
+extern const struct Type * const ert_printfMethodType_;
 
-struct PrintfMethod
+struct Ert_PrintfMethod
 {
     const struct Type * const *mType;
 
-    struct PrintfMethod_ mMethod;
+    struct Ert_PrintfMethod_ mMethod;
 };
 
 /* The C compiler is quite willing to take the address of the temporary
@@ -86,23 +89,23 @@ struct PrintfMethod
  * this context. */
 
 #ifndef __cplusplus
-#define PrintfMethodPtr_(aMethod) (&(aMethod))
+#define Ert_PrintfMethodPtr_(aMethod) (&(aMethod))
 #else
 static inline
-const struct PrintfMethod *
-PrintfMethodPtr_(const struct PrintfMethod &aMethod)
+const struct Ert_PrintfMethod *
+Ert_PrintfMethodPtr_(const struct Ert_PrintfMethod &aMethod)
 {
     return &aMethod;
 }
 #endif
 
-#define PrintfMethod(Object_, Method_)                          \
+#define Ert_PrintfMethod(Object_, Method_)                      \
 (                                                               \
-    PrintfMethodPtr_(                                           \
-        ((struct PrintfMethod)                                  \
+    Ert_PrintfMethodPtr_(                                       \
+        ((struct Ert_PrintfMethod)                              \
         {                                                       \
-            mType   : &printfMethodType_,                       \
-            mMethod : PrintfMethod_((Object_), (Method_)),      \
+            mType   : &ert_printfMethodType_,                   \
+            mMethod : Ert_PrintfMethod_((Object_), (Method_)),  \
         }))                                                     \
 )
 
@@ -114,7 +117,7 @@ PrintfMethodPtr_(const struct PrintfMethod &aMethod)
  * comprises a series of printf() calls, it is necessary to sum the
  * contributions, but at the same time watching for an error. */
 
-#define PRINTF(IOCount_, Expr_)                 \
+#define ERT_PRINTF(IOCount_, Expr_)             \
     ({                                          \
         int io_ = (Expr_);                      \
                                                 \
@@ -122,42 +125,43 @@ PrintfMethodPtr_(const struct PrintfMethod &aMethod)
     })
 
 /* -------------------------------------------------------------------------- */
-#define PRIs_Method "%%p<struct PrintfMethod>%%"
-#define FMTs_Method(Object_, Method_) ( PrintfMethod((Object_), (Method_)) )
+#define PRIs_Ert_Method "%%p<struct Ert_PrintfMethod>%%"
+#define FMTs_Ert_Method(Object_, Method_) ( Ert_PrintfMethod( \
+                                                (Object_), (Method_)) )
 
 /* -------------------------------------------------------------------------- */
 int
-xprintf(const char *aFmt, ...)
+ert_printf(const char *aFmt, ...)
     __attribute__ ((__format__(__printf__, 1, 2)));
 
 int
-xfprintf(FILE *aFile, const char *aFmt, ...)
+ert_fprintf(FILE *aFile, const char *aFmt, ...)
     __attribute__ ((__format__(__printf__, 2, 3)));
 
 ERT_CHECKED int
-xsnprintf(char *aBuf, size_t aSize, const char *aFmt, ...)
+ert_snprintf(char *aBuf, size_t aSize, const char *aFmt, ...)
     __attribute__ ((__format__(__printf__, 3, 4)));
 
 int
-xdprintf(int aFd, const char *aFmt, ...)
+ert_dprintf(int aFd, const char *aFmt, ...)
     __attribute__ ((__format__(__printf__, 2, 3)));
 
 /* -------------------------------------------------------------------------- */
 int
-xvfprintf(FILE *aFile, const char *aFmt, va_list);
+ert_vfprintf(FILE *aFile, const char *aFmt, va_list);
 
 ERT_CHECKED int
-xvsnprintf(char *aBuf, size_t aSize, const char *aFmt, va_list);
+ert_vsnprintf(char *aBuf, size_t aSize, const char *aFmt, va_list);
 
 int
-xvdprintf(int aFd, const char *aFmt, va_list);
+ert_vdprintf(int aFd, const char *aFmt, va_list);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-Printf_init(struct PrintfModule *self);
+Ert_Printf_init(struct Ert_PrintfModule *self);
 
-ERT_CHECKED struct PrintfModule *
-Printf_exit(struct PrintfModule *self);
+ERT_CHECKED struct Ert_PrintfModule *
+Ert_Printf_exit(struct Ert_PrintfModule *self);
 
 /* -------------------------------------------------------------------------- */
 

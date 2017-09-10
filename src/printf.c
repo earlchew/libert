@@ -42,11 +42,11 @@ static bool     moduleInitPrintf_;
 
 #define PRINTF_SPEC_METHOD 'M'
 
-const struct Type * const printfMethodType_ = TYPE("PrintfMethod");
+const struct Type * const ert_printfMethodType_ = TYPE("PrintfMethod");
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-xvprintf_(void       *self,
+ert_vprintf_(void       *self,
           int       (*aPrintf)(void *self, const char *aFmt, va_list aArg),
           const char *aFmt,
           va_list     aArg)
@@ -79,9 +79,11 @@ xvprintf_(void       *self,
             {
                 if (*rdPtr)
                 {
-                    if ( ! memcmp(rdPtr+1, PRIs_Method, sizeof(PRIs_Method)-1))
+                    if ( ! memcmp(
+                             rdPtr+1,
+                             PRIs_Ert_Method, sizeof(PRIs_Ert_Method)-1))
                     {
-                        rdPtr += 1 + sizeof(PRIs_Method) - 1;
+                        rdPtr += 1 + sizeof(PRIs_Ert_Method) - 1;
 
                         *wrPtr++ = '%';
                         *wrPtr++ = PRINTF_SPEC_METHOD;
@@ -108,15 +110,15 @@ xvprintf_(void       *self,
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-xvfprintf_(void *self, const char *aFmt, va_list aArg)
+ert_vfprintf_(void *self, const char *aFmt, va_list aArg)
 {
     return vfprintf(self, aFmt, aArg);
 }
 
 int
-xvfprintf(FILE *aFile, const char *aFmt, va_list aArg)
+ert_vfprintf(FILE *aFile, const char *aFmt, va_list aArg)
 {
-    return xvprintf_(aFile, xvfprintf_, aFmt, aArg);
+    return ert_vprintf_(aFile, ert_vfprintf_, aFmt, aArg);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -127,7 +129,7 @@ struct PrintfString
 };
 
 static ERT_CHECKED int
-xvsnprintf_(void *self_, const char *aFmt, va_list aArg)
+ert_vsnprintf_(void *self_, const char *aFmt, va_list aArg)
 {
     struct PrintfString *self = self_;
 
@@ -135,7 +137,7 @@ xvsnprintf_(void *self_, const char *aFmt, va_list aArg)
 }
 
 int
-xvsnprintf(char *aBuf, size_t aSize, const char *aFmt, va_list aArg)
+ert_vsnprintf(char *aBuf, size_t aSize, const char *aFmt, va_list aArg)
 {
     struct PrintfString self_ =
     {
@@ -143,12 +145,12 @@ xvsnprintf(char *aBuf, size_t aSize, const char *aFmt, va_list aArg)
         .mBufLen = aSize,
     };
 
-    return xvprintf_(&self_, xvsnprintf_, aFmt, aArg);
+    return ert_vprintf_(&self_, ert_vsnprintf_, aFmt, aArg);
 }
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-xvdprintf_(void *self_, const char *aFmt, va_list aArg)
+ert_vdprintf_(void *self_, const char *aFmt, va_list aArg)
 {
     const int *self = self_;
 
@@ -156,21 +158,21 @@ xvdprintf_(void *self_, const char *aFmt, va_list aArg)
 }
 
 int
-xvdprintf(int aFd, const char *aFmt, va_list aArg)
+ert_vdprintf(int aFd, const char *aFmt, va_list aArg)
 {
-    return xvprintf_(&aFd, xvdprintf_, aFmt, aArg);
+    return ert_vprintf_(&aFd, ert_vdprintf_, aFmt, aArg);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-xprintf(const char *aFmt, ...)
+ert_printf(const char *aFmt, ...)
 {
     int rc = -1;
 
     va_list argp;
 
     va_start(argp, aFmt);
-    rc = xvfprintf(stdout, aFmt, argp);
+    rc = ert_vfprintf(stdout, aFmt, argp);
     va_end(argp);
 
     return rc;
@@ -178,14 +180,14 @@ xprintf(const char *aFmt, ...)
 
 /* -------------------------------------------------------------------------- */
 int
-xfprintf(FILE *aFile, const char *aFmt, ...)
+ert_fprintf(FILE *aFile, const char *aFmt, ...)
 {
     int rc = -1;
 
     va_list argp;
 
     va_start(argp, aFmt);
-    rc = xvfprintf(aFile, aFmt, argp);
+    rc = ert_vfprintf(aFile, aFmt, argp);
     va_end(argp);
 
     return rc;
@@ -193,14 +195,14 @@ xfprintf(FILE *aFile, const char *aFmt, ...)
 
 /* -------------------------------------------------------------------------- */
 int
-xsnprintf(char *aBuf, size_t aSize, const char *aFmt, ...)
+ert_snprintf(char *aBuf, size_t aSize, const char *aFmt, ...)
 {
     int rc = -1;
 
     va_list argp;
 
     va_start(argp, aFmt);
-    rc = xvsnprintf(aBuf, aSize, aFmt, argp);
+    rc = ert_vsnprintf(aBuf, aSize, aFmt, argp);
     va_end(argp);
 
     return rc;
@@ -208,14 +210,14 @@ xsnprintf(char *aBuf, size_t aSize, const char *aFmt, ...)
 
 /* -------------------------------------------------------------------------- */
 int
-xdprintf(int aFd, const char *aFmt, ...)
+ert_dprintf(int aFd, const char *aFmt, ...)
 {
     int rc = -1;
 
     va_list argp;
 
     va_start(argp, aFmt);
-    rc = xvdprintf(aFd, aFmt, argp);
+    rc = ert_vdprintf(aFd, aFmt, argp);
     va_end(argp);
 
     return rc;
@@ -232,11 +234,11 @@ printf_method_call_(
 
     memcpy(&self_, aArgs[0], sizeof(self_));
 
-    const struct PrintfMethod *self = self_;
+    const struct Ert_PrintfMethod *self = self_;
 
-    ensure(self->mType == &printfMethodType_);
+    ensure(self->mType == &ert_printfMethodType_);
 
-    return callPrintfMethod_(self->mMethod, aFile);
+    return ert_callPrintfMethod_(self->mMethod, aFile);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -255,7 +257,7 @@ printf_method_info_(
 
 /* -------------------------------------------------------------------------- */
 int
-Printf_init(struct PrintfModule *self)
+Ert_Printf_init(struct Ert_PrintfModule *self)
 {
     int rc = -1;
 
@@ -287,8 +289,8 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct PrintfModule *
-Printf_exit(struct PrintfModule *self)
+struct Ert_PrintfModule *
+Ert_Printf_exit(struct Ert_PrintfModule *self)
 {
     if (self)
         --moduleInit_;
