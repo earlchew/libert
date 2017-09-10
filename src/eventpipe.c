@@ -46,7 +46,7 @@ ert_createEventPipe(struct Ert_EventPipe *self, unsigned aFlags)
     self->mLatchList = &self->mLatchList_;
 
     ERROR_IF(
-        createPipe(&self->mPipe_, aFlags));
+        ert_createPipe(&self->mPipe_, aFlags));
     self->mPipe = &self->mPipe_;
 
     rc = 0;
@@ -72,7 +72,7 @@ ert_closeEventPipe(struct Ert_EventPipe *self)
             ensure(LIST_EMPTY(&self->mLatchList->mList));
         self->mLatchList = 0;
 
-        self->mPipe  = closePipe(self->mPipe);
+        self->mPipe  = ert_closePipe(self->mPipe);
         self->mMutex = destroyThreadSigMutex(self->mMutex);
     }
 

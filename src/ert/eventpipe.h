@@ -43,8 +43,8 @@ struct Ert_EventPipe
 {
     struct ThreadSigMutex  mMutex_;
     struct ThreadSigMutex *mMutex;
-    struct Pipe            mPipe_;
-    struct Pipe           *mPipe;
+    struct Ert_Pipe        mPipe_;
+    struct Ert_Pipe       *mPipe;
     bool                   mSignalled;
 
     struct Ert_EventLatchList   mLatchList_;

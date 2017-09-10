@@ -118,10 +118,10 @@ TEST(UnixSocketTest, AbstractServer)
      * socket. Close the reading file descriptor, and ensure that the
      * duplicate can be used to read data written into the pipe. */
 
-    struct Pipe  pipe_;
-    struct Pipe *pipe = 0;
+    struct Ert_Pipe  pipe_;
+    struct Ert_Pipe *pipe = 0;
 
-    EXPECT_EQ(0, createPipe(&pipe_, 0));
+    EXPECT_EQ(0, ert_createPipe(&pipe_, 0));
     pipe = &pipe_;
 
     EXPECT_EQ(0, sendUnixSocketFd(peersock, pipe->mRdFile->mFd));
@@ -131,7 +131,7 @@ TEST(UnixSocketTest, AbstractServer)
     EXPECT_LE(0, fd);
     EXPECT_EQ(1, ert_ownFdCloseOnExec(fd));
 
-    closePipeReader(pipe);
+    ert_closePipeReader(pipe);
     buf[0] = 'A';
     EXPECT_EQ(1, ert_writeFile(pipe->mWrFile, buf, sizeof(buf), 0));
     buf[0] = 0;
@@ -140,7 +140,7 @@ TEST(UnixSocketTest, AbstractServer)
     EXPECT_EQ('A', buf[0]);
 
     fd = ert_closeFd(fd);
-    pipe = closePipe(pipe);
+    pipe = ert_closePipe(pipe);
 
     clientsock = closeUnixSocket(clientsock);
     peersock   = closeUnixSocket(peersock);

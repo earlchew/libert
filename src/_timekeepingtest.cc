@@ -476,10 +476,10 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
 static struct Duration
 uptime()
 {
-    struct Pipe  pipe_;
-    struct Pipe *pipe = 0;
+    struct Ert_Pipe  pipe_;
+    struct Ert_Pipe *pipe = 0;
 
-    EXPECT_EQ(0, createPipe(&pipe_, 0));
+    EXPECT_EQ(0, ert_createPipe(&pipe_, 0));
     pipe = &pipe_;
 
     struct Ert_Pid pid = Ert_Pid(fork());
@@ -495,7 +495,7 @@ uptime()
             ? 0
             : -1;
 
-        pipe = closePipe(pipe);
+        pipe = ert_closePipe(pipe);
 
         rc = rc ||
             execlp(
@@ -508,18 +508,18 @@ uptime()
         _exit(EXIT_FAILURE);
     }
 
-    closePipeWriter(pipe);
+    ert_closePipeWriter(pipe);
 
     FILE *fp = fdopen(pipe->mRdFile->mFd, "r");
 
     EXPECT_TRUE(fp);
-    EXPECT_EQ(0, detachPipeReader(pipe));
+    EXPECT_EQ(0, ert_detachPipeReader(pipe));
 
     unsigned seconds;
     EXPECT_EQ(1, fscanf(fp, "%u", &seconds));
 
     EXPECT_EQ(0, fclose(fp));
-    pipe = closePipe(pipe);
+    pipe = ert_closePipe(pipe);
 
     int status;
     EXPECT_EQ(0, reapProcessChild(pid, &status));

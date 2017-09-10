@@ -201,7 +201,7 @@ ERT_BEGIN_C_SCOPE;
 struct timespec;
 
 struct BootClockTime;
-struct Pipe;
+struct Ert_Pipe;
 struct File;
 struct ProcessAppLock;
 

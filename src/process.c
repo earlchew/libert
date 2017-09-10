@@ -1695,8 +1695,8 @@ struct ForkProcessChannel_
     struct ForkProcessChannel_  *mPrev;
     struct ForkProcessChannel_ **mList;
 
-    struct Pipe  mResultPipe_;
-    struct Pipe *mResultPipe;
+    struct Ert_Pipe  mResultPipe_;
+    struct Ert_Pipe *mResultPipe;
 
     struct Ert_BellSocketPair  mResultSocket_;
     struct Ert_BellSocketPair *mResultSocket;
@@ -1712,7 +1712,7 @@ closeForkProcessChannel_(
         self->mPrev  = 0;
 
         self->mResultSocket = ert_closeBellSocketPair(self->mResultSocket);
-        self->mResultPipe   = closePipe(self->mResultPipe);
+        self->mResultPipe   = ert_closePipe(self->mResultPipe);
     }
 
     return 0;
@@ -1722,7 +1722,7 @@ static void
 closeForkProcessChannelResultChild_(
     struct ForkProcessChannel_ *self)
 {
-    closePipeWriter(self->mResultPipe);
+    ert_closePipeWriter(self->mResultPipe);
     ert_closeBellSocketPairChild(self->mResultSocket);
 }
 
@@ -1730,7 +1730,7 @@ static void
 closeForkProcessChannelResultParent_(
     struct ForkProcessChannel_ *self)
 {
-    closePipeReader(self->mResultPipe);
+    ert_closePipeReader(self->mResultPipe);
     ert_closeBellSocketPairParent(self->mResultSocket);
 }
 
@@ -1758,7 +1758,7 @@ createForkProcessChannel_(
     stdFdFiller = &stdFdFiller_;
 
     ERROR_IF(
-        createPipe(&self->mResultPipe_, O_CLOEXEC));
+        ert_createPipe(&self->mResultPipe_, O_CLOEXEC));
     self->mResultPipe = &self->mResultPipe_;
 
     ERROR_IF(

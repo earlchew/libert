@@ -311,7 +311,7 @@ struct ProcessForkArg
 
 struct ProcessForkTest
 {
-    int        mPipeFds[2];
+    int            mPipeFds[2];
     struct Ert_Pid mChildPid;
 };
 
