@@ -86,15 +86,15 @@ createPollEventText(
 
 /* -------------------------------------------------------------------------- */
 int
-createPollFd(struct PollFd                 *self,
+ert_createPollFd(struct Ert_PollFd                 *self,
              struct pollfd                 *aPoll,
-             struct PollFdAction           *aFdActions,
+             struct Ert_PollFdAction           *aFdActions,
              const char * const            *aFdNames,
              size_t                         aNumFdActions,
-             struct PollFdTimerAction      *aTimerActions,
+             struct Ert_PollFdTimerAction      *aTimerActions,
              const char * const            *aTimerNames,
              size_t                         aNumTimerActions,
-             struct PollFdCompletionMethod  aCompletionQuery)
+             struct Ert_PollFdCompletionMethod  aCompletionQuery)
 {
     int rc = -1;
 
@@ -116,21 +116,21 @@ createPollFd(struct PollFd                 *self,
 }
 
 /* -------------------------------------------------------------------------- */
-struct PollFd *
-closePollFd(struct PollFd *self)
+struct Ert_PollFd *
+ert_closePollFd(struct Ert_PollFd *self)
 {
     return 0;
 }
 
 /* -------------------------------------------------------------------------- */
 int
-runPollFdLoop(struct PollFd *self)
+ert_runPollFdLoop(struct Ert_PollFd *self)
 {
     int rc = -1;
 
     struct EventClockTime polltm;
 
-    while ( ! callPollFdCompletionMethod(self->mCompletionQuery))
+    while ( ! ert_callPollFdCompletionMethod(self->mCompletionQuery))
     {
         /* Poll the file descriptors and process the file descriptor
          * events before attempting to check for timeouts. This
@@ -255,10 +255,10 @@ runPollFdLoop(struct PollFd *self)
 
                     ++eventCount;
 
-                    if ( ! ownPollFdCallbackMethodNil(
+                    if ( ! ert_ownPollFdCallbackMethodNil(
                              self->mFdActions.mActions[ix].mAction))
                         ERROR_IF(
-                            callPollFdCallbackMethod(
+                            ert_callPollFdCallbackMethod(
                                 self->mFdActions.mActions[ix].mAction, &polltm),
                             {
                                 warn(
@@ -281,7 +281,7 @@ runPollFdLoop(struct PollFd *self)
 
         for (size_t ix = 0; self->mTimerActions.mSize > ix; ++ix)
         {
-            struct PollFdTimerAction *timerAction =
+            struct Ert_PollFdTimerAction *timerAction =
                 &self->mTimerActions.mActions[ix];
 
             if (timerAction->mPeriod.duration.ns)
@@ -305,7 +305,7 @@ runPollFdLoop(struct PollFd *self)
                             MSECS(timerAction->mPeriod.duration)));
 
                     ERROR_IF(
-                        callPollFdCallbackMethod(timerAction->mAction, &polltm),
+                        ert_callPollFdCallbackMethod(timerAction->mAction, &polltm),
                         {
                             warn(errno,
                                  "Error dispatching timer %s",

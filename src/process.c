@@ -3197,7 +3197,7 @@ Process_init(struct ProcessModule *self, const char *aArg0)
     bool hookedSignals = false;
 
     self->mModule      = self;
-    self->ert_mErrorModule = 0;
+    self->mErrorModule = 0;
 
     ensure( ! moduleInit_);
 
@@ -3244,8 +3244,8 @@ Process_init(struct ProcessModule *self, const char *aArg0)
     }
 
     ERROR_IF(
-        Ert_Error_init(&self->ert_mErrorModule_));
-    self->ert_mErrorModule = &self->ert_mErrorModule_;
+        Ert_Error_init(&self->mErrorModule_));
+    self->mErrorModule = &self->mErrorModule_;
 
     ERROR_IF(
         errno = pthread_sigmask(SIG_BLOCK, 0, &processSigMask_));
@@ -3285,7 +3285,7 @@ Finally:
 
             closeProcessLock_(processLock);
 
-            self->ert_mErrorModule = Ert_Error_exit(self->ert_mErrorModule);
+            self->mErrorModule = Ert_Error_exit(self->mErrorModule);
         }
     });
 
@@ -3314,7 +3314,7 @@ Process_exit(struct ProcessModule *self)
         ABORT_IF(
             errno = pthread_sigmask(SIG_SETMASK, &processSigMask_, 0));
 
-        self->ert_mErrorModule = Ert_Error_exit(self->ert_mErrorModule);
+        self->mErrorModule = Ert_Error_exit(self->mErrorModule);
     }
 
     return 0;

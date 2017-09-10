@@ -178,7 +178,7 @@ ert_readFdDeadline(
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_lockFd(int aFd, struct Ert_LockType ert_aLockType);
+ert_lockFd(int aFd, struct Ert_LockType aLockType);
 
 ERT_CHECKED int
 ert_unlockFd(int aFd);
@@ -186,7 +186,7 @@ ert_unlockFd(int aFd);
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
 ert_lockFdRegion(
-    int aFd, struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen);
+    int aFd, struct Ert_LockType aLockType, off_t aPos, off_t aLen);
 
 ERT_CHECKED int
 ert_unlockFdRegion(

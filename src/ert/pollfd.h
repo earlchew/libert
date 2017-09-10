@@ -43,6 +43,9 @@
 #define ERT_METHOD_ARG_LIST_PollFdCompletionMethod  ()
 #define ERT_METHOD_CALL_LIST_PollFdCompletionMethod ()
 
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
 #define ERT_METHOD_NAME      PollFdCompletionMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PollFdCompletionMethod
 #define ERT_METHOD_CONST     ERT_METHOD_CONST_PollFdCompletionMethod
@@ -50,10 +53,10 @@
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PollFdCompletionMethod
 #include "ert/method.h"
 
-#define PollFdCompletionMethod(Object_, Method_)  \
+#define Ert_PollFdCompletionMethod(Object_, Method_)  \
     ERT_METHOD_TRAMPOLINE(                            \
-        Object_, Method_,                         \
-        PollFdCompletionMethod_,                  \
+        Object_, Method_,                             \
+        Ert_PollFdCompletionMethod_,                  \
         ERT_METHOD_RETURN_PollFdCompletionMethod,     \
         ERT_METHOD_CONST_PollFdCompletionMethod,      \
         ERT_METHOD_ARG_LIST_PollFdCompletionMethod,   \
@@ -69,6 +72,9 @@
 #define ERT_METHOD_CALL_LIST_PollFdCallbackMethod \
     (aPollTime_)
 
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
 #define ERT_METHOD_NAME      PollFdCallbackMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_PollFdCallbackMethod
 #define ERT_METHOD_CONST     ERT_METHOD_CONST_PollFdCallbackMethod
@@ -76,10 +82,10 @@
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_PollFdCallbackMethod
 #include "ert/method.h"
 
-#define PollFdCallbackMethod(Object_, Method_)      \
+#define Ert_PollFdCallbackMethod(Object_, Method_)  \
     ERT_METHOD_TRAMPOLINE(                          \
         Object_, Method_,                           \
-        PollFdCallbackMethod_,                      \
+        Ert_PollFdCallbackMethod_,                  \
         ERT_METHOD_RETURN_PollFdCallbackMethod,     \
         ERT_METHOD_CONST_PollFdCallbackMethod,      \
         ERT_METHOD_ARG_LIST_PollFdCallbackMethod,   \
@@ -91,33 +97,33 @@ ERT_BEGIN_C_SCOPE;
 struct pollfd;
 
 /* -------------------------------------------------------------------------- */
-struct PollFdAction
+struct Ert_PollFdAction
 {
-    struct PollFdCallbackMethod mAction;
+    struct Ert_PollFdCallbackMethod mAction;
 };
 
-struct PollFdTimerAction
+struct Ert_PollFdTimerAction
 {
-    struct PollFdCallbackMethod mAction;
+    struct Ert_PollFdCallbackMethod mAction;
     struct Duration             mPeriod;
     struct EventClockTime       mSince;
 };
 
-struct PollFd
+struct Ert_PollFd
 {
     struct pollfd                 *mPoll;
-    struct PollFdCompletionMethod  mCompletionQuery;
+    struct Ert_PollFdCompletionMethod  mCompletionQuery;
 
     struct
     {
-        struct PollFdAction *mActions;
+        struct Ert_PollFdAction *mActions;
         const char * const  *mNames;
         size_t               mSize;
     } mFdActions;
 
     struct
     {
-        struct PollFdTimerAction *mActions;
+        struct Ert_PollFdTimerAction *mActions;
         const char * const       *mNames;
         size_t                    mSize;
     } mTimerActions;
@@ -145,21 +151,21 @@ struct PollEventText
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createPollFd(struct PollFd                 *self,
+ert_createPollFd(struct Ert_PollFd                 *self,
              struct pollfd                 *aPoll,
-             struct PollFdAction           *aFdActions,
+             struct Ert_PollFdAction           *aFdActions,
              const char * const            *aFdNames,
              size_t                         aNumFdActions,
-             struct PollFdTimerAction      *aTimerActions,
+             struct Ert_PollFdTimerAction      *aTimerActions,
              const char * const            *aTimerNames,
              size_t                         aNumTimerActions,
-             struct PollFdCompletionMethod  aCompletionQuery);
+             struct Ert_PollFdCompletionMethod  aCompletionQuery);
 
 ERT_CHECKED int
-runPollFdLoop(struct PollFd *self);
+ert_runPollFdLoop(struct Ert_PollFd *self);
 
-ERT_CHECKED struct PollFd *
-closePollFd(struct PollFd *self);
+ERT_CHECKED struct Ert_PollFd *
+ert_closePollFd(struct Ert_PollFd *self);
 
 /* -------------------------------------------------------------------------- */
 const char *

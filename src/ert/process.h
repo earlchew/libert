@@ -174,10 +174,10 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_DEFINITION
 #define ERT_METHOD_RETURN_WatchProcessSignalMethod    int
 #define ERT_METHOD_CONST_WatchProcessSignalMethod
-#define ERT_METHOD_ARG_LIST_WatchProcessSignalMethod  (int aSigNum_,     \
-                                                       struct Ert_Pid ert_aPid_, \
+#define ERT_METHOD_ARG_LIST_WatchProcessSignalMethod  (int aSigNum_,         \
+                                                       struct Ert_Pid aPid_, \
                                                        struct Uid aUid_)
-#define ERT_METHOD_CALL_LIST_WatchProcessSignalMethod (aSigNum_, ert_aPid_, aUid_)
+#define ERT_METHOD_CALL_LIST_WatchProcessSignalMethod (aSigNum_, aPid_, aUid_)
 
 #define ERT_METHOD_NAME      WatchProcessSignalMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_WatchProcessSignalMethod
@@ -209,8 +209,8 @@ struct ProcessModule
 {
     struct ProcessModule *mModule;
 
-    struct Ert_ErrorModule  ert_mErrorModule_;
-    struct Ert_ErrorModule *ert_mErrorModule;
+    struct Ert_ErrorModule  mErrorModule_;
+    struct Ert_ErrorModule *mErrorModule;
 };
 
 #define PRId_ExitCode "d"

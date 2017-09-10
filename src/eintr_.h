@@ -360,7 +360,7 @@ EINTR_FUNCTION_DECL_(
 
 EINTR_FUNCTION_DECL_(
     pid_t, wait4,
-    (pid_t ert_aPid, int *aStatus, int aOptions, struct rusage *aRusage));
+    (pid_t aPid, int *aStatus, int aOptions, struct rusage *aRusage));
 
 EINTR_FUNCTION_DECL_(
     int, waitid,
@@ -368,7 +368,7 @@ EINTR_FUNCTION_DECL_(
 
 EINTR_FUNCTION_DECL_(
     pid_t, waitpid,
-    (pid_t ert_aPid, int *aStatus, int aOptions));
+    (pid_t aPid, int *aStatus, int aOptions));
 
 EINTR_FUNCTION_DECL_(
     ssize_t, write,

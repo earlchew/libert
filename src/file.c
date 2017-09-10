@@ -635,9 +635,9 @@ ert_ownFileCloseOnExec(const struct Ert_File *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_lockFile(struct Ert_File *self, struct Ert_LockType ert_aLockType)
+ert_lockFile(struct Ert_File *self, struct Ert_LockType aLockType)
 {
-    return ert_lockFd(self->mFd, ert_aLockType);
+    return ert_lockFd(self->mFd, aLockType);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -651,9 +651,9 @@ ert_unlockFile(struct Ert_File *self)
 int
 ert_lockFileRegion(
     struct Ert_File *self,
-    struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen)
+    struct Ert_LockType aLockType, off_t aPos, off_t aLen)
 {
-    return ert_lockFdRegion(self->mFd, ert_aLockType, aPos, aLen);
+    return ert_lockFdRegion(self->mFd, aLockType, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */

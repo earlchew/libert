@@ -53,14 +53,15 @@ Finally:
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
 ert_raiseJobControlSignal_(
-    struct Ert_JobControl *self, int aSigNum, struct Ert_Pid ert_aPid, struct Uid aUid)
+    struct Ert_JobControl *self,
+    int aSigNum, struct Ert_Pid aPid, struct Uid aUid)
 {
     int rc = -1;
 
     if ( ! ownWatchProcessSignalMethodNil(self->mRaise.mMethod))
         ERROR_IF(
             callWatchProcessSignalMethod(
-                self->mRaise.mMethod, aSigNum, ert_aPid, aUid));
+                self->mRaise.mMethod, aSigNum, aPid, aUid));
 
     rc = 0;
 

@@ -159,7 +159,7 @@ ert_waitFileReadReady(const struct Ert_File     *self,
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_lockFile(struct Ert_File *self, struct Ert_LockType ert_aLockType);
+ert_lockFile(struct Ert_File *self, struct Ert_LockType aLockType);
 
 ERT_CHECKED int
 ert_unlockFile(struct Ert_File *self);
@@ -168,7 +168,7 @@ ert_unlockFile(struct Ert_File *self);
 ERT_CHECKED int
 ert_lockFileRegion(
     struct Ert_File *self,
-    struct Ert_LockType ert_aLockType, off_t aPos, off_t aLen);
+    struct Ert_LockType aLockType, off_t aPos, off_t aLen);
 
 ERT_CHECKED int
 ert_unlockFileRegion(struct Ert_File *self, off_t aPos, off_t aLen);
