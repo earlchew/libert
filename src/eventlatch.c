@@ -360,8 +360,8 @@ ert_pollEventLatchListEntry(struct Ert_EventLatchListEntry  *self,
              Ert_EventLatchSettingError == setting),
             {
                 warn(errno,
-                     "Unable to reset event latch %" PRIs_Method,
-                     FMTs_Method(self->mLatch, ert_printEventLatch));
+                     "Unable to reset event latch %" PRIs_Ert_Method,
+                     FMTs_Ert_Method(self->mLatch, ert_printEventLatch));
             });
 
         if (Ert_EventLatchSettingOff != setting)

@@ -63,20 +63,20 @@ ert_printFdSet(const struct Ert_FdSet *self, FILE *aFile)
     int printed = 0;
 
     ERROR_IF(
-        PRINTF(printed, fprintf(aFile, "<fdset %p", self)));
+        ERT_PRINTF(printed, fprintf(aFile, "<fdset %p", self)));
 
     struct Ert_FdSetElement_ *elem;
     RB_FOREACH(elem, Ert_FdSetTree_, &((struct Ert_FdSet *) self)->mRoot)
     {
         ERROR_IF(
-            PRINTF(
+            ERT_PRINTF(
                 printed,
                 fprintf(aFile,
                         " (%d,%d)", elem->mRange.mLhs, elem->mRange.mRhs)));
     }
 
     ERROR_IF(
-        PRINTF(printed, fprintf(aFile, ">")));
+        ERT_PRINTF(printed, fprintf(aFile, ">")));
 
     rc = 0;
 

@@ -563,7 +563,7 @@ dprint_(
             dprintf(STDERR_FILENO, "- lock error %d - ", aLockErr);
     }
 
-    xvdprintf(STDERR_FILENO, aFmt, aArgs);
+    ert_vdprintf(STDERR_FILENO, aFmt, aArgs);
     if ( ! aErrCode)
         dprintf(STDERR_FILENO, "\n");
     else if (aErrText)
@@ -759,7 +759,7 @@ print_(
                 }
             }
 
-            xvfprintf(printBuf_.mFile, aFmt, aArgs);
+            ert_vfprintf(printBuf_.mFile, aFmt, aArgs);
             if ( ! aErrCode)
                 fprintf(printBuf_.mFile, "\n");
             else if (errText)
@@ -1032,7 +1032,7 @@ Error_exit_(struct Ert_ErrorModule *self)
 
         appLock = destroyProcessAppLock(appLock);
 
-        self->mPrintfModule = Printf_exit(self->mPrintfModule);
+        self->mPrintfModule = Ert_Printf_exit(self->mPrintfModule);
     }
 
     return 0;
@@ -1065,7 +1065,7 @@ Ert_Error_init(struct Ert_ErrorModule *self)
     if ( ! moduleInit_)
     {
         ERROR_IF(
-            Printf_init(&self->mPrintfModule_));
+            Ert_Printf_init(&self->mPrintfModule_));
         self->mPrintfModule = &self->mPrintfModule_;
 
         printBuf_.mBuf  = 0;

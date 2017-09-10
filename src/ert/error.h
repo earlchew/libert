@@ -44,8 +44,8 @@ struct Ert_ErrorModule
 {
     struct Ert_ErrorModule *mModule;
 
-    struct PrintfModule  mPrintfModule_;
-    struct PrintfModule *mPrintfModule;
+    struct Ert_PrintfModule  mPrintfModule_;
+    struct Ert_PrintfModule *mPrintfModule;
 };
 
 /* -------------------------------------------------------------------------- */

@@ -46,8 +46,8 @@ class PrintfTest : public ::testing::Test
 
 private:
 
-    struct PrintfModule  mModule_;
-    struct PrintfModule *mModule;
+    struct Ert_PrintfModule  mModule_;
+    struct Ert_PrintfModule *mModule;
 };
 
 class TestClass
