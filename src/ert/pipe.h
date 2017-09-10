@@ -34,7 +34,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct Pipe
+struct Ert_Pipe
 {
     struct Ert_File  mRdFile_;
     struct Ert_File *mRdFile;
@@ -44,28 +44,28 @@ struct Pipe
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createPipe(struct Pipe *self, unsigned aFlags);
+ert_createPipe(struct Ert_Pipe *self, unsigned aFlags);
 
-ERT_CHECKED struct Pipe *
-closePipe(struct Pipe *self);
-
-ERT_CHECKED int
-detachPipeReader(struct Pipe *self);
+ERT_CHECKED struct Ert_Pipe *
+ert_closePipe(struct Ert_Pipe *self);
 
 ERT_CHECKED int
-detachPipeWriter(struct Pipe *self);
+ert_detachPipeReader(struct Ert_Pipe *self);
+
+ERT_CHECKED int
+ert_detachPipeWriter(struct Ert_Pipe *self);
 
 void
-closePipeReader(struct Pipe *self);
+ert_closePipeReader(struct Ert_Pipe *self);
 
 void
-closePipeWriter(struct Pipe *self);
+ert_closePipeWriter(struct Ert_Pipe *self);
 
 ERT_CHECKED int
-closePipeOnExec(struct Pipe *self, unsigned aCloseOnExec);
+ert_closePipeOnExec(struct Ert_Pipe *self, unsigned aCloseOnExec);
 
 ERT_CHECKED int
-nonBlockingPipe(struct Pipe *self, unsigned aNonBlocking);
+nonBlockingPipe(struct Ert_Pipe *self, unsigned aNonBlocking);
 
 /* -------------------------------------------------------------------------- */
 

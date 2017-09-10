@@ -35,7 +35,7 @@
 
 /* -------------------------------------------------------------------------- */
 int
-createPipe(struct Pipe *self, unsigned aFlags)
+ert_createPipe(struct Ert_Pipe *self, unsigned aFlags)
 {
     int rc = -1;
 
@@ -99,7 +99,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-detachPipeReader(struct Pipe *self)
+ert_detachPipeReader(struct Ert_Pipe *self)
 {
     int rc = -1;
 
@@ -119,7 +119,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-detachPipeWriter(struct Pipe *self)
+ert_detachPipeWriter(struct Ert_Pipe *self)
 {
     int rc = -1;
 
@@ -139,21 +139,21 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-closePipeReader(struct Pipe *self)
+ert_closePipeReader(struct Ert_Pipe *self)
 {
     self->mRdFile = ert_closeFile(self->mRdFile);
 }
 
 /* -------------------------------------------------------------------------- */
 void
-closePipeWriter(struct Pipe *self)
+ert_closePipeWriter(struct Ert_Pipe *self)
 {
     self->mWrFile = ert_closeFile(self->mWrFile);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-closePipeOnExec(struct Pipe *self, unsigned aCloseOnExec)
+ert_closePipeOnExec(struct Ert_Pipe *self, unsigned aCloseOnExec)
 {
     int rc = -1;
 
@@ -173,7 +173,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-nonBlockingPipe(struct Pipe *self, unsigned aNonBlocking)
+nonBlockingPipe(struct Ert_Pipe *self, unsigned aNonBlocking)
 {
     int rc = -1;
 
@@ -192,13 +192,13 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pipe *
-closePipe(struct Pipe *self)
+struct Ert_Pipe *
+ert_closePipe(struct Ert_Pipe *self)
 {
     if (self)
     {
-        closePipeReader(self);
-        closePipeWriter(self);
+        ert_closePipeReader(self);
+        ert_closePipeWriter(self);
     }
 
     return 0;
