@@ -36,83 +36,83 @@
 ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
-struct Tid
-Tid_(pid_t aTid);
+struct Ert_Tid
+Ert_Tid_(pid_t aTid);
 
-#define PRId_Tid "jd"
-#define FMTd_Tid(Tid) ((intmax_t) (Tid).mTid)
-struct Tid
+#define PRId_Ert_Tid "jd"
+#define FMTd_Ert_Tid(Tid) ((intmax_t) (Tid).mTid)
+struct Ert_Tid
 {
 #ifdef __cplusplus
-    explicit Tid()
-    { *this = Tid_(0); }
+    explicit Ert_Tid()
+    { *this = Ert_Tid_(0); }
 
-    explicit Tid(pid_t aTid)
-    { *this = Tid_(aTid); }
+    explicit Ert_Tid(pid_t aTid)
+    { *this = Ert_Tid_(aTid); }
 #endif
 
     pid_t mTid;
 };
 
 #ifndef __cplusplus
-static inline struct Tid
-Tid(pid_t aTid)
+static inline struct Ert_Tid
+Ert_Tid(pid_t aTid)
 {
-    return Tid_(aTid);
+    return Ert_Tid_(aTid);
 }
 #endif
 
 /* -------------------------------------------------------------------------- */
-struct Pid
-Pid_(pid_t aPid);
+struct Ert_Pid
+Ert_Pid_(pid_t aPid);
 
-#define PRId_Pid "jd"
-#define FMTd_Pid(Pid) ((intmax_t) (Pid).mPid)
-struct Pid
+#define PRId_Ert_Pid "jd"
+#define FMTd_Ert_Pid(Pid) ((intmax_t) (Pid).mPid)
+struct Ert_Pid
 {
 #ifdef __cplusplus
-    explicit Pid()
-    { *this = Pid_(0); }
+    explicit Ert_Pid()
+    { *this = Ert_Pid_(0); }
 
-    explicit Pid(pid_t aPid)
-    { *this = Pid_(aPid); }
+    explicit Ert_Pid(pid_t aPid)
+    { *this = Ert_Pid_(aPid); }
 #endif
 
     pid_t mPid;
 };
 
 #ifndef __cplusplus
-static inline struct Pid
-Pid(pid_t aPid)
+static inline struct Ert_Pid
+Ert_Pid(pid_t aPid)
 {
-    return Pid_(aPid);
+    return Ert_Pid_(aPid);
 }
 #endif
 
 /* -------------------------------------------------------------------------- */
-struct Pgid
-Pgid_(pid_t aPgid);
+struct Ert_Pgid
+Ert_Pgid_(pid_t aPgid);
 
-#define PRId_Pgid "jd"
-#define FMTd_Pgid(Pgid) ((intmax_t) (Pgid).mPgid)
-struct Pgid
+#define PRId_Ert_Pgid "jd"
+#define FMTd_Ert_Pgid(Pgid) ((intmax_t) (Pgid).mPgid)
+struct Ert_Pgid
 {
 #ifdef __cplusplus
-    explicit Pgid()
-    { *this = Pgid_(0); }
+    explicit Ert_Pgid()
+    { *this = Ert_Pgid_(0); }
 
-    explicit Pgid(pid_t aPgid)
-    { *this = Pgid_(aPgid); }
+    explicit Ert_Pgid(pid_t aPgid)
+    { *this = Ert_Pgid_(aPgid); }
 #endif
 
     pid_t mPgid;
 };
 
 #ifndef __cplusplus
-static inline struct Pgid
-Pgid(pid_t aPgid)
+static inline struct Ert_Pgid
+Ert_Pgid(pid_t aPgid)
 {
-    return Pgid_(aPgid);
+    return Ert_Pgid_(aPgid);
 }
 #endif
 

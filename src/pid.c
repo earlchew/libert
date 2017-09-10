@@ -30,24 +30,24 @@
 #include "ert/pid.h"
 
 /* -------------------------------------------------------------------------- */
-struct Tid
-Tid_(pid_t aTid)
+struct Ert_Tid
+Ert_Tid_(pid_t aTid)
 {
-    return (struct Tid) { .mTid = aTid };
+    return (struct Ert_Tid) { .mTid = aTid };
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pid
-Pid_(pid_t aPid)
+struct Ert_Pid
+Ert_Pid_(pid_t aPid)
 {
-    return (struct Pid) { .mPid = aPid };
+    return (struct Ert_Pid) { .mPid = aPid };
 }
 
 /* -------------------------------------------------------------------------- */
-struct Pgid
-Pgid_(pid_t aPgid)
+struct Ert_Pgid
+Ert_Pgid_(pid_t aPgid)
 {
-    return (struct Pgid) { .mPgid = aPgid };
+    return (struct Ert_Pgid) { .mPgid = aPgid };
 }
 
 /* -------------------------------------------------------------------------- */
