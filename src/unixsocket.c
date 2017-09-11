@@ -81,7 +81,7 @@ createUnixSocket(
     self->mSocket = 0;
 
     ERROR_IF(
-        createSocket(&self->mSocket_,
+        ert_createSocket(&self->mSocket_,
                      socket(AF_UNIX,
                             SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)));
     self->mSocket = &self->mSocket_;
@@ -128,7 +128,7 @@ createUnixSocket(
 
         int err;
         ERROR_IF(
-            (err = bindSocket(
+            (err = ert_bindSocket(
                 self->mSocket,
                 (struct sockaddr *) &sockAddr, sizeof(sockAddr)),
              err && (EADDRINUSE != errno || aName || aNameLen)));
@@ -137,7 +137,7 @@ createUnixSocket(
             continue;
 
         ERROR_IF(
-            listenSocket(self->mSocket, aQueueLen));
+            ert_listenSocket(self->mSocket, aQueueLen));
 
         break;
     }
@@ -149,7 +149,7 @@ Finally:
     FINALLY(
     {
         if (rc)
-            self->mSocket = closeSocket(self->mSocket);
+            self->mSocket = ert_closeSocket(self->mSocket);
     });
 
     return rc;
@@ -168,9 +168,9 @@ acceptUnixSocket(
     {
         int err;
         ERROR_IF(
-            (err = createSocket(
+            (err = ert_createSocket(
                 &self->mSocket_,
-                acceptSocket(aServer->mSocket, O_NONBLOCK | O_CLOEXEC)),
+                ert_acceptSocket(aServer->mSocket, O_NONBLOCK | O_CLOEXEC)),
              err && EINTR != errno));
 
         if ( ! err)
@@ -185,7 +185,7 @@ Finally:
     FINALLY(
     {
         if (rc)
-            self->mSocket = closeSocket(self->mSocket);
+            self->mSocket = ert_closeSocket(self->mSocket);
     });
 
     return rc;
@@ -218,7 +218,7 @@ connectUnixSocket(struct UnixSocket *self, const char *aName, size_t aNameLen)
         sockAddr.sun_path + aNameLen, 0, sizeof(sockAddr.sun_path) - aNameLen);
 
     ERROR_IF(
-        createSocket(
+        ert_createSocket(
             &self->mSocket_,
             socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)));
     self->mSocket = &self->mSocket_;
@@ -226,7 +226,7 @@ connectUnixSocket(struct UnixSocket *self, const char *aName, size_t aNameLen)
     while (1)
     {
         ERROR_IF(
-            (err = connectSocket(
+            (err = ert_connectSocket(
                 self->mSocket,
                 (struct sockaddr *) &sockAddr, sizeof(sockAddr)),
              err && EINTR != errno && EINPROGRESS != errno));
@@ -249,7 +249,7 @@ Finally:
     FINALLY(
     {
         if (rc)
-            self->mSocket = closeSocket(self->mSocket);
+            self->mSocket = ert_closeSocket(self->mSocket);
     });
 
     return rc ? rc : err ? err : 0;
@@ -261,7 +261,7 @@ closeUnixSocket(struct UnixSocket *self)
 {
     if (self)
     {
-        self->mSocket = closeSocket(self->mSocket);
+        self->mSocket = ert_closeSocket(self->mSocket);
     }
 
     return 0;
@@ -305,13 +305,13 @@ createUnixSocketPair(struct UnixSocket *aParent,
         -1 == fd[0] || -1 == fd[1]);
 
     ERROR_IF(
-        createSocket(&aParent->mSocket_, fd[0]));
+        ert_createSocket(&aParent->mSocket_, fd[0]));
     aParent->mSocket = &aParent->mSocket_;
 
     fd[0] = -1;
 
     ERROR_IF(
-        createSocket(&aChild->mSocket_, fd[1]));
+        ert_createSocket(&aChild->mSocket_, fd[1]));
     aChild->mSocket = &aChild->mSocket_;
 
     fd[1] = -1;
@@ -327,8 +327,8 @@ Finally:
 
         if (rc)
         {
-            aParent->mSocket = closeSocket(aParent->mSocket);
-            aChild->mSocket  = closeSocket(aChild->mSocket);
+            aParent->mSocket = ert_closeSocket(aParent->mSocket);
+            aChild->mSocket  = ert_closeSocket(aChild->mSocket);
         }
     });
 
@@ -374,7 +374,7 @@ sendUnixSocketFd(struct UnixSocket *self, int aFd)
     bufPtr[0] = aFd;
 
     ERROR_IF(
-        sizeof(buf) != sendSocketMsg(self->mSocket, &msg, 0));
+        sizeof(buf) != ert_sendSocketMsg(self->mSocket, &msg, 0));
 
     rc = 0;
 
@@ -507,7 +507,7 @@ recvUnixSocketFd(struct UnixSocket *self, unsigned aFlags)
 
     ssize_t rdlen;
     ERROR_IF(
-        (rdlen = recvSocketMsg(self->mSocket, &msg, flags),
+        (rdlen = ert_recvSocketMsg(self->mSocket, &msg, flags),
          -1 == rdlen || (errno = EIO, sizeof(buf) != rdlen) || buf[0]));
 
     ERROR_UNLESS(
@@ -540,21 +540,21 @@ Finally:
 bool
 ownUnixSocketValid(const struct UnixSocket *self)
 {
-    return ownSocketValid(self->mSocket);
+    return ert_ownSocketValid(self->mSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 shutdownUnixSocketReader(struct UnixSocket *self)
 {
-    return shutdownSocketReader(self->mSocket);
+    return ert_shutdownSocketReader(self->mSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 shutdownUnixSocketWriter(struct UnixSocket *self)
 {
-    return shutdownSocketWriter(self->mSocket);
+    return ert_shutdownSocketWriter(self->mSocket);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -562,7 +562,7 @@ int
 waitUnixSocketWriteReady(const struct UnixSocket *self,
                          const struct Duration   *aTimeout)
 {
-    return waitSocketWriteReady(self->mSocket, aTimeout);
+    return ert_waitSocketWriteReady(self->mSocket, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -570,21 +570,21 @@ int
 waitUnixSocketReadReady(const struct UnixSocket *self,
                         const struct Duration   *aTimeout)
 {
-    return waitSocketReadReady(self->mSocket, aTimeout);
+    return ert_waitSocketReadReady(self->mSocket, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
 sendUnixSocket(struct UnixSocket *self, const char *aBuf, size_t aLen)
 {
-    return sendSocket(self->mSocket, aBuf, aLen);
+    return ert_sendSocket(self->mSocket, aBuf, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
 recvUnixSocket(struct UnixSocket *self, char *aBuf, size_t aLen)
 {
-    return recvSocket(self->mSocket, aBuf, aLen);
+    return ert_recvSocket(self->mSocket, aBuf, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -592,7 +592,7 @@ ssize_t
 writeUnixSocket(struct UnixSocket *self,
                 const char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
-    return writeSocket(self->mSocket, aBuf, aLen, aTimeout);
+    return ert_writeSocket(self->mSocket, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -600,7 +600,7 @@ ssize_t
 readUnixSocket(struct UnixSocket *self,
                char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
-    return readSocket(self->mSocket, aBuf, aLen, aTimeout);
+    return ert_readSocket(self->mSocket, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -610,7 +610,7 @@ ownUnixSocketName(const struct UnixSocket *self,
 {
     socklen_t addrLen = sizeof(*aAddr);
 
-    return ownSocketName(self->mSocket, (struct sockaddr *) aAddr, &addrLen);
+    return ert_ownSocketName(self->mSocket, (struct sockaddr *) aAddr, &addrLen);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -620,7 +620,7 @@ ownUnixSocketPeerName(const struct UnixSocket *self,
 {
     socklen_t addrLen = sizeof(*aAddr);
 
-    return ownSocketPeerName(
+    return ert_ownSocketPeerName(
         self->mSocket, (struct sockaddr *) aAddr, &addrLen);
 }
 
@@ -628,14 +628,14 @@ ownUnixSocketPeerName(const struct UnixSocket *self,
 int
 ownUnixSocketError(const struct UnixSocket *self, int *aError)
 {
-    return ownSocketError(self->mSocket, aError);
+    return ert_ownSocketError(self->mSocket, aError);
 }
 
 /* -------------------------------------------------------------------------- */
 int
 ownUnixSocketPeerCred(const struct UnixSocket *self, struct ucred *aCred)
 {
-    return ownSocketPeerCred(self->mSocket, aCred);
+    return ert_ownSocketPeerCred(self->mSocket, aCred);
 }
 
 /* -------------------------------------------------------------------------- */

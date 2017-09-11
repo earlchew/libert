@@ -41,8 +41,8 @@ struct ucred;
 
 struct UnixSocket
 {
-    struct Socket  mSocket_;
-    struct Socket *mSocket;
+    struct Ert_Socket  mSocket_;
+    struct Ert_Socket *mSocket;
 };
 
 /* -------------------------------------------------------------------------- */
