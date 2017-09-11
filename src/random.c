@@ -52,8 +52,8 @@ srandom_(uint64_t aValue)
 
 }
 
-static uint64_t
-random_(void)
+static void
+init_(void)
 {
     static pthread_once_t once = PTHREAD_ONCE_INIT;
 
@@ -65,6 +65,19 @@ random_(void)
                     ert_scrambleRandomSeed(getpid());
                 })))
         ert_abortProcess();
+}
+
+ERT_EARLY_INITIALISER(
+    random_,
+    ({
+        init_();
+    }),
+    ({ }));
+
+static uint64_t
+random_(void)
+{
+    init_();
 
     uint64_t seed;
     uint64_t value;
@@ -78,13 +91,6 @@ random_(void)
 
     return value >> 32;
 }
-
-ERT_EARLY_INITIALISER(
-    random_,
-    ({
-        ert_scrambleRandomSeed(getpid());
-    }),
-    ({ }));
 
 /* -------------------------------------------------------------------------- */
 void
