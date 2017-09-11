@@ -820,7 +820,8 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
 
     const struct Duration timeout = aTimeout ? *aTimeout : ZeroDuration;
 
-    struct ProcessSigContTracker sigContTracker = ProcessSigContTracker();
+    struct Ert_ProcessSigContTracker sigContTracker =
+        Ert_ProcessSigContTracker();
 
     while (1)
     {
@@ -850,7 +851,7 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
         {
             if (deadlineTimeExpired(&since, timeout, &remaining, &tm))
             {
-                if (checkProcessSigContTracker(&sigContTracker))
+                if (ert_checkProcessSigContTracker(&sigContTracker))
                 {
                     since = (struct EventClockTime) EVENTCLOCKTIME_INIT;
                     continue;
@@ -1508,12 +1509,12 @@ ert_ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
         break;
 
     case F_RDLCK:
-        if (lockRegion.l_pid != ownProcessId().mPid)
+        if (lockRegion.l_pid != ert_ownProcessId().mPid)
             lockType = Ert_LockTypeRead;
         break;
 
     case F_WRLCK:
-        if (lockRegion.l_pid != ownProcessId().mPid)
+        if (lockRegion.l_pid != ert_ownProcessId().mPid)
             lockType = Ert_LockTypeWrite;
         break;
     }

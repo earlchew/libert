@@ -176,9 +176,11 @@ struct Ert_ErrorModule
         if ( Sense_ (Predicate_))                                             \
         {                                                                     \
             Ert_Error_warn_(0,                                                \
-                 "%" PRIs_Method                                              \
-                 ERT_IFEMPTY("", " ", ERT_CAR(__VA_ARGS__)) ERT_CAR(__VA_ARGS__), \
-                 FMTs_Method(Self_, PrintfMethod_) ERT_CDR(__VA_ARGS__));     \
+                 "%" PRIs_Ert_Method                                          \
+                 ERT_IFEMPTY("", " ", ERT_CAR(__VA_ARGS__))                   \
+                 ERT_CAR(__VA_ARGS__),                                        \
+                 FMTs_Ert_Method(Self_, PrintfMethod_)                        \
+                 ERT_CDR(__VA_ARGS__));                                       \
         }                                                                     \
     } while (0)
 

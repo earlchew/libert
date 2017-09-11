@@ -42,19 +42,19 @@ class ThreadTest : public ::testing::Test
 {
     void SetUp()
     {
-        ASSERT_EQ(0, Process_init(&mModule_, __FILE__));
+        ASSERT_EQ(0, Ert_Process_init(&mModule_, __FILE__));
         mModule= &mModule_;
     }
 
     void TearDown()
     {
-        mModule = Process_exit(mModule);
+        mModule = Ert_Process_exit(mModule);
     }
 
 private:
 
-    struct ProcessModule  mModule_;
-    struct ProcessModule *mModule;
+    struct Ert_ProcessModule  mModule_;
+    struct Ert_ProcessModule *mModule;
 };
 
 TEST_F(ThreadTest, MutexDestroy)

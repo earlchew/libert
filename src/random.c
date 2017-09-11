@@ -64,7 +64,7 @@ random_(void)
                 {
                     scrambleRandomSeed(getpid());
                 })))
-        abortProcess();
+        ert_abortProcess();
 
     uint64_t seed;
     uint64_t value;

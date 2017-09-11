@@ -35,13 +35,13 @@ class PrintfTest : public ::testing::Test
 {
     void SetUp()
     {
-        ASSERT_EQ(0, Printf_init(&mModule_));
+        ASSERT_EQ(0, Ert_Printf_init(&mModule_));
         mModule = &mModule_;
     }
 
     void TearDown()
     {
-        mModule = Printf_exit(mModule);
+        mModule = Ert_Printf_exit(mModule);
     }
 
 private:
@@ -79,42 +79,42 @@ TEST_F(PrintfTest, PrintfMethod)
     EXPECT_TRUE(fp);
 
     rewind(fp);
-    xfprintf(
+    ert_fprintf(
         fp,
-        "%" PRIs_Method,
-        FMTs_Method(&test, TestClass::print));
+        "%" PRIs_Ert_Method,
+        FMTs_Ert_Method(&test, TestClass::print));
 
     EXPECT_EQ(0, fflush(fp));
     EXPECT_NE(0u, bufLen);
     EXPECT_EQ(std::string("Test"), bufPtr);
 
     rewind(fp);
-    xfprintf(
+    ert_fprintf(
         fp,
-        "-%" PRIs_Method "-",
-        FMTs_Method(&test, TestClass::print));
+        "-%" PRIs_Ert_Method "-",
+        FMTs_Ert_Method(&test, TestClass::print));
 
     EXPECT_EQ(0, fflush(fp));
     EXPECT_NE(0u, bufLen);
     EXPECT_EQ(std::string("-Test-"), bufPtr);
 
     rewind(fp);
-    xfprintf(
+    ert_fprintf(
         fp,
-        "%" PRIs_Method "%" PRIs_Method,
-        FMTs_Method(&test, TestClass::print),
-        FMTs_Method(&test, TestClass::print));
+        "%" PRIs_Ert_Method "%" PRIs_Ert_Method,
+        FMTs_Ert_Method(&test, TestClass::print),
+        FMTs_Ert_Method(&test, TestClass::print));
 
     EXPECT_EQ(0, fflush(fp));
     EXPECT_NE(0u, bufLen);
     EXPECT_EQ(std::string("TestTest"), bufPtr);
 
     rewind(fp);
-    xfprintf(
+    ert_fprintf(
         fp,
-        "%" PRIs_Method "-%" PRIs_Method,
-        FMTs_Method(&test, TestClass::print),
-        FMTs_Method(&test, TestClass::print));
+        "%" PRIs_Ert_Method "-%" PRIs_Ert_Method,
+        FMTs_Ert_Method(&test, TestClass::print),
+        FMTs_Ert_Method(&test, TestClass::print));
 
     EXPECT_EQ(0, fflush(fp));
     EXPECT_NE(0u, bufLen);

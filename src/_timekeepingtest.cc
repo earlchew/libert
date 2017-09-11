@@ -522,9 +522,9 @@ uptime()
     pipe = ert_closePipe(pipe);
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(pid, &status));
+    EXPECT_EQ(0, ert_reapProcessChild(pid, &status));
 
-    struct ExitCode exitcode = extractProcessExitStatus(status, pid);
+    struct Ert_ExitCode exitcode = ert_extractProcessExitStatus(status, pid);
 
     EXPECT_EQ(0, exitcode.mStatus);
 

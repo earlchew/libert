@@ -57,50 +57,48 @@ struct Ert_LockType
 checkLock(struct Ert_File *aFile)
 {
     struct Ert_Pid checkPid =
-        forkProcessChild(ForkProcessInheritProcessGroup,
-                         Ert_Pgid(0),
-                         PreForkProcessMethod(
-                             aFile,
-                             ERT_LAMBDA(
-                                 int, (struct Ert_File                 *self,
-                                       const struct PreForkProcess *aPreFork),
-                                 {
-                                     return ert_insertFdSetFile(
-                                         aPreFork->mWhitelistFds, self);
-                                 })),
-                         PostForkChildProcessMethodNil(),
-                         PostForkParentProcessMethodNil(),
-                         ForkProcessMethod(
-                             aFile,
-                             ERT_LAMBDA(
-                                 int, (struct Ert_File *self),
-                                 {
-                                     struct Ert_LockType lockType =
-                                         ert_ownFileRegionLocked(self, 0, 1);
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
+            Ert_Pgid(0),
+            Ert_PreForkProcessMethod(
+                aFile,
+                ERT_LAMBDA(
+                    int, (struct Ert_File                 *self,
+                          const struct Ert_PreForkProcess *aPreFork),
+                    {
+                        return ert_insertFdSetFile(
+                            aPreFork->mWhitelistFds, self);
+                    })),
+            Ert_PostForkChildProcessMethodNil(),
+            Ert_PostForkParentProcessMethodNil(),
+            Ert_ForkProcessMethod(
+                aFile,
+                ERT_LAMBDA(
+                    int, (struct Ert_File *self),
+                    {
+                        struct Ert_LockType lockType =
+                            ert_ownFileRegionLocked(self, 0, 1);
 
-                                     int rc = 0;
+                        int rc = 0;
 
-                                     if (Ert_LockTypeUnlocked.mType
-                                         == lockType.mType)
-                                         rc = 1;
-                                     else if (Ert_LockTypeRead.mType
-                                              == lockType.mType)
-                                         rc = 2;
-                                     else if (Ert_LockTypeWrite.mType
-                                              == lockType.mType)
-                                         rc = 3;
+                        if (Ert_LockTypeUnlocked.mType == lockType.mType)
+                            rc = 1;
+                        else if (Ert_LockTypeRead.mType == lockType.mType)
+                            rc = 2;
+                        else if (Ert_LockTypeWrite.mType == lockType.mType)
+                            rc = 3;
 
-                                     return rc;
-                                 })));
+                        return rc;
+                    })));
 
     if (-1 == checkPid.mPid)
         return Ert_LockTypeError;
 
     int status;
-    if (reapProcessChild(checkPid, &status))
+    if (ert_reapProcessChild(checkPid, &status))
         return Ert_LockTypeError;
 
-    switch (extractProcessExitStatus(status, checkPid).mStatus)
+    switch (ert_extractProcessExitStatus(status, checkPid).mStatus)
     {
     default:
         return Ert_LockTypeError;

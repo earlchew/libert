@@ -98,13 +98,13 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_Deadline
 {
-    struct EventClockTime        mSince;
-    struct EventClockTime        mTime;
-    struct Duration              mRemaining;
-    struct ProcessSigContTracker mSigContTracker;
-    struct Duration              mDuration_;
-    struct Duration             *mDuration;
-    bool                         mExpired;
+    struct EventClockTime            mSince;
+    struct EventClockTime            mTime;
+    struct Duration                  mRemaining;
+    struct Ert_ProcessSigContTracker mSigContTracker;
+    struct Duration                  mDuration_;
+    struct Duration                 *mDuration;
+    bool                             mExpired;
 };
 
 /* -------------------------------------------------------------------------- */

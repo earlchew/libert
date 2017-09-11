@@ -158,7 +158,7 @@ temporaryFileCreate_(const char *aDirName)
          -1 == dirFd));
 
     uint32_t rnd =
-        ownProcessId().mPid ^ MSECS(monotonicTime().monotonic).ms;
+        ert_ownProcessId().mPid ^ MSECS(monotonicTime().monotonic).ms;
 
     struct TemporaryFileName_ fileName;
 
@@ -289,7 +289,7 @@ Finally:
 
 static ERT_CHECKED int
 prepareTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self,
-                                   const struct PreForkProcess  *aFork)
+                                   const struct Ert_PreForkProcess  *aFork)
 {
     int rc = -1;
 
@@ -393,18 +393,18 @@ temporaryFile_(const char *aDirName)
     temporaryFileProcess = &temporaryFileProcess_;
 
     ERROR_IF(
-        (tempPid = forkProcessChild(
-            ForkProcessSetSessionLeader,
+        (tempPid = ert_forkProcessChild(
+            Ert_ForkProcessSetSessionLeader,
             Ert_Pgid(0),
-            PreForkProcessMethod(
+            Ert_PreForkProcessMethod(
                 temporaryFileProcess,
                 ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self,
-                          const struct PreForkProcess  *aFork),
+                          const struct Ert_PreForkProcess  *aFork),
                     {
                         return prepareTemporaryFileProcessSocket_(self, aFork);
                     })),
-            PostForkChildProcessMethod(
+            Ert_PostForkChildProcessMethod(
                 temporaryFileProcess,
                 ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self),
@@ -413,7 +413,7 @@ temporaryFile_(const char *aDirName)
 
                         return sendTemporaryFileProcessFd_(self);
                     })),
-            PostForkParentProcessMethod(
+            Ert_PostForkParentProcessMethod(
                 temporaryFileProcess,
                 ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self,
@@ -424,15 +424,15 @@ temporaryFile_(const char *aDirName)
                         return waitTemporaryFileProcessSocket_(
                             temporaryFileProcess);
                     })),
-            ForkProcessMethodNil()),
+            Ert_ForkProcessMethodNil()),
          -1 == tempPid.mPid));
 
     int status;
     ERROR_IF(
-        reapProcessChild(tempPid, &status));
+        ert_reapProcessChild(tempPid, &status));
 
-    struct ExitCode exitCode =
-        extractProcessExitStatus(status, tempPid);
+    struct Ert_ExitCode exitCode =
+        ert_extractProcessExitStatus(status, tempPid);
 
     ERROR_IF(
         exitCode.mStatus,

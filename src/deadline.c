@@ -38,7 +38,7 @@ ert_createDeadline(struct Ert_Deadline *self, const struct Duration *aDuration)
     self->mSince          = (struct EventClockTime) EVENTCLOCKTIME_INIT;
     self->mTime           = self->mSince;
     self->mRemaining      = ZeroDuration;
-    self->mSigContTracker = ProcessSigContTracker();
+    self->mSigContTracker = Ert_ProcessSigContTracker();
     self->mDuration_      = aDuration ? *aDuration : ZeroDuration;
     self->mDuration       = aDuration ? &self->mDuration_ : 0;
     self->mExpired        = false;
@@ -100,7 +100,7 @@ ert_checkDeadlineExpired(struct Ert_Deadline *self,
                     &self->mSince,
                     *self->mDuration, &self->mRemaining, &self->mTime))
             {
-                if (checkProcessSigContTracker(&self->mSigContTracker))
+                if (ert_checkProcessSigContTracker(&self->mSigContTracker))
                 {
                     self->mSince =
                         (struct EventClockTime) EVENTCLOCKTIME_INIT;

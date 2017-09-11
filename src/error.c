@@ -116,7 +116,7 @@ destroyErrorKey_(void *aChunk_)
         struct Ert_ErrorFrameChunk *next = chunk->mChunkList;
 
         if (munmap(chunk, chunk->mChunkSize))
-            abortProcess();
+            ert_abortProcess();
 
         VALGRIND_FREELIKE_BLOCK(chunk, 0);
 
@@ -134,9 +134,9 @@ initErrorKey_(void)
                 {
                     if (pthread_key_create(
                             &errorDtor_.mKey, destroyErrorKey_))
-                        abortProcess();
+                        ert_abortProcess();
                 })))
-        abortProcess();
+        ert_abortProcess();
 }
 
 static void
@@ -145,7 +145,7 @@ setErrorKey_(struct Ert_ErrorFrameChunk *aChunk)
     initErrorKey_();
 
     if (pthread_setspecific(errorDtor_.mKey, aChunk))
-        abortProcess();
+        ert_abortProcess();
 }
 
 ERT_EARLY_INITIALISER(
@@ -167,7 +167,7 @@ createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
     long pageSize = sysconf(_SC_PAGESIZE);
 
     if (-1 == pageSize || ! pageSize)
-        abortProcess();
+        ert_abortProcess();
 
     /* Do not use malloc() because the the implementation in malloc_.c
      * will cause a recursive reference to createErrorFrameChunk_(). */
@@ -180,7 +180,7 @@ createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
                 MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 
     if (MAP_FAILED == self)
-        abortProcess();
+        ert_abortProcess();
 
     VALGRIND_MALLOCLIKE_BLOCK(self, chunkSize, 0, 0);
 
@@ -515,7 +515,7 @@ dprint_(
 {
 
     if ( ! aFile)
-        dprintf(STDERR_FILENO, "%s: ", ownProcessName());
+        dprintf(STDERR_FILENO, "%s: ", ert_ownProcessName());
     else
     {
         if (aPid.mPid == aTid.mTid)
@@ -526,14 +526,14 @@ dprint_(
                     "%s: [%04" PRIu64 ":%02" PRIu64
                     ":%02" PRIu64
                     ".%03" PRIu64 " %" PRId_Ert_Pid " %s %s:%u] ",
-                    ownProcessName(),
+                    ert_ownProcessName(),
                     aElapsed_h, aElapsed_m, aElapsed_s, aElapsed_ms,
                     FMTd_Ert_Pid(aPid), aFunction, aFile, aLine);
             else
                 dprintf(
                     STDERR_FILENO,
                     "%s: [%" PRId_Ert_Pid " %s %s:%u] ",
-                    ownProcessName(),
+                    ert_ownProcessName(),
                     FMTd_Ert_Pid(aPid), aFunction, aFile, aLine);
         }
         else
@@ -546,7 +546,7 @@ dprint_(
                     ".%03" PRIu64
                     " %" PRId_Ert_Pid
                     ":%" PRId_Ert_Tid " %s %s:%u] ",
-                    ownProcessName(),
+                    ert_ownProcessName(),
                     aElapsed_h, aElapsed_m, aElapsed_s, aElapsed_ms,
                     FMTd_Ert_Pid(aPid), FMTd_Ert_Tid(aTid),
                     aFunction, aFile, aLine);
@@ -554,7 +554,7 @@ dprint_(
                 dprintf(
                     STDERR_FILENO,
                     "%s: [%" PRId_Ert_Pid ":%" PRId_Ert_Tid " %s %s:%u] ",
-                    ownProcessName(),
+                    ert_ownProcessName(),
                     FMTd_Ert_Pid(aPid), FMTd_Ert_Tid(aTid),
                     aFunction, aFile, aLine);
         }
@@ -633,7 +633,7 @@ print_(
 
     FINALLY
     ({
-        struct Ert_Pid pid = ownProcessId();
+        struct Ert_Pid pid = ert_ownProcessId();
         struct Ert_Tid tid = ownThreadId();
 
         /* The availability of buffered IO might be lost while a message
@@ -644,7 +644,7 @@ print_(
         bool locked;
         bool buffered;
 
-        if (acquireProcessAppLock())
+        if (ert_acquireProcessAppLock())
         {
             lockerr  = errno ? errno : EPERM;
             locked   = false;
@@ -657,7 +657,7 @@ print_(
             buffered = !! printBuf_.mFile;
         }
 
-        struct Duration elapsed = ownProcessElapsedTime();
+        struct Duration elapsed = ert_ownProcessElapsedTime();
 
         uint64_t elapsed_ms = MSECS(elapsed.duration).ms;
         uint64_t elapsed_s;
@@ -713,7 +713,7 @@ print_(
             rewind(printBuf_.mFile);
 
             if ( ! aFile)
-                fprintf(printBuf_.mFile, "%s: ", ownProcessName());
+                fprintf(printBuf_.mFile, "%s: ", ert_ownProcessName());
             else
             {
                 if (pid.mPid == tid.mTid)
@@ -724,14 +724,14 @@ print_(
                             "%s: [%04" PRIu64 ":%02" PRIu64
                             ":%02" PRIu64
                             ".%03" PRIu64 " %" PRId_Ert_Pid " %s %s:%u] ",
-                            ownProcessName(),
+                            ert_ownProcessName(),
                             elapsed_h, elapsed_m, elapsed_s, elapsed_ms,
                             FMTd_Ert_Pid(pid), aFunction, aFile, aLine);
                     else
                         fprintf(
                             printBuf_.mFile,
                             "%s: [%" PRId_Ert_Pid " %s %s:%u] ",
-                            ownProcessName(),
+                            ert_ownProcessName(),
                             FMTd_Ert_Pid(pid), aFunction, aFile, aLine);
                 }
                 else
@@ -744,7 +744,7 @@ print_(
                             ".%03" PRIu64 " %" PRId_Ert_Pid
                             ":%" PRId_Ert_Tid " "
                             "%s %s:%u] ",
-                            ownProcessName(),
+                            ert_ownProcessName(),
                             elapsed_h, elapsed_m, elapsed_s, elapsed_ms,
                             FMTd_Ert_Pid(pid), FMTd_Ert_Tid(tid),
                             aFunction, aFile, aLine);
@@ -753,7 +753,7 @@ print_(
                             printBuf_.mFile,
                             "%s: [%" PRId_Ert_Pid
                             ":%" PRId_Ert_Tid " %s %s:%u] ",
-                            ownProcessName(),
+                            ert_ownProcessName(),
                             FMTd_Ert_Pid(pid), FMTd_Ert_Tid(tid),
                             aFunction, aFile, aLine);
                 }
@@ -779,12 +779,12 @@ print_(
             if (printBuf_.mSize != ert_writeFdRaw(STDERR_FILENO,
                                                   printBuf_.mBuf,
                                                   printBuf_.mSize, 0))
-                abortProcess();
+                ert_abortProcess();
         }
 
         if (locked)
         {
-            if (releaseProcessAppLock())
+            if (ert_releaseProcessAppLock())
             {
                 dprintf_(
                     errno, 0,
@@ -792,7 +792,7 @@ print_(
                     &elapsed, elapsed_h, elapsed_m, elapsed_s, elapsed_ms,
                     __func__, __FILE__, __LINE__,
                     "Unable to release process lock");
-                abortProcess();
+                ert_abortProcess();
             }
         }
     });
@@ -902,9 +902,9 @@ ert_errorEnsure(
          * the backtrace functionality. */
 
         if (aPredicate)
-            abortProcess();
+            ert_abortProcess();
         else
-            exitProcess(EXIT_SUCCESS);
+            ert_exitProcess(EXIT_SUCCESS);
     });
 }
 
@@ -1006,7 +1006,7 @@ ert_errorTerminate(
         print_(aErrCode, 0, 0, 0, aFmt, args);
         va_end(args);
 
-        abortProcess();
+        ert_abortProcess();
     });
 }
 
@@ -1016,7 +1016,7 @@ Error_exit_(struct Ert_ErrorModule *self)
 {
     if (self)
     {
-        struct ProcessAppLock *appLock = createProcessAppLock();
+        struct Ert_ProcessAppLock *appLock = ert_createProcessAppLock();
 
         FILE *file = printBuf_.mFile;
 
@@ -1030,7 +1030,7 @@ Error_exit_(struct Ert_ErrorModule *self)
             printBuf_.mFile = 0;
         }
 
-        appLock = destroyProcessAppLock(appLock);
+        appLock = ert_destroyProcessAppLock(appLock);
 
         self->mPrintfModule = Ert_Printf_exit(self->mPrintfModule);
     }
@@ -1057,7 +1057,7 @@ Ert_Error_init(struct Ert_ErrorModule *self)
 {
     int rc = -1;
 
-    struct ProcessAppLock *appLock = 0;
+    struct Ert_ProcessAppLock *appLock = 0;
 
     self->mModule       = self;
     self->mPrintfModule = 0;
@@ -1075,7 +1075,7 @@ Ert_Error_init(struct Ert_ErrorModule *self)
         ERROR_UNLESS(
             (file = open_memstream(&printBuf_.mBuf, &printBuf_.mSize)));
 
-        appLock = createProcessAppLock();
+        appLock = ert_createProcessAppLock();
 
         printBuf_.mFile = file;
     }
@@ -1088,7 +1088,7 @@ Finally:
 
     FINALLY
     ({
-        appLock = destroyProcessAppLock(appLock);
+        appLock = ert_destroyProcessAppLock(appLock);
 
         if (rc)
             self = Error_exit_(self);

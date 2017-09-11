@@ -43,7 +43,8 @@ timedLock_(void *aLock,
            int   aTryLock(void *),
            int   aTimedLock(void *, const struct timespec *))
 {
-    struct ProcessSigContTracker sigContTracker = ProcessSigContTracker();
+    struct Ert_ProcessSigContTracker sigContTracker =
+        Ert_ProcessSigContTracker();
 
     while (1)
     {
@@ -84,7 +85,7 @@ timedLock_(void *aLock,
             /* Try again if the attempt to lock the mutex timed out
              * but the process was stopped for some part of that time. */
 
-            if (checkProcessSigContTracker(&sigContTracker))
+            if (ert_checkProcessSigContTracker(&sigContTracker))
                 continue;
         }
 
@@ -402,7 +403,7 @@ lockMutex_(pthread_mutex_t *self)
 pthread_mutex_t *
 lockMutex(pthread_mutex_t *self)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     ABORT_UNLESS(
         lockMutex_(self));
@@ -429,7 +430,7 @@ unlockMutex_(pthread_mutex_t *self)
 pthread_mutex_t *
 unlockMutex(pthread_mutex_t *self)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     return unlockMutex_(self);
 }
@@ -463,7 +464,7 @@ unlockMutexSignal_(pthread_mutex_t *self, pthread_cond_t *aCond)
 pthread_mutex_t *
 unlockMutexSignal(pthread_mutex_t *self, pthread_cond_t *aCond)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     return unlockMutexSignal_(self, aCond);
 }
@@ -497,7 +498,7 @@ unlockMutexBroadcast_(pthread_mutex_t *self, pthread_cond_t *aCond)
 pthread_mutex_t *
 unlockMutexBroadcast(pthread_mutex_t *self, pthread_cond_t *aCond)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     return unlockMutexBroadcast_(self, aCond);
 }
@@ -571,7 +572,7 @@ struct SharedMutex *
 lockSharedMutex(struct SharedMutex      *self,
                 struct MutexRepairMethod aRepair)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     if ( ! lockMutex_(&self->mMutex))
     {
@@ -599,7 +600,7 @@ lockSharedMutex(struct SharedMutex      *self,
 struct SharedMutex *
 unlockSharedMutex(struct SharedMutex *self)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     if (self)
         ABORT_IF(
@@ -612,7 +613,7 @@ unlockSharedMutex(struct SharedMutex *self)
 struct SharedMutex *
 unlockSharedMutexSignal(struct SharedMutex *self, struct SharedCond *aCond)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     if (self)
         ABORT_IF(
@@ -625,7 +626,7 @@ unlockSharedMutexSignal(struct SharedMutex *self, struct SharedCond *aCond)
 struct SharedMutex *
 unlockSharedMutexBroadcast(struct SharedMutex *self, struct SharedCond *aCond)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     if (self)
         ABORT_IF(
@@ -714,7 +715,7 @@ waitCond_(pthread_cond_t *self, pthread_mutex_t *aMutex)
 void
 waitCond(pthread_cond_t *self, pthread_mutex_t *aMutex)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     ABORT_IF(
         waitCond_(self, aMutex),
@@ -829,7 +830,7 @@ destroySharedCond(struct SharedCond *self)
 int
 waitSharedCond(struct SharedCond *self, struct SharedMutex *aMutex)
 {
-    ensure( ! ownProcessSignalContext());
+    ensure( ! ert_ownProcessSignalContext());
 
     return waitCond_(&self->mCond, &aMutex->mMutex) ? -1 : 0;
 }

@@ -132,8 +132,6 @@ acceptSocket(struct Socket *self, unsigned aFlags)
     int fd    = -1;
     int flags = 0;
 
-    struct ProcessAppLock *appLock = 0;
-
     switch (aFlags)
     {
     default:
@@ -166,7 +164,6 @@ Finally:
     ({
         if (-1 == rc)
             fd = ert_closeFd(fd);
-        appLock = destroyProcessAppLock(appLock);
     });
 
     return rc;

@@ -92,7 +92,7 @@ createUnixSocket(
     uint32_t rnd =
         aNameLen
         ? aNameLen
-        : ownProcessId().mPid ^ MSECS(monotonicTime().monotonic).ms;
+        : ert_ownProcessId().mPid ^ MSECS(monotonicTime().monotonic).ms;
 
     while (1)
     {

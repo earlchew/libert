@@ -40,23 +40,23 @@ struct Ert_JobControl
 {
     struct
     {
-        struct WatchProcessSignalMethod mMethod;
+        struct Ert_WatchProcessSignalMethod mMethod;
     } mRaise;
 
     struct
     {
-        struct WatchProcessMethod mMethod;
+        struct Ert_WatchProcessMethod mMethod;
     } mReap;
 
     struct
     {
-        struct WatchProcessMethod mPauseMethod;
-        struct WatchProcessMethod mResumeMethod;
+        struct Ert_WatchProcessMethod mPauseMethod;
+        struct Ert_WatchProcessMethod mResumeMethod;
     } mStop;
 
     struct
     {
-        struct WatchProcessMethod mMethod;
+        struct Ert_WatchProcessMethod mMethod;
     } mContinue;
 };
 
@@ -69,29 +69,29 @@ ert_closeJobControl(struct Ert_JobControl *self);
 
 ERT_CHECKED int
 ert_watchJobControlSignals(struct Ert_JobControl              *self,
-                       struct WatchProcessSignalMethod aRaiseMethod);
+                       struct Ert_WatchProcessSignalMethod aRaiseMethod);
 
 ERT_CHECKED int
 ert_unwatchJobControlSignals(struct Ert_JobControl *self);
 
 ERT_CHECKED int
 ert_watchJobControlDone(struct Ert_JobControl        *self,
-                    struct WatchProcessMethod aReapMethod);
+                    struct Ert_WatchProcessMethod aReapMethod);
 
 ERT_CHECKED int
 ert_unwatchJobControlDone(struct Ert_JobControl *self);
 
 ERT_CHECKED int
 ert_watchJobControlStop(struct Ert_JobControl        *self,
-                    struct WatchProcessMethod aPauseMethod,
-                    struct WatchProcessMethod aResumeMethod);
+                    struct Ert_WatchProcessMethod aPauseMethod,
+                    struct Ert_WatchProcessMethod aResumeMethod);
 
 ERT_CHECKED int
 ert_unwatchJobControlStop(struct Ert_JobControl *self);
 
 ERT_CHECKED int
 ert_watchJobControlContinue(struct Ert_JobControl        *self,
-                        struct WatchProcessMethod aContinueMethod);
+                        struct Ert_WatchProcessMethod aContinueMethod);
 
 ERT_CHECKED int
 ert_unwatchJobControlContinue(struct Ert_JobControl *self);

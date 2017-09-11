@@ -49,49 +49,53 @@ class ProcessTest : public ::testing::Test
 {
     void SetUp()
     {
-        ASSERT_EQ(0, Process_init(&mModule_, __FILE__));
+        ASSERT_EQ(0, Ert_Process_init(&mModule_, __FILE__));
         mModule= &mModule_;
     }
 
     void TearDown()
     {
-        mModule = Process_exit(mModule);
+        mModule = Ert_Process_exit(mModule);
     }
 
 private:
 
-    struct ProcessModule  mModule_;
-    struct ProcessModule *mModule;
+    struct Ert_ProcessModule  mModule_;
+    struct Ert_ProcessModule *mModule;
 };
 
 TEST_F(ProcessTest, ProcessSignalName)
 {
-    struct ProcessSignalName sigName;
+    struct Ert_ProcessSignalName sigName;
 
     static const char nsigFormat[] = "signal %zu";
 
     char nsigName[sizeof(nsigFormat) + CHAR_BIT * sizeof(size_t)];
     EXPECT_FALSE(0 > sprintf(nsigName, nsigFormat, (size_t) NSIG));
 
-    EXPECT_EQ(std::string("SIGHUP"), formatProcessSignalName(&sigName, SIGHUP));
-    EXPECT_EQ(std::string("signal 0"), formatProcessSignalName(&sigName, 0));
-    EXPECT_EQ(std::string("signal -1"), formatProcessSignalName(&sigName, -1));
-    EXPECT_EQ(std::string(nsigName), formatProcessSignalName(&sigName, NSIG));
+    EXPECT_EQ(std::string("SIGHUP"),
+              ert_formatProcessSignalName(&sigName, SIGHUP));
+    EXPECT_EQ(std::string("signal 0"),
+              ert_formatProcessSignalName(&sigName, 0));
+    EXPECT_EQ(std::string("signal -1"),
+              ert_formatProcessSignalName(&sigName, -1));
+    EXPECT_EQ(std::string(nsigName),
+              ert_formatProcessSignalName(&sigName, NSIG));
 }
 
 TEST_F(ProcessTest, ProcessState)
 {
-    EXPECT_EQ(ProcessState::ProcessStateError,
-              fetchProcessState(Ert_Pid(-1)).mState);
+    EXPECT_EQ(Ert_ProcessState::Ert_ProcessStateError,
+              ert_fetchProcessState(Ert_Pid(-1)).mState);
 
-    EXPECT_EQ(ProcessState::ProcessStateRunning,
-              fetchProcessState(ownProcessId()).mState);
+    EXPECT_EQ(Ert_ProcessState::Ert_ProcessStateRunning,
+              ert_fetchProcessState(ert_ownProcessId()).mState);
 }
 
 TEST_F(ProcessTest, ProcessStatus)
 {
-    EXPECT_EQ(ChildProcessState::ChildProcessStateError,
-              monitorProcessChild(ownProcessId()).mChildState);
+    EXPECT_EQ(Ert_ChildProcessState::Ert_ChildProcessStateError,
+              ert_monitorProcessChild(ert_ownProcessId()).mChildState);
 
     struct Ert_Pid childpid = Ert_Pid(fork());
 
@@ -103,20 +107,20 @@ TEST_F(ProcessTest, ProcessStatus)
         _exit(EXIT_FAILURE);
     }
 
-    while (ChildProcessState::ChildProcessStateRunning ==
-           monitorProcessChild(childpid).mChildState)
+    while (Ert_ChildProcessState::Ert_ChildProcessStateRunning ==
+           ert_monitorProcessChild(childpid).mChildState)
         continue;
 
-    EXPECT_EQ(ChildProcessState::ChildProcessStateExited,
-              monitorProcessChild(childpid).mChildState);
+    EXPECT_EQ(Ert_ChildProcessState::Ert_ChildProcessStateExited,
+              ert_monitorProcessChild(childpid).mChildState);
 
-    EXPECT_EQ(childpid.mPid, waitProcessChildren().mPid);
+    EXPECT_EQ(childpid.mPid, ert_waitProcessChildren().mPid);
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(childpid, &status));
+    EXPECT_EQ(0, ert_reapProcessChild(childpid, &status));
     EXPECT_EQ(0, status);
 
-    EXPECT_EQ(0, waitProcessChildren().mPid);
+    EXPECT_EQ(0, ert_waitProcessChildren().mPid);
 }
 
 static int sigTermCount_;
@@ -144,7 +148,7 @@ TEST_F(ProcessTest, ProcessAppLock)
     EXPECT_FALSE(raise(SIGTERM));
     EXPECT_EQ(2, sigTermCount_);
 
-    struct ProcessAppLock *appLock = createProcessAppLock();
+    struct Ert_ProcessAppLock *appLock = ert_createProcessAppLock();
     {
         // Verify that the application lock also excludes the delivery
         // of signals while the lock is taken.
@@ -155,7 +159,7 @@ TEST_F(ProcessTest, ProcessAppLock)
         EXPECT_FALSE(raise(SIGTERM));
         EXPECT_EQ(2, sigTermCount_);
     }
-    appLock = destroyProcessAppLock(appLock);
+    appLock = ert_destroyProcessAppLock(appLock);
 
     EXPECT_EQ(3, sigTermCount_);
 
@@ -235,12 +239,12 @@ TEST_F(ProcessTest, ProcessDaemon)
     daemonState->mErrno      = ENOSYS;
     daemonState->mBellSocket = bellSocket;
 
-    struct Ert_Pid daemonPid = forkProcessDaemon(
-        PreForkProcessMethod(
+    struct Ert_Pid daemonPid = ert_forkProcessDaemon(
+        Ert_PreForkProcessMethod(
             bellSocket,
             ERT_LAMBDA(
                 int, (struct Ert_BellSocketPair       *aBellSocket,
-                      const struct PreForkProcess *aPreFork),
+                      const struct Ert_PreForkProcess *aPreFork),
                 {
                     int rc_ = -1;
 
@@ -265,9 +269,9 @@ TEST_F(ProcessTest, ProcessDaemon)
 
                     return rc_;
                 })),
-        PostForkChildProcessMethodNil(),
-        PostForkParentProcessMethodNil(),
-        ForkProcessMethod(daemonState, daemonProcess_));
+        Ert_PostForkChildProcessMethodNil(),
+        Ert_PostForkParentProcessMethodNil(),
+        Ert_ForkProcessMethod(daemonState, daemonProcess_));
 
     ert_closeBellSocketPairChild(bellSocket);
 
@@ -374,12 +378,13 @@ processForkTest_Trivial_()
     /* Simple with no prefork or postfork methods */
 
     struct Ert_Pid childPid =
-        forkProcessChild(ForkProcessInheritProcessGroup,
-                         Ert_Pgid(0),
-                         PreForkProcessMethodNil(),
-                         PostForkChildProcessMethodNil(),
-                         PostForkParentProcessMethodNil(),
-                         ForkProcessMethodNil());
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
+            Ert_Pgid(0),
+            Ert_PreForkProcessMethodNil(),
+            Ert_PostForkChildProcessMethodNil(),
+            Ert_PostForkParentProcessMethodNil(),
+            Ert_ForkProcessMethodNil());
 
     EXPECT_NE(-1, childPid.mPid);
 
@@ -387,8 +392,8 @@ processForkTest_Trivial_()
         abort();
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(childPid, &status));
-    EXPECT_EQ(0, (extractProcessExitStatus(status, childPid).mStatus));
+    EXPECT_EQ(0, ert_reapProcessChild(childPid, &status));
+    EXPECT_EQ(0, (ert_extractProcessExitStatus(status, childPid).mStatus));
 }
 
 static void
@@ -397,54 +402,52 @@ processForkTest_CloseFds_(struct ProcessForkArg *aArg)
     /* Simple with no prefork or postfork methods */
 
     struct Ert_Pid childPid =
-        forkProcessChild(ForkProcessInheritProcessGroup,
-                         Ert_Pgid(0),
-                         PreForkProcessMethod(
-                             aArg,
-                             ERT_LAMBDA(
-                                 int, (struct ProcessForkArg       *aArg_,
-                                       const struct PreForkProcess *aPreFork),
-                                 {
-                                     int rc = -1;
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
+            Ert_Pgid(0),
+            Ert_PreForkProcessMethod(
+                aArg,
+                ERT_LAMBDA(
+                    int, (struct ProcessForkArg           *aArg_,
+                          const struct Ert_PreForkProcess *aPreFork),
+                    {
+                        int rc = -1;
 
-                                     do
-                                     {
-                                         if (ert_insertFdSetRange(
-                                                 aPreFork->mWhitelistFds,
-                                                 Ert_FdRange(0, INT_MAX)))
-                                         {
-                                             fprintf(stderr, "%u 1\n",
-                                                     __LINE__);
-                                             break;
-                                         }
+                        do
+                        {
+                            if (ert_insertFdSetRange(
+                                    aPreFork->mWhitelistFds,
+                                    Ert_FdRange(0, INT_MAX)))
+                            {
+                                fprintf(stderr, "%u 1\n", __LINE__);
+                                break;
+                            }
 
-                                         if (ert_insertFdSetRange(
-                                                 aPreFork->mBlacklistFds,
-                                                 Ert_FdRange(0, INT_MAX)))
-                                         {
-                                             fprintf(stderr, "%u 2\n",
-                                                     __LINE__);
-                                             break;
-                                         }
+                            if (ert_insertFdSetRange(
+                                    aPreFork->mBlacklistFds,
+                                    Ert_FdRange(0, INT_MAX)))
+                            {
+                                fprintf(stderr, "%u 2\n", __LINE__);
+                                break;
+                            }
 
-                                         if (-1 == filterFds(
-                                                 aArg_,
-                                                 aPreFork->mBlacklistFds))
-                                         {
-                                             fprintf(stderr, "%u 3\n",
-                                                     __LINE__);
-                                             break;
-                                         }
+                            if (-1 == filterFds(
+                                    aArg_,
+                                    aPreFork->mBlacklistFds))
+                            {
+                                fprintf(stderr, "%u 3\n", __LINE__);
+                                break;
+                            }
 
-                                         rc = 0;
+                            rc = 0;
 
-                                     } while (0);
+                        } while (0);
 
-                                     return rc;
-                                 })),
-                         PostForkChildProcessMethodNil(),
-                         PostForkParentProcessMethodNil(),
-                         ForkProcessMethodNil());
+                        return rc;
+                    })),
+            Ert_PostForkChildProcessMethodNil(),
+            Ert_PostForkParentProcessMethodNil(),
+            Ert_ForkProcessMethodNil());
 
     EXPECT_NE(-1, childPid.mPid);
 
@@ -452,8 +455,8 @@ processForkTest_CloseFds_(struct ProcessForkArg *aArg)
         abort();
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(childPid, &status));
-    EXPECT_EQ(0, (extractProcessExitStatus(status, childPid).mStatus));
+    EXPECT_EQ(0, ert_reapProcessChild(childPid, &status));
+    EXPECT_EQ(0, (ert_extractProcessExitStatus(status, childPid).mStatus));
 }
 
 static void
@@ -464,15 +467,15 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
     struct ProcessForkTest forkTest;
 
     struct Ert_Pid childPid =
-        forkProcessChild(
-            ForkProcessInheritProcessGroup,
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
             Ert_Pgid(0),
-            PreForkProcessMethod(
+            Ert_PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
-                        const struct PreForkProcess *aFork),
+                        const struct Ert_PreForkProcess *aFork),
                     {
                         /* Provide time for competing threads
                          * to also run this code. */
@@ -494,14 +497,14 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
 
                         return err;
                     })),
-            PostForkChildProcessMethod(
+            Ert_PostForkChildProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         return 0;
                     })),
-            PostForkParentProcessMethod(
+            Ert_PostForkParentProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
@@ -513,7 +516,7 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
 
                         return 0;
                     })),
-            ForkProcessMethod(
+            Ert_ForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
@@ -601,8 +604,8 @@ processForkTest_Usual_(struct ProcessForkArg *aArg)
     forkTest.mPipeFds[0] = ert_closeFd(forkTest.mPipeFds[0]);
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(childPid, &status));
-    EXPECT_EQ(0, (extractProcessExitStatus(status, childPid).mStatus));
+    EXPECT_EQ(0, ert_reapProcessChild(childPid, &status));
+    EXPECT_EQ(0, (ert_extractProcessExitStatus(status, childPid).mStatus));
 }
 
 static void
@@ -615,20 +618,20 @@ processForkTest_FailedPreFork_()
     errno = 0;
 
     struct Ert_Pid childPid =
-        forkProcessChild(
-            ForkProcessInheritProcessGroup,
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
             Ert_Pgid(0),
-            PreForkProcessMethod(
+            Ert_PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
-                        const struct PreForkProcess *aFork),
+                        const struct Ert_PreForkProcess *aFork),
                     {
                         errno = EINVAL;
                         return -1;
                     })),
-            PostForkChildProcessMethod(
+            Ert_PostForkChildProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
@@ -638,7 +641,7 @@ processForkTest_FailedPreFork_()
                         errno = EINVAL;
                         return -1;
                     })),
-            PostForkParentProcessMethod(
+            Ert_PostForkParentProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
@@ -649,7 +652,7 @@ processForkTest_FailedPreFork_()
                         errno = EINVAL;
                         return -1;
                     })),
-            ForkProcessMethod(
+            Ert_ForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
@@ -694,26 +697,26 @@ processForkTest_FailedChildPostFork_()
     errno = 0;
 
     struct Ert_Pid childPid =
-        forkProcessChild(
-            ForkProcessInheritProcessGroup,
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
             Ert_Pgid(0),
-            PreForkProcessMethod(
+            Ert_PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
-                        const struct PreForkProcess *aFork),
+                        const struct Ert_PreForkProcess *aFork),
                     {
                         return 0;
                     })),
-            PostForkChildProcessMethod(
+            Ert_PostForkChildProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         return processForkTest_Error_();
                     })),
-            PostForkParentProcessMethod(
+            Ert_PostForkParentProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
@@ -724,7 +727,7 @@ processForkTest_FailedChildPostFork_()
                         errno = EINVAL;
                         return -1;
                     })),
-            ForkProcessMethod(
+            Ert_ForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
@@ -749,26 +752,26 @@ processForkTest_FailedParentPostFork_()
     errno = 0;
 
     struct Ert_Pid childPid =
-        forkProcessChild(
-            ForkProcessInheritProcessGroup,
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
             Ert_Pgid(0),
-            PreForkProcessMethod(
+            Ert_PreForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (
                         struct ProcessForkTest      *self,
-                        const struct PreForkProcess *aFork),
+                        const struct Ert_PreForkProcess *aFork),
                     {
                         return 0;
                     })),
-            PostForkChildProcessMethod(
+            Ert_PostForkChildProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
                     {
                         return 0;
                     })),
-            PostForkParentProcessMethod(
+            Ert_PostForkParentProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self,
@@ -776,7 +779,7 @@ processForkTest_FailedParentPostFork_()
                     {
                         return processForkTest_Error_();
                     })),
-            ForkProcessMethod(
+            Ert_ForkProcessMethod(
                 &forkTest,
                 ERT_LAMBDA(
                     int, (struct ProcessForkTest *self),
@@ -861,8 +864,8 @@ processForkTest_Raw_(struct ProcessForkArg *aArg)
     struct Ert_Pid childPid = Ert_Pid(childpid);
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(childPid, &status));
-    EXPECT_EQ(0, (extractProcessExitStatus(status, childPid).mStatus));
+    EXPECT_EQ(0, ert_reapProcessChild(childPid, &status));
+    EXPECT_EQ(0, (ert_extractProcessExitStatus(status, childPid).mStatus));
 }
 
 TEST_F(ProcessTest, ProcessFork)
@@ -949,30 +952,30 @@ runSlave(void)
     do
     {
         struct Ert_Pid childPid =
-            forkProcessChild(
-                ForkProcessInheritProcessGroup,
+            ert_forkProcessChild(
+                Ert_ForkProcessInheritProcessGroup,
                 Ert_Pgid(0),
-                PreForkProcessMethod(
+                Ert_PreForkProcessMethod(
                     (char *) "",
                     ERT_LAMBDA(
                         int, (char                        *self_,
-                              const struct PreForkProcess *aPreFork),
+                              const struct Ert_PreForkProcess *aPreFork),
                         {
                             return ert_fillFdSet(
                                 aPreFork->mBlacklistFds);
                         })),
-                PostForkChildProcessMethodNil(),
-                PostForkParentProcessMethodNil(),
-                ForkProcessMethodNil());
+                Ert_PostForkChildProcessMethodNil(),
+                Ert_PostForkParentProcessMethodNil(),
+                Ert_ForkProcessMethodNil());
 
         if (-1 == childPid.mPid)
             break;
 
         int status;
-        if (reapProcessChild(childPid, &status))
+        if (ert_reapProcessChild(childPid, &status))
             break;
 
-        if (extractProcessExitStatus(status, childPid).mStatus)
+        if (ert_extractProcessExitStatus(status, childPid).mStatus)
             break;
 
         rc = 0;
@@ -984,20 +987,20 @@ runSlave(void)
 
 TEST_F(ProcessTest, ProcessForkRecursiveParent)
 {
-    struct Ert_Pid childPid = forkProcessChild(
-        ForkProcessInheritProcessGroup,
+    struct Ert_Pid childPid = ert_forkProcessChild(
+        Ert_ForkProcessInheritProcessGroup,
         Ert_Pgid(0),
-        PreForkProcessMethod(
+        Ert_PreForkProcessMethod(
             (char *) "",
             ERT_LAMBDA(
                 int, (char                        *self_,
-                      const struct PreForkProcess *aPreFork),
+                      const struct Ert_PreForkProcess *aPreFork),
                 {
                     return ert_fillFdSet(
                         aPreFork->mBlacklistFds);
                 })),
-        PostForkChildProcessMethodNil(),
-        PostForkParentProcessMethod(
+        Ert_PostForkChildProcessMethodNil(),
+        Ert_PostForkParentProcessMethod(
             (char *) "",
             ERT_LAMBDA(
                 int, (char      *self_,
@@ -1005,44 +1008,44 @@ TEST_F(ProcessTest, ProcessForkRecursiveParent)
                 {
                     return runSlave();
                 })),
-        ForkProcessMethodNil());
+        Ert_ForkProcessMethodNil());
 
     EXPECT_NE(-1, childPid.mPid);
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(childPid, &status));
-    EXPECT_EQ(0, (extractProcessExitStatus(status, childPid).mStatus));
+    EXPECT_EQ(0, ert_reapProcessChild(childPid, &status));
+    EXPECT_EQ(0, (ert_extractProcessExitStatus(status, childPid).mStatus));
 }
 
 TEST_F(ProcessTest, ProcessForkRecursiveChild)
 {
-    struct Ert_Pid childPid = forkProcessChild(
-        ForkProcessInheritProcessGroup,
+    struct Ert_Pid childPid = ert_forkProcessChild(
+        Ert_ForkProcessInheritProcessGroup,
         Ert_Pgid(0),
-        PreForkProcessMethod(
+        Ert_PreForkProcessMethod(
             (char *) "",
             ERT_LAMBDA(
                 int, (char                        *self_,
-                      const struct PreForkProcess *aPreFork),
+                      const struct Ert_PreForkProcess *aPreFork),
                 {
                     return ert_fillFdSet(
                         aPreFork->mBlacklistFds);
                 })),
-        PostForkChildProcessMethod(
+        Ert_PostForkChildProcessMethod(
             (char *) "",
             ERT_LAMBDA(
                 int, (char *self_),
                 {
                     return runSlave();
                 })),
-        PostForkParentProcessMethodNil(),
-        ForkProcessMethodNil());
+        Ert_PostForkParentProcessMethodNil(),
+        Ert_ForkProcessMethodNil());
 
     EXPECT_NE(-1, childPid.mPid);
 
     int status;
-    EXPECT_EQ(0, reapProcessChild(childPid, &status));
-    EXPECT_EQ(0, (extractProcessExitStatus(status, childPid).mStatus));
+    EXPECT_EQ(0, ert_reapProcessChild(childPid, &status));
+    EXPECT_EQ(0, (ert_extractProcessExitStatus(status, childPid).mStatus));
 }
 
 #include "../googletest/src/gtest_main.cc"

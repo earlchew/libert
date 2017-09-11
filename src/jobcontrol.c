@@ -37,9 +37,9 @@ ert_reapJobControl_(struct Ert_JobControl *self)
 {
     int rc = -1;
 
-    if ( ! ownWatchProcessMethodNil(self->mReap.mMethod))
+    if ( ! ert_ownWatchProcessMethodNil(self->mReap.mMethod))
         ERROR_IF(
-            callWatchProcessMethod(self->mReap.mMethod));
+            ert_callWatchProcessMethod(self->mReap.mMethod));
 
     rc = 0;
 
@@ -58,9 +58,9 @@ ert_raiseJobControlSignal_(
 {
     int rc = -1;
 
-    if ( ! ownWatchProcessSignalMethodNil(self->mRaise.mMethod))
+    if ( ! ert_ownWatchProcessSignalMethodNil(self->mRaise.mMethod))
         ERROR_IF(
-            callWatchProcessSignalMethod(
+            ert_callWatchProcessSignalMethod(
                 self->mRaise.mMethod, aSigNum, aPid, aUid));
 
     rc = 0;
@@ -78,9 +78,9 @@ ert_raiseJobControlSigStop_(struct Ert_JobControl *self)
 {
     int rc = -1;
 
-    if ( ! ownWatchProcessMethodNil(self->mStop.mPauseMethod))
+    if ( ! ert_ownWatchProcessMethodNil(self->mStop.mPauseMethod))
         ERROR_IF(
-            callWatchProcessMethod(self->mStop.mPauseMethod));
+            ert_callWatchProcessMethod(self->mStop.mPauseMethod));
 
     ERROR_IF(
         raise(SIGSTOP),
@@ -88,12 +88,12 @@ ert_raiseJobControlSigStop_(struct Ert_JobControl *self)
             warn(
                 errno,
                 "Unable to stop process pid %" PRId_Ert_Pid,
-                FMTd_Ert_Pid(ownProcessId()));
+                FMTd_Ert_Pid(ert_ownProcessId()));
         });
 
-    if ( ! ownWatchProcessMethodNil(self->mStop.mResumeMethod))
+    if ( ! ert_ownWatchProcessMethodNil(self->mStop.mResumeMethod))
         ERROR_IF(
-            callWatchProcessMethod(self->mStop.mResumeMethod));
+            ert_callWatchProcessMethod(self->mStop.mResumeMethod));
 
     rc = 0;
 
@@ -110,9 +110,9 @@ ert_raiseJobControlSigCont_(struct Ert_JobControl *self)
 {
     int rc = -1;
 
-    if ( ! ownWatchProcessMethodNil(self->mContinue.mMethod))
+    if ( ! ert_ownWatchProcessMethodNil(self->mContinue.mMethod))
         ERROR_IF(
-            callWatchProcessMethod(self->mContinue.mMethod));
+            ert_callWatchProcessMethod(self->mContinue.mMethod));
 
     rc = 0;
 
@@ -129,11 +129,11 @@ ert_createJobControl(struct Ert_JobControl *self)
 {
     int rc = -1;
 
-    self->mRaise.mMethod      = WatchProcessSignalMethodNil();
-    self->mReap.mMethod       = WatchProcessMethodNil();
-    self->mStop.mPauseMethod  = WatchProcessMethodNil();
-    self->mStop.mResumeMethod = WatchProcessMethodNil();
-    self->mContinue.mMethod   = WatchProcessMethodNil();
+    self->mRaise.mMethod      = Ert_WatchProcessSignalMethodNil();
+    self->mReap.mMethod       = Ert_WatchProcessMethodNil();
+    self->mStop.mPauseMethod  = Ert_WatchProcessMethodNil();
+    self->mStop.mResumeMethod = Ert_WatchProcessMethodNil();
+    self->mContinue.mMethod   = Ert_WatchProcessMethodNil();
 
     rc = 0;
 
@@ -150,10 +150,10 @@ ert_closeJobControl(struct Ert_JobControl *self)
 {
     if (self)
     {
-        ABORT_IF(unwatchProcessSigCont());
-        ABORT_IF(unwatchProcessSigStop());
-        ABORT_IF(unwatchProcessSignals());
-        ABORT_IF(unwatchProcessChildren());
+        ABORT_IF(ert_unwatchProcessSigCont());
+        ABORT_IF(ert_unwatchProcessSigStop());
+        ABORT_IF(ert_unwatchProcessSignals());
+        ABORT_IF(ert_unwatchProcessChildren());
     }
 
     return 0;
@@ -162,18 +162,18 @@ ert_closeJobControl(struct Ert_JobControl *self)
 /* -------------------------------------------------------------------------- */
 int
 ert_watchJobControlSignals(struct Ert_JobControl              *self,
-                       struct WatchProcessSignalMethod aRaiseMethod)
+                       struct Ert_WatchProcessSignalMethod aRaiseMethod)
 {
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessSignalMethodNil(aRaiseMethod),
+        ert_ownWatchProcessSignalMethodNil(aRaiseMethod),
         {
             errno = EINVAL;
         });
 
     ERROR_UNLESS(
-        ownWatchProcessSignalMethodNil(self->mRaise.mMethod),
+        ert_ownWatchProcessSignalMethodNil(self->mRaise.mMethod),
         {
             errno = EPERM;
         });
@@ -181,10 +181,10 @@ ert_watchJobControlSignals(struct Ert_JobControl              *self,
     self->mRaise.mMethod = aRaiseMethod;
 
     ERROR_IF(
-        watchProcessSignals(
-            WatchProcessSignalMethod(self, ert_raiseJobControlSignal_)),
+        ert_watchProcessSignals(
+            Ert_WatchProcessSignalMethod(self, ert_raiseJobControlSignal_)),
         {
-            self->mRaise.mMethod = WatchProcessSignalMethodNil();
+            self->mRaise.mMethod = Ert_WatchProcessSignalMethodNil();
         });
 
     rc = 0;
@@ -203,15 +203,15 @@ ert_unwatchJobControlSignals(struct Ert_JobControl *self)
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessSignalMethodNil(self->mRaise.mMethod),
+        ert_ownWatchProcessSignalMethodNil(self->mRaise.mMethod),
         {
             errno = EPERM;
         });
 
     ERROR_IF(
-        unwatchProcessSignals());
+        ert_unwatchProcessSignals());
 
-    self->mRaise.mMethod = WatchProcessSignalMethodNil();
+    self->mRaise.mMethod = Ert_WatchProcessSignalMethodNil();
 
     rc = 0;
 
@@ -225,18 +225,18 @@ Finally:
 /* -------------------------------------------------------------------------- */
 int
 ert_watchJobControlDone(struct Ert_JobControl        *self,
-                    struct WatchProcessMethod aReapMethod)
+                    struct Ert_WatchProcessMethod aReapMethod)
 {
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessMethodNil(aReapMethod),
+        ert_ownWatchProcessMethodNil(aReapMethod),
         {
             errno = EINVAL;
         });
 
     ERROR_UNLESS(
-        ownWatchProcessMethodNil(self->mReap.mMethod),
+        ert_ownWatchProcessMethodNil(self->mReap.mMethod),
         {
             errno = EPERM;
         });
@@ -244,9 +244,10 @@ ert_watchJobControlDone(struct Ert_JobControl        *self,
     self->mReap.mMethod = aReapMethod;
 
     ERROR_IF(
-        watchProcessChildren(WatchProcessMethod(self, ert_reapJobControl_)),
+        ert_watchProcessChildren(
+            Ert_WatchProcessMethod(self, ert_reapJobControl_)),
         {
-            self->mReap.mMethod = WatchProcessMethodNil();
+            self->mReap.mMethod = Ert_WatchProcessMethodNil();
         });
 
     rc = 0;
@@ -265,15 +266,15 @@ ert_unwatchJobControlDone(struct Ert_JobControl *self)
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessMethodNil(self->mReap.mMethod),
+        ert_ownWatchProcessMethodNil(self->mReap.mMethod),
         {
             errno = EPERM;
         });
 
     ERROR_IF(
-        unwatchProcessChildren());
+        ert_unwatchProcessChildren());
 
-    self->mReap.mMethod = WatchProcessMethodNil();
+    self->mReap.mMethod = Ert_WatchProcessMethodNil();
 
     rc = 0;
 
@@ -287,21 +288,21 @@ Finally:
 /* -------------------------------------------------------------------------- */
 int
 ert_watchJobControlStop(struct Ert_JobControl        *self,
-                    struct WatchProcessMethod aPauseMethod,
-                    struct WatchProcessMethod aResumeMethod)
+                    struct Ert_WatchProcessMethod aPauseMethod,
+                    struct Ert_WatchProcessMethod aResumeMethod)
 {
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessMethodNil(aPauseMethod) &&
-        ownWatchProcessMethodNil(aResumeMethod),
+        ert_ownWatchProcessMethodNil(aPauseMethod) &&
+        ert_ownWatchProcessMethodNil(aResumeMethod),
         {
             errno = EINVAL;
         });
 
     ERROR_UNLESS(
-        ownWatchProcessMethodNil(self->mStop.mPauseMethod) &&
-        ownWatchProcessMethodNil(self->mStop.mResumeMethod),
+        ert_ownWatchProcessMethodNil(self->mStop.mPauseMethod) &&
+        ert_ownWatchProcessMethodNil(self->mStop.mResumeMethod),
         {
             errno = EPERM;
         });
@@ -310,11 +311,11 @@ ert_watchJobControlStop(struct Ert_JobControl        *self,
     self->mStop.mResumeMethod = aResumeMethod;
 
     ERROR_IF(
-        watchProcessSigStop(
-            WatchProcessMethod(self, ert_raiseJobControlSigStop_)),
+        ert_watchProcessSigStop(
+            Ert_WatchProcessMethod(self, ert_raiseJobControlSigStop_)),
         {
-            self->mStop.mPauseMethod  = WatchProcessMethodNil();
-            self->mStop.mResumeMethod = WatchProcessMethodNil();
+            self->mStop.mPauseMethod  = Ert_WatchProcessMethodNil();
+            self->mStop.mResumeMethod = Ert_WatchProcessMethodNil();
         });
 
     rc = 0;
@@ -333,17 +334,17 @@ ert_unwatchJobControlStop(struct Ert_JobControl *self)
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessMethodNil(self->mStop.mPauseMethod) &&
-        ownWatchProcessMethodNil(self->mStop.mResumeMethod),
+        ert_ownWatchProcessMethodNil(self->mStop.mPauseMethod) &&
+        ert_ownWatchProcessMethodNil(self->mStop.mResumeMethod),
         {
             errno = EPERM;
         });
 
     ERROR_IF(
-        unwatchProcessSigStop());
+        ert_unwatchProcessSigStop());
 
-    self->mStop.mPauseMethod  = WatchProcessMethodNil();
-    self->mStop.mResumeMethod = WatchProcessMethodNil();
+    self->mStop.mPauseMethod  = Ert_WatchProcessMethodNil();
+    self->mStop.mResumeMethod = Ert_WatchProcessMethodNil();
 
     rc = 0;
 
@@ -357,18 +358,18 @@ Finally:
 /* -------------------------------------------------------------------------- */
 int
 ert_watchJobControlContinue(struct Ert_JobControl        *self,
-                        struct WatchProcessMethod aContinueMethod)
+                        struct Ert_WatchProcessMethod aContinueMethod)
 {
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessMethodNil(aContinueMethod),
+        ert_ownWatchProcessMethodNil(aContinueMethod),
         {
             errno = EINVAL;
         });
 
     ERROR_UNLESS(
-        ownWatchProcessMethodNil(self->mContinue.mMethod),
+        ert_ownWatchProcessMethodNil(self->mContinue.mMethod),
         {
             errno = EPERM;
         });
@@ -376,10 +377,10 @@ ert_watchJobControlContinue(struct Ert_JobControl        *self,
     self->mContinue.mMethod  = aContinueMethod;
 
     ERROR_IF(
-        watchProcessSigCont(
-            WatchProcessMethod(self, ert_raiseJobControlSigCont_)),
+        ert_watchProcessSigCont(
+            Ert_WatchProcessMethod(self, ert_raiseJobControlSigCont_)),
         {
-            self->mContinue.mMethod = WatchProcessMethodNil();
+            self->mContinue.mMethod = Ert_WatchProcessMethodNil();
         });
 
     rc = 0;
@@ -398,15 +399,15 @@ ert_unwatchJobControlContinue(struct Ert_JobControl *self)
     int rc = -1;
 
     ERROR_IF(
-        ownWatchProcessMethodNil(self->mContinue.mMethod),
+        ert_ownWatchProcessMethodNil(self->mContinue.mMethod),
         {
             errno = EPERM;
         });
 
     ERROR_IF(
-        unwatchProcessSigCont());
+        ert_unwatchProcessSigCont());
 
-    self->mContinue.mMethod  = WatchProcessMethodNil();
+    self->mContinue.mMethod = Ert_WatchProcessMethodNil();
 
     rc = 0;
 
