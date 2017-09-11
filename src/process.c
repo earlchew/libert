@@ -2153,7 +2153,7 @@ forkProcessChild_PostChild_(
      * behaviour of the parent. This is primarily useful for
      * testing. */
 
-    scrambleRandomSeed(ert_ownProcessId().mPid);
+    ert_scrambleRandomSeed(ert_ownProcessId().mPid);
 
     if (Ert_ForkProcessSetSessionLeader == aOption)
     {

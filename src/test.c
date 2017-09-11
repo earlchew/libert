@@ -62,7 +62,7 @@ testAction(enum TestLevel aLevel)
     /* If test mode has been enabled, choose to activate a test action
      * a small percentage of the time. */
 
-    return aLevel <= gErtOptions_.mTest && 3 > fetchRandomRange(10);
+    return aLevel <= gErtOptions_.mTest && 3 > ert_fetchRandomRange(10);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -83,7 +83,7 @@ testSleep(enum TestLevel aLevel)
             slept = true;
             monotonicSleep(
                 Duration(
-                    NSECS(MicroSeconds(fetchRandomRange(500 * 1000)))));
+                    NSECS(MicroSeconds(ert_fetchRandomRange(500 * 1000)))));
         }
     }
 
@@ -118,7 +118,7 @@ testFinally(const struct Ert_ErrorFrame *aFrame)
                 { EIO,   "EIO" },
             };
 
-            unsigned choice = fetchRandomRange(ERT_NUMBEROF(errTable));
+            unsigned choice = ert_fetchRandomRange(ERT_NUMBEROF(errTable));
 
             debug(0,
                   "inject %s into %s %s %u",
