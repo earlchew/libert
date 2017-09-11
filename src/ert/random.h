@@ -36,13 +36,13 @@ ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 void
-scrambleRandomSeed(unsigned aSeed);
+ert_scrambleRandomSeed(unsigned aSeed);
 
 ERT_CHECKED unsigned
-fetchRandomRange(unsigned aRange);
+ert_fetchRandomRange(unsigned aRange);
 
 ERT_CHECKED unsigned
-fetchRandomUniform(unsigned aLhs, unsigned aRhs);
+ert_fetchRandomUniform(unsigned aLhs, unsigned aRhs);
 
 /* -------------------------------------------------------------------------- */
 

@@ -46,7 +46,7 @@ srandom_(uint64_t aValue)
 
     do
     {
-        seed  = seed_;
+        seed = seed_;
     }
     while ( ! __sync_bool_compare_and_swap(&seed_, seed, aValue));
 
@@ -62,7 +62,7 @@ random_(void)
             ERT_LAMBDA(
                 void, (void),
                 {
-                    scrambleRandomSeed(getpid());
+                    ert_scrambleRandomSeed(getpid());
                 })))
         ert_abortProcess();
 
@@ -82,27 +82,27 @@ random_(void)
 ERT_EARLY_INITIALISER(
     random_,
     ({
-        scrambleRandomSeed(getpid());
+        ert_scrambleRandomSeed(getpid());
     }),
     ({ }));
 
 /* -------------------------------------------------------------------------- */
 void
-scrambleRandomSeed(unsigned aSeed)
+ert_scrambleRandomSeed(unsigned aSeed)
 {
     srandom_(aSeed * multiplier_);
 }
 
 /* -------------------------------------------------------------------------- */
 unsigned
-fetchRandomRange(unsigned aRange)
+ert_fetchRandomRange(unsigned aRange)
 {
     return random_() % aRange;
 }
 
 /* -------------------------------------------------------------------------- */
 unsigned
-fetchRandomUniform(unsigned aLhs, unsigned aRhs)
+ert_fetchRandomUniform(unsigned aLhs, unsigned aRhs)
 {
     unsigned range = aRhs - aLhs + 1;
 
