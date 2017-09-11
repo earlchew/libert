@@ -36,7 +36,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct Socket
+struct Ert_Socket
 {
     struct Ert_File  mFile_;
     struct Ert_File *mFile;
@@ -44,87 +44,90 @@ struct Socket
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createSocket(struct Socket *self, int aFd);
+ert_createSocket(struct Ert_Socket *self, int aFd);
 
-ERT_CHECKED struct Socket *
-closeSocket(struct Socket *self);
+ERT_CHECKED struct Ert_Socket *
+ert_closeSocket(struct Ert_Socket *self);
 
 bool
-ownSocketValid(const struct Socket *self);
+ert_ownSocketValid(const struct Ert_Socket *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-writeSocket(struct Socket *self,
+ert_writeSocket(struct Ert_Socket *self,
             const char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-readSocket(struct Socket *self,
+ert_readSocket(struct Ert_Socket *self,
            char *aBuf, size_t aLen, const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-writeSocketDeadline(struct Socket *self,
+ert_writeSocketDeadline(struct Ert_Socket *self,
                     const char *aBuf, size_t aLen,
                     struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED ssize_t
-readSocketDeadline(struct Socket *self,
+ert_readSocketDeadline(struct Ert_Socket *self,
                    char *aBuf, size_t aLen,
                    struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-waitSocketWriteReady(const struct Socket   *self,
+ert_waitSocketWriteReady(const struct Ert_Socket   *self,
                      const struct Duration *aTimeout);
 
 ERT_CHECKED int
-waitSocketReadReady(const struct Socket   *self,
+ert_waitSocketReadReady(const struct Ert_Socket   *self,
                     const struct Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-bindSocket(struct Socket *self, struct sockaddr *aAddr, size_t aAddrLen);
+ert_bindSocket(struct Ert_Socket *self,
+               struct sockaddr *aAddr, size_t aAddrLen);
 
 ERT_CHECKED int
-connectSocket(struct Socket *self, struct sockaddr *aAddr, size_t aAddrLen);
+ert_connectSocket(struct Ert_Socket *self,
+                  struct sockaddr *aAddr, size_t aAddrLen);
 
 ERT_CHECKED int
-acceptSocket(struct Socket *self, unsigned aFlags);
+ert_acceptSocket(struct Ert_Socket *self, unsigned aFlags);
 
 ERT_CHECKED int
-listenSocket(struct Socket *self, unsigned aQueueLen);
+ert_listenSocket(struct Ert_Socket *self, unsigned aQueueLen);
 
 ERT_CHECKED ssize_t
-sendSocket(struct Socket *self, const char *aBuf, size_t aLen);
+ert_sendSocket(struct Ert_Socket *self, const char *aBuf, size_t aLen);
 
 ERT_CHECKED ssize_t
-recvSocket(struct Socket *self, char *aBuf, size_t aLen);
+ert_recvSocket(struct Ert_Socket *self, char *aBuf, size_t aLen);
 
 ERT_CHECKED ssize_t
-sendSocketMsg(struct Socket *self, const struct msghdr *aMsg, int aFlags);
+ert_sendSocketMsg(struct Ert_Socket *self,
+                  const struct msghdr *aMsg, int aFlags);
 
 ERT_CHECKED ssize_t
-recvSocketMsg(struct Socket *self, struct msghdr *aMsg, int aFlags);
+ert_recvSocketMsg(struct Ert_Socket *self, struct msghdr *aMsg, int aFlags);
 
 ERT_CHECKED int
-shutdownSocketReader(struct Socket *self);
+ert_shutdownSocketReader(struct Ert_Socket *self);
 
 ERT_CHECKED int
-shutdownSocketWriter(struct Socket *self);
+ert_shutdownSocketWriter(struct Ert_Socket *self);
 
 ERT_CHECKED int
-ownSocketName(const struct Socket *self,
+ert_ownSocketName(const struct Ert_Socket *self,
               struct sockaddr *aAddr, socklen_t *aAddrLen);
 
 ERT_CHECKED int
-ownSocketPeerName(const struct Socket *self,
+ert_ownSocketPeerName(const struct Ert_Socket *self,
                   struct sockaddr *aAddr, socklen_t *aAddrLen);
 
 ERT_CHECKED int
-ownSocketError(const struct Socket *self, int *aError);
+ert_ownSocketError(const struct Ert_Socket *self, int *aError);
 
 ERT_CHECKED int
-ownSocketPeerCred(const struct Socket *self, struct ucred *aCred);
+ert_ownSocketPeerCred(const struct Ert_Socket *self, struct ucred *aCred);
 
 /* -------------------------------------------------------------------------- */
 

@@ -34,8 +34,8 @@
 
 
 /* -------------------------------------------------------------------------- */
-struct Socket *
-closeSocket(struct Socket *self)
+struct Ert_Socket *
+ert_closeSocket(struct Ert_Socket *self)
 {
     if (self)
         self->mFile = ert_closeFile(self->mFile);
@@ -45,7 +45,7 @@ closeSocket(struct Socket *self)
 
 /* -------------------------------------------------------------------------- */
 int
-createSocket(struct Socket *self, int aFd)
+ert_createSocket(struct Ert_Socket *self, int aFd)
 {
     int rc = -1;
 
@@ -66,14 +66,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 bool
-ownSocketValid(const struct Socket *self)
+ert_ownSocketValid(const struct Ert_Socket *self)
 {
     return ert_ownFileValid(self->mFile);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-writeSocket(struct Socket *self,
+ert_writeSocket(struct Ert_Socket *self,
             const char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return ert_writeFile(self->mFile, aBuf, aLen, aTimeout);
@@ -81,7 +81,7 @@ writeSocket(struct Socket *self,
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-readSocket(struct Socket *self,
+ert_readSocket(struct Ert_Socket *self,
            char *aBuf, size_t aLen, const struct Duration *aTimeout)
 {
     return ert_readFile(self->mFile, aBuf, aLen, aTimeout);
@@ -89,7 +89,7 @@ readSocket(struct Socket *self,
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-writeSocketDeadline(struct Socket *self,
+ert_writeSocketDeadline(struct Ert_Socket *self,
                     const char *aBuf, size_t aLen,
                     struct Ert_Deadline *aDeadline)
 {
@@ -98,7 +98,7 @@ writeSocketDeadline(struct Socket *self,
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-readSocketDeadline(struct Socket *self,
+ert_readSocketDeadline(struct Ert_Socket *self,
                    char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return ert_readFileDeadline(self->mFile, aBuf, aLen, aDeadline);
@@ -106,14 +106,14 @@ readSocketDeadline(struct Socket *self,
 
 /* -------------------------------------------------------------------------- */
 int
-bindSocket(struct Socket *self, struct sockaddr *aAddr, size_t aAddrLen)
+ert_bindSocket(struct Ert_Socket *self, struct sockaddr *aAddr, size_t aAddrLen)
 {
     return bind(self->mFile->mFd, aAddr, aAddrLen);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-connectSocket(struct Socket *self, struct sockaddr *aAddr, size_t aAddrLen)
+ert_connectSocket(struct Ert_Socket *self, struct sockaddr *aAddr, size_t aAddrLen)
 {
     int rc;
 
@@ -126,7 +126,7 @@ connectSocket(struct Socket *self, struct sockaddr *aAddr, size_t aAddrLen)
 
 /* -------------------------------------------------------------------------- */
 int
-acceptSocket(struct Socket *self, unsigned aFlags)
+ert_acceptSocket(struct Ert_Socket *self, unsigned aFlags)
 {
     int rc    = -1;
     int fd    = -1;
@@ -171,14 +171,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-listenSocket(struct Socket *self, unsigned aQueueLen)
+ert_listenSocket(struct Ert_Socket *self, unsigned aQueueLen)
 {
     return listen(self->mFile->mFd, aQueueLen ? aQueueLen : 1);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-waitSocketWriteReady(const struct Socket   *self,
+ert_waitSocketWriteReady(const struct Ert_Socket   *self,
                      const struct Duration *aTimeout)
 {
     return ert_waitFileWriteReady(self->mFile, aTimeout);
@@ -186,7 +186,7 @@ waitSocketWriteReady(const struct Socket   *self,
 
 /* -------------------------------------------------------------------------- */
 int
-waitSocketReadReady(const struct Socket   *self,
+ert_waitSocketReadReady(const struct Ert_Socket   *self,
                     const struct Duration *aTimeout)
 {
     return ert_waitFileReadReady(self->mFile, aTimeout);
@@ -194,7 +194,7 @@ waitSocketReadReady(const struct Socket   *self,
 
 /* -------------------------------------------------------------------------- */
 int
-ownSocketError(const struct Socket *self, int *aError)
+ert_ownSocketError(const struct Ert_Socket *self, int *aError)
 {
     int rc = -1;
 
@@ -220,7 +220,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ownSocketPeerCred(const struct Socket *self, struct ucred *aCred)
+ert_ownSocketPeerCred(const struct Ert_Socket *self, struct ucred *aCred)
 {
     int rc = -1;
 
@@ -246,7 +246,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ownSocketName(const struct Socket *self,
+ert_ownSocketName(const struct Ert_Socket *self,
               struct sockaddr *aAddr, socklen_t *aAddrLen)
 {
     return getsockname(self->mFile->mFd, aAddr, aAddrLen);
@@ -254,7 +254,7 @@ ownSocketName(const struct Socket *self,
 
 /* -------------------------------------------------------------------------- */
 int
-ownSocketPeerName(const struct Socket *self,
+ert_ownSocketPeerName(const struct Ert_Socket *self,
                   struct sockaddr *aAddr, socklen_t *aAddrLen)
 {
     return getpeername(self->mFile->mFd, aAddr, aAddrLen);
@@ -262,7 +262,7 @@ ownSocketPeerName(const struct Socket *self,
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-sendSocket(struct Socket *self, const char *aBuf, size_t aLen)
+ert_sendSocket(struct Ert_Socket *self, const char *aBuf, size_t aLen)
 {
     ssize_t rc;
 
@@ -275,7 +275,7 @@ sendSocket(struct Socket *self, const char *aBuf, size_t aLen)
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-recvSocket(struct Socket *self, char *aBuf, size_t aLen)
+ert_recvSocket(struct Ert_Socket *self, char *aBuf, size_t aLen)
 {
     ssize_t rc;
 
@@ -288,7 +288,7 @@ recvSocket(struct Socket *self, char *aBuf, size_t aLen)
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-sendSocketMsg(struct Socket *self, const struct msghdr *aMsg, int aFlags)
+ert_sendSocketMsg(struct Ert_Socket *self, const struct msghdr *aMsg, int aFlags)
 {
     ssize_t rc;
 
@@ -301,7 +301,7 @@ sendSocketMsg(struct Socket *self, const struct msghdr *aMsg, int aFlags)
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-recvSocketMsg(struct Socket *self, struct msghdr *aMsg, int aFlags)
+ert_recvSocketMsg(struct Ert_Socket *self, struct msghdr *aMsg, int aFlags)
 {
     ssize_t rc;
 
@@ -314,14 +314,14 @@ recvSocketMsg(struct Socket *self, struct msghdr *aMsg, int aFlags)
 
 /* -------------------------------------------------------------------------- */
 int
-shutdownSocketReader(struct Socket *self)
+ert_shutdownSocketReader(struct Ert_Socket *self)
 {
     return shutdown(self->mFile->mFd, SHUT_RD);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-shutdownSocketWriter(struct Socket *self)
+ert_shutdownSocketWriter(struct Ert_Socket *self)
 {
     return shutdown(self->mFile->mFd, SHUT_WR);
 }
