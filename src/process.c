@@ -1751,8 +1751,8 @@ createForkProcessChannel_(
 {
     int rc = -1;
 
-    struct StdFdFiller  stdFdFiller_;
-    struct StdFdFiller *stdFdFiller = 0;
+    struct Ert_StdFdFiller  stdFdFiller_;
+    struct Ert_StdFdFiller *stdFdFiller = 0;
 
     self->mResultPipe   = 0;
     self->mResultSocket = 0;
@@ -1765,7 +1765,7 @@ createForkProcessChannel_(
      * stdin, stdout or stderr. */
 
     ERROR_IF(
-        createStdFdFiller(&stdFdFiller_));
+        ert_createStdFdFiller(&stdFdFiller_));
     stdFdFiller = &stdFdFiller_;
 
     ERROR_IF(
@@ -1785,7 +1785,7 @@ Finally:
         if (rc)
             self = closeForkProcessChannel_(self);
 
-        stdFdFiller = closeStdFdFiller(stdFdFiller);
+        stdFdFiller = ert_closeStdFdFiller(stdFdFiller);
     });
 
     return rc;
@@ -1997,8 +1997,8 @@ forkProcessChild_PostParent_(
 {
     int rc = -1;
 
-    struct StdFdFiller  stdFdFiller_;
-    struct StdFdFiller *stdFdFiller = 0;
+    struct Ert_StdFdFiller  stdFdFiller_;
+    struct Ert_StdFdFiller *stdFdFiller = 0;
 
     /* Forcibly set the process group of the child to avoid
      * the race that would occur if only the child attempts
@@ -2078,7 +2078,7 @@ forkProcessChild_PostParent_(
 
         {
             ERROR_IF(
-                createStdFdFiller(&stdFdFiller_));
+                ert_createStdFdFiller(&stdFdFiller_));
             stdFdFiller = &stdFdFiller_;
 
             const struct
@@ -2112,7 +2112,7 @@ forkProcessChild_PostParent_(
                         fd != ert_duplicateFd(altFd, fd));
             }
 
-            stdFdFiller = closeStdFdFiller(stdFdFiller);
+            stdFdFiller = ert_closeStdFdFiller(stdFdFiller);
         }
 
         ERROR_IF(
@@ -2128,7 +2128,7 @@ Finally:
 
     FINALLY
     ({
-        stdFdFiller = closeStdFdFiller(stdFdFiller);
+        stdFdFiller = ert_closeStdFdFiller(stdFdFiller);
     });
 
     return rc;
