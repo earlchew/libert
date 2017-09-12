@@ -37,10 +37,10 @@ ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
 const char *
-fetchSystemIncarnation(void);
+ert_fetchSystemIncarnation(void);
 
 size_t
-fetchSystemPageSize(void);
+ert_fetchSystemPageSize(void);
 
 /* -------------------------------------------------------------------------- */
 

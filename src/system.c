@@ -96,7 +96,7 @@ Finally:
 }
 
 const char *
-fetchSystemIncarnation(void)
+ert_fetchSystemIncarnation(void)
 {
     ABORT_IF(
         (errno = pthread_once(&bootIncarnationOnce_, fetchSystemIncarnation_)),
@@ -114,7 +114,7 @@ fetchSystemIncarnation(void)
 
 /* -------------------------------------------------------------------------- */
 size_t
-fetchSystemPageSize(void)
+ert_fetchSystemPageSize(void)
 {
     long pageSize = sysconf(_SC_PAGESIZE);
 
