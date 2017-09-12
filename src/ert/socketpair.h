@@ -36,10 +36,10 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_SocketPair
 {
-    struct UnixSocket  mParentSocket_;
-    struct UnixSocket *mParentSocket;
-    struct UnixSocket  mChildSocket_;
-    struct UnixSocket *mChildSocket;
+    struct Ert_UnixSocket  mParentSocket_;
+    struct Ert_UnixSocket *mParentSocket;
+    struct Ert_UnixSocket  mChildSocket_;
+    struct Ert_UnixSocket *mChildSocket;
 };
 
 /* -------------------------------------------------------------------------- */

@@ -2476,14 +2476,14 @@ forkProcessDaemonChild_(struct ForkProcessDaemon *self)
     debug(0, "daemon orphaned");
 
     ERROR_UNLESS(
-        sizeof(daemonPid.mPid) == sendUnixSocket(
+        sizeof(daemonPid.mPid) == ert_sendUnixSocket(
             self->mSyncSocket->mChildSocket,
             (void *) &daemonPid.mPid,
             sizeof(daemonPid.mPid)));
 
     char buf[1];
     ERROR_UNLESS(
-        sizeof(buf) == recvUnixSocket(
+        sizeof(buf) == ert_recvUnixSocket(
             self->mSyncSocket->mChildSocket, buf, sizeof(buf)));
 
     self->mSyncSocket = ert_closeSocketPair(self->mSyncSocket);
@@ -2678,13 +2678,13 @@ ert_forkProcessDaemon(
 
     struct Ert_Pid daemonPid;
     ERROR_UNLESS(
-        sizeof(daemonPid.mPid) == recvUnixSocket(syncSocket->mParentSocket,
+        sizeof(daemonPid.mPid) == ert_recvUnixSocket(syncSocket->mParentSocket,
                                                  (void *) &daemonPid.mPid,
                                                  sizeof(daemonPid.mPid)));
 
     char buf[1] = { 0 };
     ERROR_UNLESS(
-        sizeof(buf) == sendUnixSocket(
+        sizeof(buf) == ert_sendUnixSocket(
             syncSocket->mParentSocket, buf, sizeof(buf)));
 
     rc = daemonPid.mPid;

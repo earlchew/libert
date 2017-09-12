@@ -39,79 +39,79 @@
 
 TEST(UnixSocketTest, AbstractServerCollision)
 {
-    struct UnixSocket serversock1;
+    struct Ert_UnixSocket serversock1;
 
-    EXPECT_EQ(0, createUnixSocket(&serversock1, 0, 0+getpid(), 0));
+    EXPECT_EQ(0, ert_createUnixSocket(&serversock1, 0, 0+getpid(), 0));
 
-    struct UnixSocket serversock2;
+    struct Ert_UnixSocket serversock2;
 
-    EXPECT_EQ(-1, createUnixSocket(&serversock2, 0, 0+getpid(), 0));
+    EXPECT_EQ(-1, ert_createUnixSocket(&serversock2, 0, 0+getpid(), 0));
 
     EXPECT_EQ(EADDRINUSE, errno);
 
-    EXPECT_EQ(0, createUnixSocket(&serversock2, 0, 1+getpid(), 0));
+    EXPECT_EQ(0, ert_createUnixSocket(&serversock2, 0, 1+getpid(), 0));
 }
 
 TEST(UnixSocketTest, AbstractServer)
 {
-    struct UnixSocket  serversock_;
-    struct UnixSocket *serversock = 0;
+    struct Ert_UnixSocket  serversock_;
+    struct Ert_UnixSocket *serversock = 0;
 
-    EXPECT_EQ(0, createUnixSocket(&serversock_, 0, 0, 0));
+    EXPECT_EQ(0, ert_createUnixSocket(&serversock_, 0, 0, 0));
     serversock = &serversock_;
 
     struct sockaddr_un name;
-    EXPECT_EQ(0, ownUnixSocketName(serversock, &name));
+    EXPECT_EQ(0, ert_ownUnixSocketName(serversock, &name));
     EXPECT_EQ(0, name.sun_path[0]);
     for (unsigned ix = 1; sizeof(name.sun_path) > ix; ++ix)
         EXPECT_TRUE(strchr("0123456789abcdef", name.sun_path[ix]));
 
-    struct UnixSocket  clientsock_;
-    struct UnixSocket *clientsock = 0;
+    struct Ert_UnixSocket  clientsock_;
+    struct Ert_UnixSocket *clientsock = 0;
 
-    int rc = connectUnixSocket(
+    int rc = ert_connectUnixSocket(
         &clientsock_, name.sun_path, sizeof(name.sun_path));
     EXPECT_TRUE(0 == rc || EINPROGRESS == rc);
     clientsock = &clientsock_;
 
-    struct UnixSocket  peersock_;
-    struct UnixSocket *peersock = 0;
+    struct Ert_UnixSocket  peersock_;
+    struct Ert_UnixSocket *peersock = 0;
 
-    EXPECT_EQ(0, acceptUnixSocket(&peersock_, serversock));
+    EXPECT_EQ(0, ert_acceptUnixSocket(&peersock_, serversock));
     peersock = &peersock_;
 
-    EXPECT_EQ(1, waitUnixSocketWriteReady(clientsock, &ZeroDuration));
+    EXPECT_EQ(1, ert_waitUnixSocketWriteReady(clientsock, &ZeroDuration));
 
     struct ucred cred;
 
     memset(&cred, -1, sizeof(cred));
-    EXPECT_EQ(0, ownUnixSocketPeerCred(peersock, &cred));
+    EXPECT_EQ(0, ert_ownUnixSocketPeerCred(peersock, &cred));
     EXPECT_EQ(getpid(), cred.pid);
     EXPECT_EQ(getuid(), cred.uid);
     EXPECT_EQ(getgid(), cred.gid);
 
     memset(&cred, -1, sizeof(cred));
-    EXPECT_EQ(0, ownUnixSocketPeerCred(clientsock, &cred));
+    EXPECT_EQ(0, ert_ownUnixSocketPeerCred(clientsock, &cred));
     EXPECT_EQ(getpid(), cred.pid);
     EXPECT_EQ(getuid(), cred.uid);
     EXPECT_EQ(getgid(), cred.gid);
 
     int err;
-    EXPECT_EQ(0, ownUnixSocketError(clientsock, &err));
+    EXPECT_EQ(0, ert_ownUnixSocketError(clientsock, &err));
     EXPECT_EQ(0, err);
 
     char buf[1];
 
     buf[0] = 'X';
-    EXPECT_EQ(1, sendUnixSocket(clientsock, buf, sizeof(buf)));
-    EXPECT_EQ(1, waitUnixSocketReadReady(peersock, 0));
-    EXPECT_EQ(1, recvUnixSocket(peersock, buf, sizeof(buf)));
+    EXPECT_EQ(1, ert_sendUnixSocket(clientsock, buf, sizeof(buf)));
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(peersock, 0));
+    EXPECT_EQ(1, ert_recvUnixSocket(peersock, buf, sizeof(buf)));
     EXPECT_EQ('X', buf[0]);
 
     buf[0] = 'Z';
-    EXPECT_EQ(1, sendUnixSocket(peersock, buf, sizeof(buf)));
-    EXPECT_EQ(1, waitUnixSocketReadReady(clientsock, 0));
-    EXPECT_EQ(1, recvUnixSocket(clientsock, buf, sizeof(buf)));
+    EXPECT_EQ(1, ert_sendUnixSocket(peersock, buf, sizeof(buf)));
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(clientsock, 0));
+    EXPECT_EQ(1, ert_recvUnixSocket(clientsock, buf, sizeof(buf)));
     EXPECT_EQ('Z', buf[0]);
 
     /* Create a pipe and send the reading file descriptor over the
@@ -124,10 +124,10 @@ TEST(UnixSocketTest, AbstractServer)
     EXPECT_EQ(0, ert_createPipe(&pipe_, 0));
     pipe = &pipe_;
 
-    EXPECT_EQ(0, sendUnixSocketFd(peersock, pipe->mRdFile->mFd));
-    EXPECT_EQ(1, waitUnixSocketReadReady(clientsock, 0));
+    EXPECT_EQ(0, ert_sendUnixSocketFd(peersock, pipe->mRdFile->mFd));
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(clientsock, 0));
 
-    int fd = recvUnixSocketFd(clientsock, O_CLOEXEC);
+    int fd = ert_recvUnixSocketFd(clientsock, O_CLOEXEC);
     EXPECT_LE(0, fd);
     EXPECT_EQ(1, ert_ownFdCloseOnExec(fd));
 
@@ -142,9 +142,9 @@ TEST(UnixSocketTest, AbstractServer)
     fd = ert_closeFd(fd);
     pipe = ert_closePipe(pipe);
 
-    clientsock = closeUnixSocket(clientsock);
-    peersock   = closeUnixSocket(peersock);
-    serversock = closeUnixSocket(serversock);
+    clientsock = ert_closeUnixSocket(clientsock);
+    peersock   = ert_closeUnixSocket(peersock);
+    serversock = ert_closeUnixSocket(serversock);
 }
 
 #include "../googletest/src/gtest_main.cc"

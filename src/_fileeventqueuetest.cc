@@ -107,7 +107,7 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
-    EXPECT_EQ(1, waitUnixSocketReadReady(
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     eventCount_ = 0;
@@ -157,7 +157,7 @@ TEST_F(FileEventQueueTest, ReadyArmPollClose)
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
-    EXPECT_EQ(1, waitUnixSocketReadReady(
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
@@ -196,7 +196,7 @@ TEST_F(FileEventQueueTest, ArmPollReadyClose)
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
-    EXPECT_EQ(1, waitUnixSocketReadReady(
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
@@ -242,7 +242,7 @@ TEST_F(FileEventQueueTest, ArmReadyClose)
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
-    EXPECT_EQ(1, waitUnixSocketReadReady(
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
@@ -265,7 +265,7 @@ TEST_F(FileEventQueueTest, ReadyArmClose)
     mEventActivity = &mEventActivity_;
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
-    EXPECT_EQ(1, waitUnixSocketReadReady(
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
@@ -312,7 +312,7 @@ TEST_F(FileEventQueueTest, ReadyClose)
     mEventActivity = &mEventActivity_;
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
-    EXPECT_EQ(1, waitUnixSocketReadReady(
+    EXPECT_EQ(1, ert_waitUnixSocketReadReady(
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);

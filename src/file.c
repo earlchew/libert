@@ -241,7 +241,7 @@ recvTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
 
     ssize_t rdlen;
     ERROR_IF(
-        (rdlen = recvUnixSocket(
+        (rdlen = ert_recvUnixSocket(
             self->mSocketPair->mParentSocket,
             (void *) &self->mErr,
             sizeof(self->mErr)),
@@ -256,7 +256,7 @@ recvTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
 
     int tmpFd;
     ERROR_IF(
-        (tmpFd = recvUnixSocketFd(self->mSocketPair->mParentSocket, O_CLOEXEC),
+        (tmpFd = ert_recvUnixSocketFd(self->mSocketPair->mParentSocket, O_CLOEXEC),
          -1 == tmpFd));
 
     self->mFd = tmpFd;
@@ -348,14 +348,14 @@ sendTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
 
     ssize_t wrlen;
     ERROR_IF(
-        (wrlen = sendUnixSocket(
+        (wrlen = ert_sendUnixSocket(
             self->mSocketPair->mChildSocket,
             (void *) &self->mErr, sizeof(self->mErr)),
          -1 == wrlen || (errno = 0, sizeof(self->mErr) != wrlen)));
 
     if ( ! self->mErr)
         ERROR_IF(
-            sendUnixSocketFd(
+            ert_sendUnixSocketFd(
                 self->mSocketPair->mChildSocket, fd));
 
     rc = 0;

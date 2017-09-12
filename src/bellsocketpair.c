@@ -81,7 +81,7 @@ ert_closeBellSocketPair(struct Ert_BellSocketPair *self)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_ringBellSocketPair_(struct UnixSocket *aSocket)
+ert_ringBellSocketPair_(struct Ert_UnixSocket *aSocket)
 {
     int rc = -1;
 
@@ -91,7 +91,7 @@ ert_ringBellSocketPair_(struct UnixSocket *aSocket)
 
     err = -1;
     ERROR_IF(
-        (err = writeUnixSocket(aSocket, buf, 1, 0),
+        (err = ert_writeUnixSocket(aSocket, buf, 1, 0),
          1 != err),
         {
             if ( ! err)
@@ -123,7 +123,7 @@ ert_ringBellSocketPairChild(struct Ert_BellSocketPair *self)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_waitBellSocketPair_(struct UnixSocket     *aSocket,
+ert_waitBellSocketPair_(struct Ert_UnixSocket     *aSocket,
                     const struct Ert_Duration *aTimeout)
 {
     int rc = -1;
@@ -134,7 +134,7 @@ ert_waitBellSocketPair_(struct UnixSocket     *aSocket,
 
     err = -1;
     ERROR_IF(
-        (err = readUnixSocket(aSocket, buf, 1, aTimeout),
+        (err = ert_readUnixSocket(aSocket, buf, 1, aTimeout),
          1 != err),
         {
             if ( ! err)

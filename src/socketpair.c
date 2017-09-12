@@ -41,7 +41,7 @@ ert_createSocketPair(struct Ert_SocketPair *self, unsigned aFlags)
     self->mChildSocket  = 0;
 
     ERROR_IF(
-        createUnixSocketPair(
+        ert_createUnixSocketPair(
             &self->mParentSocket_, &self->mChildSocket_, aFlags));
 
     self->mParentSocket = &self->mParentSocket_;
@@ -60,14 +60,14 @@ Finally:
 void
 ert_closeSocketPairParent(struct Ert_SocketPair *self)
 {
-    self->mParentSocket = closeUnixSocket(self->mParentSocket);
+    self->mParentSocket = ert_closeUnixSocket(self->mParentSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 void
 ert_closeSocketPairChild(struct Ert_SocketPair *self)
 {
-    self->mChildSocket = closeUnixSocket(self->mChildSocket);
+    self->mChildSocket = ert_closeUnixSocket(self->mChildSocket);
 }
 
 /* -------------------------------------------------------------------------- */
