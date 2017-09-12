@@ -29,7 +29,7 @@
 AC_PREREQ([2.63])
 AC_INIT([libert], [0.1], [earl_chew@yahoo.com])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([src/libert.h])
+AC_CONFIG_SRCDIR([src/libert_.h])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wno-portability])
 
