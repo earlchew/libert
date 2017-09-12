@@ -39,115 +39,115 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct TimeKeepingModule
+struct Ert_TimeKeepingModule
 {
-    struct TimeKeepingModule *mModule;
+    struct Ert_TimeKeepingModule *mModule;
 };
 
-struct MonotonicTime
+struct Ert_MonotonicTime
 {
     struct NanoSeconds monotonic;
 };
 
-struct WallClockTime
+struct Ert_WallClockTime
 {
     struct NanoSeconds wallclock;
 };
 
-struct EventClockTime
+struct Ert_EventClockTime
 {
     struct NanoSeconds eventclock;
 };
 
-struct BootClockTime
+struct Ert_BootClockTime
 {
     struct NanoSeconds bootclock;
 };
 
-struct PushedIntervalTimer
+struct Ert_PushedIntervalTimer
 {
     int                  mType;
     int                  mSignal;
-    struct MonotonicTime mMark;
+    struct Ert_MonotonicTime mMark;
     struct sigaction     mAction;
     struct itimerval     mTimer;
 };
 
-struct MonotonicDeadline
+struct Ert_MonotonicDeadline
 {
-    struct MonotonicTime *mSince;
-    struct MonotonicTime  mSince_;
+    struct Ert_MonotonicTime *mSince;
+    struct Ert_MonotonicTime  mSince_;
 };
 
 /* -------------------------------------------------------------------------- */
-#define EVENTCLOCKTIME_INIT ((struct EventClockTime) { { { ns : 0 } } })
+#define ERT_EVENTCLOCKTIME_INIT ((struct Ert_EventClockTime) { { { ns : 0 } } })
 
-#define MONOTONICDEADLINE_INIT \
-    ((struct MonotonicDeadline) { mSince : 0, { { { ns : 0 } } } })
+#define ERT_MONOTONICDEADLINE_INIT \
+    ((struct Ert_MonotonicDeadline) { mSince : 0, { { { ns : 0 } } } })
 
 /* -------------------------------------------------------------------------- */
 void
-monotonicSleep(struct Duration aPeriod);
+ert_monotonicSleep(struct Duration aPeriod);
 
 /* -------------------------------------------------------------------------- */
-struct EventClockTime
-eventclockTime(void);
+struct Ert_EventClockTime
+ert_eventclockTime(void);
 
-struct MonotonicTime
-monotonicTime(void);
+struct Ert_MonotonicTime
+ert_monotonicTime(void);
 
-struct WallClockTime
-wallclockTime(void);
+struct Ert_WallClockTime
+ert_wallclockTime(void);
 
-struct BootClockTime
-bootclockTime(void);
+struct Ert_BootClockTime
+ert_bootclockTime(void);
 
 /* -------------------------------------------------------------------------- */
 #ifdef __linux__
 ERT_CHECKED int
-procUptime(struct Duration *aUptime, const char *aFileName);
+ert_procUptime(struct Duration *aUptime, const char *aFileName);
 #endif
 
 /* -------------------------------------------------------------------------- */
 struct Duration
-lapTimeSince(struct EventClockTime       *self,
-             struct Duration              aPeriod,
-             const struct EventClockTime *aTime);
+ert_lapTimeSince(struct Ert_EventClockTime       *self,
+                 struct Duration              aPeriod,
+                 const struct Ert_EventClockTime *aTime);
 
 void
-lapTimeRestart(struct EventClockTime       *self,
-               const struct EventClockTime *aTime);
+ert_lapTimeRestart(struct Ert_EventClockTime       *self,
+                   const struct Ert_EventClockTime *aTime);
 
 void
-lapTimeTrigger(struct EventClockTime       *self,
-               struct Duration              aPeriod,
-               const struct EventClockTime *aTime);
+ert_lapTimeTrigger(struct Ert_EventClockTime       *self,
+                   struct Duration              aPeriod,
+                   const struct Ert_EventClockTime *aTime);
 
 void
-lapTimeDelay(struct EventClockTime *self,
-             struct Duration        aDelay);
+ert_lapTimeDelay(struct Ert_EventClockTime *self,
+                 struct Duration        aDelay);
 
 /* -------------------------------------------------------------------------- */
 bool
-deadlineTimeExpired(
-    struct EventClockTime       *self,
+ert_deadlineTimeExpired(
+    struct Ert_EventClockTime       *self,
     struct Duration              aPeriod,
     struct Duration             *aRemaining,
-    const struct EventClockTime *aTime);
+    const struct Ert_EventClockTime *aTime);
 
 bool
-monotonicDeadlineTimeExpired(
-    struct MonotonicDeadline   *self,
+ert_monotonicDeadlineTimeExpired(
+    struct Ert_MonotonicDeadline   *self,
     struct Duration             aPeriod,
     struct Duration            *aRemaining,
-    const struct MonotonicTime *aTime);
+    const struct Ert_MonotonicTime *aTime);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-Timekeeping_init(struct TimeKeepingModule *self);
+Ert_Timekeeping_init(struct Ert_TimeKeepingModule *self);
 
-ERT_CHECKED struct TimeKeepingModule *
-Timekeeping_exit(struct TimeKeepingModule *self);
+ERT_CHECKED struct Ert_TimeKeepingModule *
+Ert_Timekeeping_exit(struct Ert_TimeKeepingModule *self);
 
 /* -------------------------------------------------------------------------- */
 
