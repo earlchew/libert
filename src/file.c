@@ -203,8 +203,8 @@ struct TemporaryFileProcess_
     int                mFd;
     int                mErr;
     const char        *mDirName;
-    struct SocketPair  mSocketPair_;
-    struct SocketPair *mSocketPair;
+    struct Ert_SocketPair  mSocketPair_;
+    struct Ert_SocketPair *mSocketPair;
     struct Thread      mThread_;
     struct Thread     *mThread;
 };
@@ -214,7 +214,7 @@ closeTemporaryFileProcess_(struct TemporaryFileProcess_ *self)
 {
     if (self)
     {
-        self->mSocketPair = closeSocketPair(self->mSocketPair);
+        self->mSocketPair = ert_closeSocketPair(self->mSocketPair);
         self->mThread     = closeThread(self->mThread);
     }
 
@@ -294,7 +294,7 @@ prepareTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self,
     int rc = -1;
 
     ERROR_IF(
-        createSocketPair(&self->mSocketPair_, O_CLOEXEC));
+        ert_createSocketPair(&self->mSocketPair_, O_CLOEXEC));
     self->mSocketPair = &self->mSocketPair_;
 
     ERROR_UNLESS(
@@ -409,7 +409,7 @@ temporaryFile_(const char *aDirName)
                 ERT_LAMBDA(
                     int, (struct TemporaryFileProcess_ *self),
                     {
-                        closeSocketPairParent(self->mSocketPair);
+                        ert_closeSocketPairParent(self->mSocketPair);
 
                         return sendTemporaryFileProcessFd_(self);
                     })),
@@ -419,7 +419,7 @@ temporaryFile_(const char *aDirName)
                     int, (struct TemporaryFileProcess_ *self,
                           struct Ert_Pid                    aChildPid),
                     {
-                        closeSocketPairChild(self->mSocketPair);
+                        ert_closeSocketPairChild(self->mSocketPair);
 
                         return waitTemporaryFileProcessSocket_(
                             temporaryFileProcess);

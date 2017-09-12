@@ -250,7 +250,7 @@ TEST_F(ProcessTest, ProcessDaemon)
 
                     do
                     {
-                        struct SocketPair *socketPair =
+                        struct Ert_SocketPair *socketPair =
                             aBellSocket->mSocketPair;
 
                         if (ert_insertFdSet(

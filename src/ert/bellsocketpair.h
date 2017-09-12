@@ -38,8 +38,8 @@ struct Duration;
 
 struct Ert_BellSocketPair
 {
-    struct SocketPair  mSocketPair_;
-    struct SocketPair *mSocketPair;
+    struct Ert_SocketPair  mSocketPair_;
+    struct Ert_SocketPair *mSocketPair;
 };
 
 /* -------------------------------------------------------------------------- */

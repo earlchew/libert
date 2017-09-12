@@ -2420,7 +2420,7 @@ struct ForkProcessDaemon
     struct Ert_PreForkProcessMethod       mPreForkMethod;
     struct Ert_PostForkChildProcessMethod mChildMethod;
     struct Ert_ForkProcessMethod          mForkMethod;
-    struct SocketPair                *mSyncSocket;
+    struct Ert_SocketPair                *mSyncSocket;
     struct ThreadSigMask             *mSigMask;
 };
 
@@ -2483,7 +2483,7 @@ forkProcessDaemonChild_(struct ForkProcessDaemon *self)
         sizeof(buf) == recvUnixSocket(
             self->mSyncSocket->mChildSocket, buf, sizeof(buf)));
 
-    self->mSyncSocket = closeSocketPair(self->mSyncSocket);
+    self->mSyncSocket = ert_closeSocketPair(self->mSyncSocket);
 
     if ( ! ert_ownForkProcessMethodNil(self->mForkMethod))
         ERROR_IF(
@@ -2503,7 +2503,7 @@ forkProcessDaemonGuardian_(struct ForkProcessDaemon *self)
 {
     int rc = -1;
 
-    closeSocketPairParent(self->mSyncSocket);
+    ert_closeSocketPairParent(self->mSyncSocket);
 
     struct Ert_Pid daemonPid;
     ERROR_IF(
@@ -2626,14 +2626,14 @@ ert_forkProcessDaemon(
     struct ThreadSigMask  sigMask_;
     struct ThreadSigMask *sigMask = 0;
 
-    struct SocketPair  syncSocket_;
-    struct SocketPair *syncSocket = 0;
+    struct Ert_SocketPair  syncSocket_;
+    struct Ert_SocketPair *syncSocket = 0;
 
     sigMask = pushThreadSigMask(
         &sigMask_, ThreadSigMaskBlock, (const int []) { SIGHUP, 0 });
 
     ERROR_IF(
-        createSocketPair(&syncSocket_, O_CLOEXEC));
+        ert_createSocketPair(&syncSocket_, O_CLOEXEC));
     syncSocket = &syncSocket_;
 
     struct ForkProcessDaemon daemonProcess =
@@ -2660,7 +2660,7 @@ ert_forkProcessDaemon(
                     int, (struct ForkProcessDaemon *self_,
                           struct Ert_Pid                aGuardianPid),
                     {
-                        closeSocketPairChild(self_->mSyncSocket);
+                        ert_closeSocketPairChild(self_->mSyncSocket);
                         return 0;
                     })),
             Ert_ForkProcessMethodNil()),
@@ -2690,7 +2690,7 @@ Finally:
 
     FINALLY
     ({
-        syncSocket = closeSocketPair(syncSocket);
+        syncSocket = ert_closeSocketPair(syncSocket);
 
         sigMask = popThreadSigMask(sigMask);
     });

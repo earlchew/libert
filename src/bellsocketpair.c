@@ -39,7 +39,7 @@ ert_createBellSocketPair(struct Ert_BellSocketPair *self, unsigned aFlags)
     self->mSocketPair = 0;
 
     ERROR_IF(
-        createSocketPair(&self->mSocketPair_, aFlags));
+        ert_createSocketPair(&self->mSocketPair_, aFlags));
     self->mSocketPair = &self->mSocketPair_;
 
     rc = 0;
@@ -49,7 +49,7 @@ Finally:
     FINALLY
     ({
         if (rc)
-            self->mSocketPair = closeSocketPair(self->mSocketPair);
+            self->mSocketPair = ert_closeSocketPair(self->mSocketPair);
     });
 
     return rc;
@@ -59,14 +59,14 @@ Finally:
 void
 ert_closeBellSocketPairParent(struct Ert_BellSocketPair *self)
 {
-    closeSocketPairParent(self->mSocketPair);
+    ert_closeSocketPairParent(self->mSocketPair);
 }
 
 /* -------------------------------------------------------------------------- */
 void
 ert_closeBellSocketPairChild(struct Ert_BellSocketPair *self)
 {
-    closeSocketPairChild(self->mSocketPair);
+    ert_closeSocketPairChild(self->mSocketPair);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -74,7 +74,7 @@ struct Ert_BellSocketPair *
 ert_closeBellSocketPair(struct Ert_BellSocketPair *self)
 {
     if (self)
-        self->mSocketPair = closeSocketPair(self->mSocketPair);
+        self->mSocketPair = ert_closeSocketPair(self->mSocketPair);
 
     return 0;
 }
