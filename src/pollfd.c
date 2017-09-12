@@ -55,7 +55,7 @@ pollEventTextBit_(char *aBuf, unsigned *aMask, unsigned aBit, const char *aText)
 
 const char *
 createPollEventText(
-    struct PollEventText *aPollEventText, unsigned aPollEventMask)
+    struct Ert_PollEventText *aPollEventText, unsigned aPollEventMask)
 {
     unsigned mask = aPollEventMask;
 
@@ -234,8 +234,8 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
 
             for (size_t ix = 0; self->mFdActions.mSize > ix; ++ix)
             {
-                struct PollEventText pollEventText;
-                struct PollEventText pollRcvdEventText;
+                struct Ert_PollEventText pollEventText;
+                struct Ert_PollEventText pollRcvdEventText;
 
                 debug(
                     1,

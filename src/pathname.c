@@ -44,7 +44,7 @@ ert_createPathName(struct Ert_PathName *self, const char *aFileName)
 {
     int rc = -1;
 
-    enum Ert_PathNameStatus status = PathNameStatusOk;
+    enum Ert_PathNameStatus status = Ert_PathNameStatusOk;
 
     self->mFileName  = 0;
     self->mBaseName_ = 0;
@@ -70,7 +70,7 @@ ert_createPathName(struct Ert_PathName *self, const char *aFileName)
                 &self->mDirFile_,
                 ert_openFd(self->mDirName, O_RDONLY | O_CLOEXEC, 0)))
         {
-            status = PathNameStatusInaccessible;
+            status = Ert_PathNameStatusInaccessible;
             break;
         }
 
@@ -85,9 +85,9 @@ Finally:
     FINALLY
     ({
         if (rc)
-            status = PathNameStatusError;
+            status = Ert_PathNameStatusError;
 
-        if (PathNameStatusOk != status)
+        if (Ert_PathNameStatusOk != status)
             self = ert_closePathName(self);
     });
 
