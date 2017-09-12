@@ -39,7 +39,7 @@ struct Ert_Duration;
 struct sockaddr_un;
 struct ucred;
 
-struct UnixSocket
+struct Ert_UnixSocket
 {
     struct Ert_Socket  mSocket_;
     struct Ert_Socket *mSocket;
@@ -47,78 +47,81 @@ struct UnixSocket
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createUnixSocketPair(struct UnixSocket *aParent,
-                     struct UnixSocket *aChild,
+ert_createUnixSocketPair(struct Ert_UnixSocket *aParent,
+                     struct Ert_UnixSocket *aChild,
                      unsigned           aFlags);
 
 ERT_CHECKED int
-createUnixSocket(struct UnixSocket *self,
+ert_createUnixSocket(struct Ert_UnixSocket *self,
                  const char        *aName,
                  size_t             aNameLen,
                  unsigned           aQueueLen);
 
 ERT_CHECKED int
-acceptUnixSocket(struct UnixSocket       *self,
-                 const struct UnixSocket *aServer);
+ert_acceptUnixSocket(struct Ert_UnixSocket       *self,
+                 const struct Ert_UnixSocket *aServer);
 
 ERT_CHECKED int
-connectUnixSocket(struct UnixSocket *self,
+ert_connectUnixSocket(struct Ert_UnixSocket *self,
                  const char         *aName,
                  size_t              aNameLen);
 
-ERT_CHECKED struct UnixSocket *
-closeUnixSocket(struct UnixSocket *self);
+ERT_CHECKED struct Ert_UnixSocket *
+ert_closeUnixSocket(struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-sendUnixSocketFd(struct UnixSocket *self, int aFd);
+ert_sendUnixSocketFd(struct Ert_UnixSocket *self, int aFd);
 
 ERT_CHECKED int
-recvUnixSocketFd(struct UnixSocket *self, unsigned aFlags);
+ert_recvUnixSocketFd(struct Ert_UnixSocket *self, unsigned aFlags);
 
 bool
-ownUnixSocketValid(const struct UnixSocket *self);
+ert_ownUnixSocketValid(const struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-shutdownUnixSocketReader(struct UnixSocket *self);
+ert_shutdownUnixSocketReader(struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-shutdownUnixSocketWriter(struct UnixSocket *self);
+ert_shutdownUnixSocketWriter(struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-waitUnixSocketWriteReady(const struct UnixSocket *self,
+ert_waitUnixSocketWriteReady(const struct Ert_UnixSocket *self,
                          const struct Ert_Duration   *aTimeout);
 
 ERT_CHECKED int
-waitUnixSocketReadReady(const struct UnixSocket *self,
+ert_waitUnixSocketReadReady(const struct Ert_UnixSocket *self,
                         const struct Ert_Duration   *aTimeout);
 
 ERT_CHECKED int
-ownUnixSocketPeerName(const struct UnixSocket *self,
+ert_ownUnixSocketPeerName(const struct Ert_UnixSocket *self,
                       struct sockaddr_un      *aAddr);
 
 ERT_CHECKED int
-ownUnixSocketName(const struct UnixSocket *self,
+ert_ownUnixSocketName(const struct Ert_UnixSocket *self,
                   struct sockaddr_un      *aAddr);
 
 ERT_CHECKED int
-ownUnixSocketError(const struct UnixSocket *self, int *aError);
+ert_ownUnixSocketError(const struct Ert_UnixSocket *self, int *aError);
 
 ERT_CHECKED int
-ownUnixSocketPeerCred(const struct UnixSocket *self, struct ucred *aCred);
+ert_ownUnixSocketPeerCred(
+    const struct Ert_UnixSocket *self, struct ucred *aCred);
 
 ERT_CHECKED ssize_t
-sendUnixSocket(struct UnixSocket *self, const char *aBuf, size_t aLen);
+ert_sendUnixSocket(struct Ert_UnixSocket *self, const char *aBuf, size_t aLen);
 
 ERT_CHECKED ssize_t
-recvUnixSocket(struct UnixSocket *self, char *aBuf, size_t aLen);
+ert_recvUnixSocket(struct Ert_UnixSocket *self, char *aBuf, size_t aLen);
 
 ERT_CHECKED ssize_t
-writeUnixSocket(struct UnixSocket *self,
-                const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_writeUnixSocket(
+    struct Ert_UnixSocket *self,
+    const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-readUnixSocket(struct UnixSocket *self,
-               char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_readUnixSocket(
+    struct Ert_UnixSocket *self,
+    char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 
