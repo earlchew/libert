@@ -38,51 +38,51 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_ErrorFrame;
 
-struct TestModule
+struct Ert_TestModule
 {
-    struct TestModule *mModule;
+    struct Ert_TestModule *mModule;
 };
 
 /* -------------------------------------------------------------------------- */
-#define TEST_RACE(...)                          \
+#define ERT_TEST_RACE(...)                      \
     do                                          \
     {                                           \
-        testSleep(TestLevelRace);               \
+        ert_testSleep(Ert_TestLevelRace);       \
         __VA_ARGS__;                            \
-        testSleep(TestLevelRace);               \
+        ert_testSleep(Ert_TestLevelRace);       \
     } while (0)
 
 /* -------------------------------------------------------------------------- */
-enum TestLevel
+enum Ert_TestLevel
 {
-    TestLevelNone  = 0,
-    TestLevelRace  = 1,
-    TestLevelError = 2,
-    TestLevelSync  = 3
+    Ert_TestLevelNone  = 0,
+    Ert_TestLevelRace  = 1,
+    Ert_TestLevelError = 2,
+    Ert_TestLevelSync  = 3
 };
 
 /* -------------------------------------------------------------------------- */
 bool
-testSleep(enum TestLevel aLevel);
+ert_testSleep(enum Ert_TestLevel aLevel);
 
 bool
-testAction(enum TestLevel aLevel);
+ert_testAction(enum Ert_TestLevel aLevel);
 
 bool
-testMode(enum TestLevel aLevel);
+ert_testMode(enum Ert_TestLevel aLevel);
 
 bool
-testFinally(const struct Ert_ErrorFrame *aFrame);
+ert_testFinally(const struct Ert_ErrorFrame *aFrame);
 
 uint64_t
-testErrorLevel(void);
+ert_testErrorLevel(void);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-Test_init(struct TestModule *self, const char *aErrorEnv);
+Ert_Test_init(struct Ert_TestModule *self, const char *aErrorEnv);
 
-ERT_CHECKED struct TestModule *
-Test_exit(struct TestModule *self);
+ERT_CHECKED struct Ert_TestModule *
+Ert_Test_exit(struct Ert_TestModule *self);
 
 /* -------------------------------------------------------------------------- */
 

@@ -50,14 +50,14 @@ static unsigned          moduleInit_;
 
 /* -------------------------------------------------------------------------- */
 bool
-testMode(enum TestLevel aLevel)
+ert_testMode(enum Ert_TestLevel aLevel)
 {
     return aLevel <= gErtOptions_.mTest;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-testAction(enum TestLevel aLevel)
+ert_testAction(enum Ert_TestLevel aLevel)
 {
     /* If test mode has been enabled, choose to activate a test action
      * a small percentage of the time. */
@@ -67,7 +67,7 @@ testAction(enum TestLevel aLevel)
 
 /* -------------------------------------------------------------------------- */
 bool
-testSleep(enum TestLevel aLevel)
+ert_testSleep(enum Ert_TestLevel aLevel)
 {
     bool slept = false;
 
@@ -78,7 +78,7 @@ testSleep(enum TestLevel aLevel)
 
     if ( ! RUNNING_ON_VALGRIND)
     {
-        if (testAction(aLevel))
+        if (ert_testAction(aLevel))
         {
             slept = true;
             monotonicSleep(
@@ -92,14 +92,14 @@ testSleep(enum TestLevel aLevel)
 
 /* -------------------------------------------------------------------------- */
 uint64_t
-testErrorLevel(void)
+ert_testErrorLevel(void)
 {
     return testState_ ? testState_->mError : 0;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-testFinally(const struct Ert_ErrorFrame *aFrame)
+ert_testFinally(const struct Ert_ErrorFrame *aFrame)
 {
     bool inject = false;
 
@@ -137,7 +137,7 @@ testFinally(const struct Ert_ErrorFrame *aFrame)
 
 /* -------------------------------------------------------------------------- */
 int
-Test_init(struct TestModule *self, const char *aErrorEnv)
+Ert_Test_init(struct Ert_TestModule *self, const char *aErrorEnv)
 {
     int rc = -1;
 
@@ -188,8 +188,8 @@ Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct TestModule *
-Test_exit(struct TestModule *self)
+struct Ert_TestModule *
+Ert_Test_exit(struct Ert_TestModule *self)
 {
     if (self)
     {
