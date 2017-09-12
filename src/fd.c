@@ -1321,26 +1321,26 @@ ert_lseekFd(int aFd, off_t aOffset, struct Ert_WhenceType aWhenceType)
 {
     off_t rc = -1;
 
-    int whenceType;
+    int ert_whenceType;
     switch (aWhenceType.mType)
     {
     default:
         ensure(0);
 
     case Ert_WhenceTypeStart_:
-        whenceType = SEEK_SET;
+        ert_whenceType = SEEK_SET;
         break;
 
     case Ert_WhenceTypeHere_:
-        whenceType = SEEK_CUR;
+        ert_whenceType = SEEK_CUR;
         break;
 
     case Ert_WhenceTypeEnd_:
-        whenceType = SEEK_END;
+        ert_whenceType = SEEK_END;
         break;
     }
 
-    rc = lseek(aFd, aOffset, whenceType);
+    rc = lseek(aFd, aOffset, ert_whenceType);
 
 Finally:
 
@@ -1355,25 +1355,25 @@ ert_lockFd(int aFd, struct Ert_LockType aLockType)
 {
     int rc = -1;
 
-    int lockType;
+    int ert_lockType;
     switch (aLockType.mType)
     {
     default:
         ensure(0);
 
     case Ert_LockTypeWrite_:
-        lockType = LOCK_EX;
+        ert_lockType = LOCK_EX;
         break;
 
     case Ert_LockTypeRead_:
-        lockType = LOCK_SH;
+        ert_lockType = LOCK_SH;
         break;
     }
 
     int err;
     do
         ERROR_IF(
-            (err = flock(aFd, lockType),
+            (err = flock(aFd, ert_lockType),
              err && EINTR != errno));
     while (err);
 
@@ -1411,24 +1411,24 @@ ert_lockFdRegion(
 {
     int rc = -1;
 
-    int lockType;
+    int ert_lockType;
     switch (aLockType.mType)
     {
     default:
         ensure(0);
 
     case Ert_LockTypeWrite_:
-        lockType = F_WRLCK;
+        ert_lockType = F_WRLCK;
         break;
 
     case Ert_LockTypeRead_:
-        lockType = F_RDLCK;
+        ert_lockType = F_RDLCK;
         break;
     }
 
     struct flock lockRegion =
     {
-        .l_type   = lockType,
+        .l_type   = ert_lockType,
         .l_whence = SEEK_SET,
         .l_start  = aPos,
         .l_len    = aLen,
@@ -1483,7 +1483,7 @@ ert_ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
 {
     int rc = -1;
 
-    struct Ert_LockType lockType = Ert_LockTypeUnlocked;
+    struct Ert_LockType ert_lockType = Ert_LockTypeUnlocked;
 
     struct flock lockRegion =
     {
@@ -1510,12 +1510,12 @@ ert_ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
 
     case F_RDLCK:
         if (lockRegion.l_pid != ert_ownProcessId().mPid)
-            lockType = Ert_LockTypeRead;
+            ert_lockType = Ert_LockTypeRead;
         break;
 
     case F_WRLCK:
         if (lockRegion.l_pid != ert_ownProcessId().mPid)
-            lockType = Ert_LockTypeWrite;
+            ert_lockType = Ert_LockTypeWrite;
         break;
     }
 
@@ -1525,7 +1525,7 @@ Finally:
 
     FINALLY({});
 
-    return rc ? Ert_LockTypeError : lockType;
+    return rc ? Ert_LockTypeError : ert_lockType;
 }
 
 /* -------------------------------------------------------------------------- */

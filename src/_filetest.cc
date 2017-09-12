@@ -76,16 +76,16 @@ checkLock(struct Ert_File *aFile)
                 ERT_LAMBDA(
                     int, (struct Ert_File *self),
                     {
-                        struct Ert_LockType lockType =
+                        struct Ert_LockType ert_lockType =
                             ert_ownFileRegionLocked(self, 0, 1);
 
                         int rc = 0;
 
-                        if (Ert_LockTypeUnlocked.mType == lockType.mType)
+                        if (Ert_LockTypeUnlocked.mType == ert_lockType.mType)
                             rc = 1;
-                        else if (Ert_LockTypeRead.mType == lockType.mType)
+                        else if (Ert_LockTypeRead.mType == ert_lockType.mType)
                             rc = 2;
-                        else if (Ert_LockTypeWrite.mType == lockType.mType)
+                        else if (Ert_LockTypeWrite.mType == ert_lockType.mType)
                             rc = 3;
 
                         return rc;

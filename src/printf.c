@@ -42,7 +42,7 @@ static bool     moduleInitPrintf_;
 
 #define PRINTF_SPEC_METHOD 'M'
 
-const struct Type * const ert_printfMethodType_ = TYPE("PrintfMethod");
+const struct Ert_Type * const ert_printfMethodType_ = ERT_TYPE("PrintfMethod");
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int

@@ -64,7 +64,7 @@
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
 
-struct Type;
+struct Ert_Type;
 
 struct Ert_PrintfModule
 {
@@ -72,11 +72,11 @@ struct Ert_PrintfModule
 };
 
 /* -------------------------------------------------------------------------- */
-extern const struct Type * const ert_printfMethodType_;
+extern const struct Ert_Type * const ert_printfMethodType_;
 
 struct Ert_PrintfMethod
 {
-    const struct Type * const *mType;
+    const struct Ert_Type * const *mType;
 
     struct Ert_PrintfMethod_ mMethod;
 };
