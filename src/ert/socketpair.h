@@ -34,7 +34,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct SocketPair
+struct Ert_SocketPair
 {
     struct UnixSocket  mParentSocket_;
     struct UnixSocket *mParentSocket;
@@ -44,16 +44,16 @@ struct SocketPair
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createSocketPair(struct SocketPair *self, unsigned aFlags);
+ert_createSocketPair(struct Ert_SocketPair *self, unsigned aFlags);
 
-ERT_CHECKED struct SocketPair *
-closeSocketPair(struct SocketPair *self);
-
-void
-closeSocketPairParent(struct SocketPair *self);
+ERT_CHECKED struct Ert_SocketPair *
+ert_closeSocketPair(struct Ert_SocketPair *self);
 
 void
-closeSocketPairChild(struct SocketPair *self);
+ert_closeSocketPairParent(struct Ert_SocketPair *self);
+
+void
+ert_closeSocketPairChild(struct Ert_SocketPair *self);
 
 /* -------------------------------------------------------------------------- */
 
