@@ -145,8 +145,12 @@ _isblockingtest_SOURCES = _isblockingtest.c
 _isblockingtest_LDADD   = $(TEST_LIBS)
 
 include libert_a.am
-$(call WILDCARD,libert_a,libert_a_SOURCES,[a-z]*_.[ch])
+$(call WILDCARD,libert_a,libert_a_SOURCES,[a-z]*.[ch])
 libert_a_CFLAGS = $(COMMON_CFLAGS)
+
+include libert_a_h.am
+$(call WILDCARD,libert_a_h,nobase_libert_a_HEADERS,ert/*.h)
+libert_adir = $(includedir)
 
 libgoogletest_la_SOURCES  = gtest-all.cc
 libgoogletest_la_CPPFLAGS = -I ../googletest
