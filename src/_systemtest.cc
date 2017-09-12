@@ -35,7 +35,7 @@
 
 TEST(SystemTest, Incarnation)
 {
-    const char *incarnation = fetchSystemIncarnation();
+    const char *incarnation = ert_fetchSystemIncarnation();
 
     EXPECT_TRUE(incarnation);
     EXPECT_TRUE(strlen(incarnation));

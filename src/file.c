@@ -180,7 +180,7 @@ temporaryFileCreate_(const char *aDirName)
      * and unlinking of the newly created file must be performed
      * in separate steps. */
 
-    TEST_RACE
+    ERT_TEST_RACE
     ({
         ERROR_IF(
             unlinkat(dirFd, fileName.mName, 0) && ENOENT == errno);
@@ -485,7 +485,7 @@ ert_temporaryFile(struct Ert_File *self)
          *
          * The above is only of passing interest for this use case. */
 
-        if ( ! testAction(TestLevelRace))
+        if ( ! ert_testAction(Ert_TestLevelRace))
         {
             ERROR_IF(
                 (fd = ert_openFd(tmpDir,

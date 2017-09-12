@@ -196,7 +196,7 @@ createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
 
     unsigned testFrames = 2;
 
-    if (testMode(TestLevelRace) && numFrames > testFrames)
+    if (ert_testMode(Ert_TestLevelRace) && numFrames > testFrames)
         numFrames = testFrames;
 
     self->mBegin = &self->mFrame_[0];
@@ -467,7 +467,7 @@ findErrTextLength_(int aErrCode)
 {
     size_t rc = 0;
 
-    size_t textCapacity = testMode(TestLevelRace) ? 2 : 128;
+    size_t textCapacity = ert_testMode(Ert_TestLevelRace) ? 2 : 128;
 
     while (1)
     {
@@ -842,7 +842,7 @@ errorEnsureBacktrace_(int aFd, int aDepth)
 
         frames = backtrace_symbols(symbols, depth);
 
-        if ( ! frames || testAction(TestLevelRace))
+        if ( ! frames || ert_testAction(Ert_TestLevelRace))
             backtrace_symbols_fd(symbols, depth, aFd);
         else
         {

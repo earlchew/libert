@@ -78,7 +78,7 @@ struct Ert_ErrorModule
                                                      \
         ert_restartErrorFrameSequence();             \
                                                      \
-        if (testFinally(&frame_) ||                  \
+        if (ert_testFinally(&frame_) ||              \
             Sense_ (Predicate_))                     \
         {                                            \
             __VA_ARGS__                              \

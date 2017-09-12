@@ -827,7 +827,7 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
     {
         struct EventClockTime tm = eventclockTime();
 
-        TEST_RACE
+        ERT_TEST_RACE
         ({
             /* In case the process is stopped after the time is
              * latched, check once more if the fds are ready
@@ -1274,8 +1274,8 @@ ert_readFdFully(int aFd, char **aBuf, size_t aBufSize)
         {
             len =
                 len ? 2 * len :
-                testMode(TestLevelRace) ? 1 :
-                aBufSize ? aBufSize : fetchSystemPageSize();
+                ert_testMode(Ert_TestLevelRace) ? 1 :
+                aBufSize ? aBufSize : ert_fetchSystemPageSize();
 
             char *ptr;
             ERROR_UNLESS(

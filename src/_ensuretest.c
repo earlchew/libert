@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     ert_initOptions(
         &(struct Ert_Options)
         {
-        .mTest = TestLevelRace,
+            .mTest = Ert_TestLevelRace,
         });
 
     ert_errorEnsure(__func__, __FILE__, __LINE__, 0);

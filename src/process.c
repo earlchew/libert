@@ -2333,7 +2333,7 @@ ert_forkProcessChild(
      * is an important consideration for propagating signals to
      * the child process. */
 
-    TEST_RACE
+    ERT_TEST_RACE
     ({
         childPid = Ert_Pid(fork());
     });
@@ -2830,7 +2830,7 @@ killProcess_(int aSigNum, unsigned *aSigTrigger)
              * signal to be ignored, or handled. So when the signal is raised,
              * it might not actually cause the process to abort. */
 
-            if ( ! testAction(TestLevelRace))
+            if ( ! ert_testAction(Ert_TestLevelRace))
             {
                 if (raise(aSigNum))
                     break;
@@ -2855,7 +2855,7 @@ killProcess_(int aSigNum, unsigned *aSigTrigger)
     /* There was an error trying to deliver the signal to the process, so
      * try one last time, then resort to killing the process. */
 
-    if ( ! testAction(TestLevelRace))
+    if ( ! ert_testAction(Ert_TestLevelRace))
         raise(aSigNum);
 
     while (1)
@@ -2863,7 +2863,7 @@ killProcess_(int aSigNum, unsigned *aSigTrigger)
         monotonicSleep(
             Duration(NSECS(Seconds(1))));
 
-        if ( ! testAction(TestLevelRace))
+        if ( ! ert_testAction(Ert_TestLevelRace))
             raise(SIGKILL);
     }
 }
@@ -3105,7 +3105,7 @@ prepareFork_(void)
 static void
 completeFork_(void)
 {
-    TEST_RACE
+    ERT_TEST_RACE
     ({
         /* This function is called in the context of both parent and child
          * process immediately after the fork completes. Both processes

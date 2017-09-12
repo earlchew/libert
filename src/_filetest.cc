@@ -119,7 +119,7 @@ TEST(FileTest, LockFileRegion)
     {
         unsigned optTest = gErtOptions_.mTest;
 
-        gErtOptions_.mTest = TestLevelRace;
+        gErtOptions_.mTest = Ert_TestLevelRace;
 
         ASSERT_EQ(0, ert_temporaryFile(&file_));
         file = &file_;

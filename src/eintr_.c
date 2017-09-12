@@ -1031,7 +1031,7 @@ interruptSystemCall(enum SystemCallKind aKind, const char *aErrName)
 
     uintptr_t addr = 0;
 
-    if (testAction(TestLevelRace) && 1 > ert_fetchRandomRange(10))
+    if (ert_testAction(Ert_TestLevelRace) && 1 > ert_fetchRandomRange(10))
         debug(0,
               "inject %s into %s",
               (aErrName ? aErrName : "EINTR"),

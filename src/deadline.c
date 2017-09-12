@@ -81,7 +81,7 @@ ert_checkDeadlineExpired(struct Ert_Deadline *self,
          * latched, check once more if the fds are ready
          * before checking the deadline. */
 
-        TEST_RACE
+        ERT_TEST_RACE
         ({
             ready = -1;
 

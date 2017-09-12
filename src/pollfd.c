@@ -205,7 +205,7 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
         polltm = eventclockTime();
 
         int events;
-        TEST_RACE
+        ERT_TEST_RACE
         ({
             while (1)
             {
