@@ -42,10 +42,12 @@ struct Ert_StdFdFiller
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createStdFdFiller(struct Ert_StdFdFiller *self);
+ert_createStdFdFiller(
+    struct Ert_StdFdFiller *self);
 
 ERT_CHECKED struct Ert_StdFdFiller *
-ert_closeStdFdFiller(struct Ert_StdFdFiller *self);
+ert_closeStdFdFiller(
+    struct Ert_StdFdFiller *self);
 
 /* -------------------------------------------------------------------------- */
 

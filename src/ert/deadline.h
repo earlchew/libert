@@ -98,29 +98,34 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_Deadline
 {
-    struct Ert_EventClockTime            mSince;
-    struct Ert_EventClockTime            mTime;
-    struct Ert_Duration                  mRemaining;
-    struct Ert_ProcessSigContTracker mSigContTracker;
-    struct Ert_Duration                  mDuration_;
-    struct Ert_Duration                 *mDuration;
-    bool                             mExpired;
+    struct Ert_EventClockTime         mSince;
+    struct Ert_EventClockTime         mTime;
+    struct Ert_Duration               mRemaining;
+    struct Ert_ProcessSigContTracker  mSigContTracker;
+    struct Ert_Duration               mDuration_;
+    struct Ert_Duration              *mDuration;
+    bool                              mExpired;
 };
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createDeadline(struct Ert_Deadline *self, const struct Ert_Duration *aDuration);
+ert_createDeadline(
+    struct Ert_Deadline       *self,
+    const struct Ert_Duration *aDuration);
 
 ERT_CHECKED int
-ert_checkDeadlineExpired(struct Ert_Deadline *self,
-                         struct Ert_DeadlinePollMethod aPollMethod,
-                         struct Ert_DeadlineWaitMethod aWaitMethod);
+ert_checkDeadlineExpired(
+    struct Ert_Deadline          *self,
+    struct Ert_DeadlinePollMethod aPollMethod,
+    struct Ert_DeadlineWaitMethod aWaitMethod);
 
 bool
-ert_ownDeadlineExpired(const struct Ert_Deadline *self);
+ert_ownDeadlineExpired(
+    const struct Ert_Deadline *self);
 
 ERT_CHECKED struct Ert_Deadline *
-ert_closeDeadline(struct Ert_Deadline *self);
+ert_closeDeadline(
+    struct Ert_Deadline *self);
 
 /* -------------------------------------------------------------------------- */
 

@@ -47,27 +47,34 @@ ERT_CHECKED int
 ert_createBellSocketPair(struct Ert_BellSocketPair *self, unsigned aFlags);
 
 ERT_CHECKED struct Ert_BellSocketPair *
-ert_closeBellSocketPair(struct Ert_BellSocketPair *self);
+ert_closeBellSocketPair(
+    struct Ert_BellSocketPair *self);
 
 void
-ert_closeBellSocketPairParent(struct Ert_BellSocketPair *self);
+ert_closeBellSocketPairParent(
+    struct Ert_BellSocketPair *self);
 
 void
-ert_closeBellSocketPairChild(struct Ert_BellSocketPair *self);
+ert_closeBellSocketPairChild(
+    struct Ert_BellSocketPair *self);
 
 ERT_CHECKED int
-ert_ringBellSocketPairChild(struct Ert_BellSocketPair *self);
+ert_ringBellSocketPairChild(
+    struct Ert_BellSocketPair *self);
 
 ERT_CHECKED int
-ert_ringBellSocketPairParent(struct Ert_BellSocketPair *self);
+ert_ringBellSocketPairParent(
+    struct Ert_BellSocketPair *self);
 
 ERT_CHECKED int
-ert_waitBellSocketPairChild(struct Ert_BellSocketPair *self,
-                            const struct Ert_Duration *aTimeout);
+ert_waitBellSocketPairChild(
+    struct Ert_BellSocketPair *self,
+    const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED int
-ert_waitBellSocketPairParent(struct Ert_BellSocketPair *self,
-                             const struct Ert_Duration *aTimeout);
+ert_waitBellSocketPairParent(
+    struct Ert_BellSocketPair *self,
+    const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 

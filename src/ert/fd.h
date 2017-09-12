@@ -150,20 +150,24 @@ ert_readFdFully(int aFd, char **aBuf, size_t aBufSize);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-ert_writeFd(int aFd,
-            const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_writeFd(
+    int aFd,
+    const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-ert_writeFdRaw(int aFd,
-               const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_writeFdRaw(
+    int aFd,
+    const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-ert_readFd(int aFd,
-           char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_readFd(
+    int aFd,
+    char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-ert_readFdRaw(int aFd,
-              char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_readFdRaw(
+    int aFd,
+    char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
@@ -178,10 +182,12 @@ ert_readFdDeadline(
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_lockFd(int aFd, struct Ert_LockType aLockType);
+ert_lockFd(
+    int aFd, struct Ert_LockType aLockType);
 
 ERT_CHECKED int
-ert_unlockFd(int aFd);
+ert_unlockFd(
+    int aFd);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
@@ -198,17 +204,21 @@ ert_ownFdRegionLocked(
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_waitFdWriteReady(int aFd, const struct Ert_Duration *aTimeout);
+ert_waitFdWriteReady(
+    int aFd, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED int
-ert_waitFdReadReady(int aFd, const struct Ert_Duration *aTimeout);
+ert_waitFdReadReady(
+    int aFd, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_waitFdWriteReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
+ert_waitFdWriteReadyDeadline(
+    int aFd, struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED int
-ert_waitFdReadReadyDeadline(int aFd, struct Ert_Deadline *aDeadline);
+ert_waitFdReadReadyDeadline(
+    int aFd, struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 

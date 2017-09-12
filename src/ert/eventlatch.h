@@ -88,10 +88,10 @@ struct Ert_EventLatchList
 
 struct Ert_EventLatch
 {
-    struct Ert_ThreadSigMutex           mMutex_;
-    struct Ert_ThreadSigMutex          *mMutex;
+    struct Ert_ThreadSigMutex       mMutex_;
+    struct Ert_ThreadSigMutex      *mMutex;
     unsigned                        mEvent;
-    struct Ert_EventPipe               *mPipe;
+    struct Ert_EventPipe           *mPipe;
     char                           *mName;
     struct Ert_EventLatchListEntry  mList;
 };
@@ -106,38 +106,50 @@ enum Ert_EventLatchSetting
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_pollEventLatchListEntry(struct Ert_EventLatchListEntry  *self,
-                            const struct Ert_EventClockTime *aPollTime);
+ert_pollEventLatchListEntry(
+    struct Ert_EventLatchListEntry  *self,
+    const struct Ert_EventClockTime *aPollTime);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createEventLatch(struct Ert_EventLatch *self, const char *aName);
+ert_createEventLatch(
+    struct Ert_EventLatch *self,
+    const char            *aName);
 
 ERT_CHECKED struct Ert_EventLatch *
-ert_closeEventLatch(struct Ert_EventLatch *self);
+ert_closeEventLatch(
+    struct Ert_EventLatch *self);
 
 int
-ert_printEventLatch(const struct Ert_EventLatch *self, FILE *aFile);
+ert_printEventLatch(
+    const struct Ert_EventLatch *self,
+    FILE                        *aFile);
 
 ERT_CHECKED enum Ert_EventLatchSetting
-ert_bindEventLatchPipe(struct Ert_EventLatch       *self,
-                       struct Ert_EventPipe        *aPipe,
-                       struct Ert_EventLatchMethod  aMethod);
+ert_bindEventLatchPipe(
+    struct Ert_EventLatch       *self,
+    struct Ert_EventPipe        *aPipe,
+    struct Ert_EventLatchMethod  aMethod);
 
 ERT_CHECKED enum Ert_EventLatchSetting
-ert_unbindEventLatchPipe(struct Ert_EventLatch *self);
+ert_unbindEventLatchPipe(
+    struct Ert_EventLatch *self);
 
 ERT_CHECKED enum Ert_EventLatchSetting
-ert_disableEventLatch(struct Ert_EventLatch *self);
+ert_disableEventLatch(
+    struct Ert_EventLatch *self);
 
 ERT_CHECKED enum Ert_EventLatchSetting
-ert_setEventLatch(struct Ert_EventLatch *self);
+ert_setEventLatch(
+    struct Ert_EventLatch *self);
 
 ERT_CHECKED enum Ert_EventLatchSetting
-ert_resetEventLatch(struct Ert_EventLatch *self);
+ert_resetEventLatch(
+    struct Ert_EventLatch *self);
 
 enum Ert_EventLatchSetting
-ert_ownEventLatchSetting(const struct Ert_EventLatch *self);
+ert_ownEventLatchSetting(
+    const struct Ert_EventLatch *self);
 
 /* -------------------------------------------------------------------------- */
 

@@ -206,7 +206,8 @@ struct Ert_ErrorUnwindFrame_ *
 ert_ownErrorUnwindActiveFrame_(void);
 
 void
-ert_popErrorUnwindFrame_(struct Ert_ErrorUnwindFrame_ *self);
+ert_popErrorUnwindFrame_(
+    struct Ert_ErrorUnwindFrame_ *self);
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ErrorFrame

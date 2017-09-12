@@ -44,16 +44,21 @@ struct Ert_SocketPair
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createSocketPair(struct Ert_SocketPair *self, unsigned aFlags);
+ert_createSocketPair(
+    struct Ert_SocketPair *self,
+    unsigned               aFlags);
 
 ERT_CHECKED struct Ert_SocketPair *
-ert_closeSocketPair(struct Ert_SocketPair *self);
+ert_closeSocketPair(
+    struct Ert_SocketPair *self);
 
 void
-ert_closeSocketPairParent(struct Ert_SocketPair *self);
+ert_closeSocketPairParent(
+    struct Ert_SocketPair *self);
 
 void
-ert_closeSocketPairChild(struct Ert_SocketPair *self);
+ert_closeSocketPairChild(
+    struct Ert_SocketPair *self);
 
 /* -------------------------------------------------------------------------- */
 

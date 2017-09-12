@@ -76,7 +76,7 @@ static __attribute__((__constructor__(101)))        \
 void Name_ ## _ctor_(void)                          \
 {                                                   \
     do                                              \
-        ERT_EXPAND Ctor_                                \
+        ERT_EXPAND Ctor_                            \
     while (0);                                      \
 }                                                   \
                                                     \
@@ -84,7 +84,7 @@ static __attribute__((__destructor__(101)))         \
 void Name_ ## _dtor_(void)                          \
 {                                                   \
     do                                              \
-        ERT_EXPAND Dtor_                                \
+        ERT_EXPAND Dtor_                            \
     while (0);                                      \
 }                                                   \
                                                     \

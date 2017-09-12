@@ -126,8 +126,8 @@ Ert_PrintfMethodPtr_(const struct Ert_PrintfMethod &aMethod)
 
 /* -------------------------------------------------------------------------- */
 #define PRIs_Ert_Method "%%p<struct Ert_PrintfMethod>%%"
-#define FMTs_Ert_Method(Object_, Method_) ( Ert_PrintfMethod( \
-                                                (Object_), (Method_)) )
+#define FMTs_Ert_Method(Object_, Method_) ( \
+        Ert_PrintfMethod((Object_), (Method_)) )
 
 /* -------------------------------------------------------------------------- */
 int

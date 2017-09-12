@@ -62,39 +62,49 @@ struct Ert_JobControl
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createJobControl(struct Ert_JobControl *self);
+ert_createJobControl(
+    struct Ert_JobControl *self);
 
 ERT_CHECKED struct Ert_JobControl *
-ert_closeJobControl(struct Ert_JobControl *self);
+ert_closeJobControl(
+    struct Ert_JobControl *self);
 
 ERT_CHECKED int
-ert_watchJobControlSignals(struct Ert_JobControl              *self,
-                       struct Ert_WatchProcessSignalMethod aRaiseMethod);
+ert_watchJobControlSignals(
+    struct Ert_JobControl              *self,
+    struct Ert_WatchProcessSignalMethod aRaiseMethod);
 
 ERT_CHECKED int
-ert_unwatchJobControlSignals(struct Ert_JobControl *self);
+ert_unwatchJobControlSignals(
+    struct Ert_JobControl *self);
 
 ERT_CHECKED int
-ert_watchJobControlDone(struct Ert_JobControl        *self,
-                    struct Ert_WatchProcessMethod aReapMethod);
+ert_watchJobControlDone(
+    struct Ert_JobControl        *self,
+    struct Ert_WatchProcessMethod aReapMethod);
 
 ERT_CHECKED int
-ert_unwatchJobControlDone(struct Ert_JobControl *self);
+ert_unwatchJobControlDone(
+    struct Ert_JobControl *self);
 
 ERT_CHECKED int
-ert_watchJobControlStop(struct Ert_JobControl        *self,
-                    struct Ert_WatchProcessMethod aPauseMethod,
-                    struct Ert_WatchProcessMethod aResumeMethod);
+ert_watchJobControlStop(
+    struct Ert_JobControl        *self,
+    struct Ert_WatchProcessMethod aPauseMethod,
+    struct Ert_WatchProcessMethod aResumeMethod);
 
 ERT_CHECKED int
-ert_unwatchJobControlStop(struct Ert_JobControl *self);
+ert_unwatchJobControlStop(
+    struct Ert_JobControl *self);
 
 ERT_CHECKED int
-ert_watchJobControlContinue(struct Ert_JobControl        *self,
-                        struct Ert_WatchProcessMethod aContinueMethod);
+ert_watchJobControlContinue(
+    struct Ert_JobControl        *self,
+    struct Ert_WatchProcessMethod aContinueMethod);
 
 ERT_CHECKED int
-ert_unwatchJobControlContinue(struct Ert_JobControl *self);
+ert_unwatchJobControlContinue(
+    struct Ert_JobControl *self);
 
 /* -------------------------------------------------------------------------- */
 

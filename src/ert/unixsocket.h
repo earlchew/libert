@@ -47,71 +47,94 @@ struct Ert_UnixSocket
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createUnixSocketPair(struct Ert_UnixSocket *aParent,
-                     struct Ert_UnixSocket *aChild,
-                     unsigned           aFlags);
+ert_createUnixSocketPair(
+    struct Ert_UnixSocket *aParent,
+    struct Ert_UnixSocket *aChild,
+    unsigned               aFlags);
 
 ERT_CHECKED int
-ert_createUnixSocket(struct Ert_UnixSocket *self,
-                 const char        *aName,
-                 size_t             aNameLen,
-                 unsigned           aQueueLen);
+ert_createUnixSocket(
+    struct Ert_UnixSocket *self,
+    const char            *aName,
+    size_t                 aNameLen,
+    unsigned               aQueueLen);
 
 ERT_CHECKED int
-ert_acceptUnixSocket(struct Ert_UnixSocket       *self,
-                 const struct Ert_UnixSocket *aServer);
+ert_acceptUnixSocket(
+    struct Ert_UnixSocket       *self,
+    const struct Ert_UnixSocket *aServer);
 
 ERT_CHECKED int
-ert_connectUnixSocket(struct Ert_UnixSocket *self,
-                 const char         *aName,
-                 size_t              aNameLen);
+ert_connectUnixSocket(
+    struct Ert_UnixSocket *self,
+    const char            *aName,
+    size_t                 aNameLen);
 
 ERT_CHECKED struct Ert_UnixSocket *
-ert_closeUnixSocket(struct Ert_UnixSocket *self);
+ert_closeUnixSocket(
+    struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-ert_sendUnixSocketFd(struct Ert_UnixSocket *self, int aFd);
+ert_sendUnixSocketFd(
+    struct Ert_UnixSocket *self,
+    int                    aFd);
 
 ERT_CHECKED int
-ert_recvUnixSocketFd(struct Ert_UnixSocket *self, unsigned aFlags);
+ert_recvUnixSocketFd(
+    struct Ert_UnixSocket *self,
+    unsigned               aFlags);
 
 bool
-ert_ownUnixSocketValid(const struct Ert_UnixSocket *self);
+ert_ownUnixSocketValid(
+    const struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-ert_shutdownUnixSocketReader(struct Ert_UnixSocket *self);
+ert_shutdownUnixSocketReader(
+    struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-ert_shutdownUnixSocketWriter(struct Ert_UnixSocket *self);
+ert_shutdownUnixSocketWriter(
+    struct Ert_UnixSocket *self);
 
 ERT_CHECKED int
-ert_waitUnixSocketWriteReady(const struct Ert_UnixSocket *self,
-                         const struct Ert_Duration   *aTimeout);
+ert_waitUnixSocketWriteReady(
+    const struct Ert_UnixSocket *self,
+    const struct Ert_Duration   *aTimeout);
 
 ERT_CHECKED int
-ert_waitUnixSocketReadReady(const struct Ert_UnixSocket *self,
-                        const struct Ert_Duration   *aTimeout);
+ert_waitUnixSocketReadReady(
+    const struct Ert_UnixSocket *self,
+    const struct Ert_Duration   *aTimeout);
 
 ERT_CHECKED int
-ert_ownUnixSocketPeerName(const struct Ert_UnixSocket *self,
-                      struct sockaddr_un      *aAddr);
+ert_ownUnixSocketPeerName(
+    const struct Ert_UnixSocket *self,
+    struct sockaddr_un          *aAddr);
 
 ERT_CHECKED int
-ert_ownUnixSocketName(const struct Ert_UnixSocket *self,
-                  struct sockaddr_un      *aAddr);
+ert_ownUnixSocketName(
+    const struct Ert_UnixSocket *self,
+    struct sockaddr_un          *aAddr);
 
 ERT_CHECKED int
-ert_ownUnixSocketError(const struct Ert_UnixSocket *self, int *aError);
+ert_ownUnixSocketError(
+    const struct Ert_UnixSocket *self,
+    int                         *aError);
 
 ERT_CHECKED int
 ert_ownUnixSocketPeerCred(
-    const struct Ert_UnixSocket *self, struct ucred *aCred);
+    const struct Ert_UnixSocket *self,
+    struct ucred                *aCred);
 
 ERT_CHECKED ssize_t
-ert_sendUnixSocket(struct Ert_UnixSocket *self, const char *aBuf, size_t aLen);
+ert_sendUnixSocket(
+    struct Ert_UnixSocket *self,
+    const char *aBuf, size_t aLen);
 
 ERT_CHECKED ssize_t
-ert_recvUnixSocket(struct Ert_UnixSocket *self, char *aBuf, size_t aLen);
+ert_recvUnixSocket(
+    struct Ert_UnixSocket *self,
+    char *aBuf, size_t aLen);
 
 ERT_CHECKED ssize_t
 ert_writeUnixSocket(

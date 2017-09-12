@@ -107,43 +107,64 @@ struct Ert_FdSet
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createFdSet(struct Ert_FdSet *self);
+ert_createFdSet(
+    struct Ert_FdSet *self);
 
 struct Ert_FdSet *
-ert_closeFdSet(struct Ert_FdSet *self);
+ert_closeFdSet(
+    struct Ert_FdSet *self);
 
 int
-ert_printFdSet(const struct Ert_FdSet *self, FILE *aFile);
+ert_printFdSet(
+    const struct Ert_FdSet *self,
+    FILE                   *aFile);
 
 void
-ert_clearFdSet(struct Ert_FdSet *self);
+ert_clearFdSet(
+    struct Ert_FdSet *self);
 
 ERT_CHECKED int
-ert_invertFdSet(struct Ert_FdSet *self);
+ert_invertFdSet(
+    struct Ert_FdSet *self);
 
 ERT_CHECKED int
-ert_fillFdSet(struct Ert_FdSet *self);
+ert_fillFdSet(
+    struct Ert_FdSet *self);
 
 ERT_CHECKED int
-ert_insertFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange);
+ert_insertFdSetRange(
+    struct Ert_FdSet  *self,
+    struct Ert_FdRange aRange);
 
 ERT_CHECKED int
-ert_removeFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange);
+ert_removeFdSetRange(
+    struct Ert_FdSet  *self,
+    struct Ert_FdRange aRange);
 
 ERT_CHECKED int
-ert_insertFdSet(struct Ert_FdSet *self, int aFd);
+ert_insertFdSet(
+    struct Ert_FdSet *self,
+    int              aFd);
 
 ERT_CHECKED int
-ert_removeFdSet(struct Ert_FdSet *self, int aFd);
+ert_removeFdSet(
+    struct Ert_FdSet *self,
+    int               aFd);
 
 ERT_CHECKED int
-ert_insertFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile);
+ert_insertFdSetFile(
+    struct Ert_FdSet      *self,
+    const struct Ert_File *aFile);
 
 ERT_CHECKED int
-ert_removeFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile);
+ert_removeFdSetFile(
+    struct Ert_FdSet      *self,
+    const struct Ert_File *aFile);
 
 ERT_CHECKED ssize_t
-ert_visitFdSet(const struct Ert_FdSet *self, struct Ert_FdSetVisitor aVisitor);
+ert_visitFdSet(
+    const struct Ert_FdSet *self,
+    struct Ert_FdSetVisitor aVisitor);
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
@@ -155,19 +176,29 @@ Ert_FdRange(int aLhs, int aRhs)
 #endif
 
 int
-ert_containsFdRange(struct Ert_FdRange self, struct Ert_FdRange aOther);
+ert_containsFdRange(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther);
 
 bool
-ert_leftFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther);
+ert_leftFdRangeOf(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther);
 
 bool
-ert_rightFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther);
+ert_rightFdRangeOf(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther);
 
 bool
-ert_leftFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther);
+ert_leftFdRangeNeighbour(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther);
 
 bool
-ert_rightFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther);
+ert_rightFdRangeNeighbour(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther);
 
 /* -------------------------------------------------------------------------- */
 

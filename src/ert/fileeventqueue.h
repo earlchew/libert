@@ -99,20 +99,25 @@ struct Ert_FileEventQueueActivity
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createFileEventQueue(struct Ert_FileEventQueue *self, int aQueueSize);
+ert_createFileEventQueue(
+    struct Ert_FileEventQueue *self,
+    int                        aQueueSize);
 
 ERT_CHECKED struct Ert_FileEventQueue *
-ert_closeFileEventQueue(struct Ert_FileEventQueue *self);
+ert_closeFileEventQueue(
+    struct Ert_FileEventQueue *self);
 
 ERT_CHECKED int
-ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
-                               const struct Ert_Duration     *aTimeout);
+ert_pollFileEventQueueActivity(
+    struct Ert_FileEventQueue *self,
+    const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createFileEventQueueActivity(struct Ert_FileEventQueueActivity *self,
-                                 struct Ert_FileEventQueue         *aQueue,
-                                 struct Ert_File                   *aFile);
+ert_createFileEventQueueActivity(
+    struct Ert_FileEventQueueActivity *self,
+    struct Ert_FileEventQueue         *aQueue,
+    struct Ert_File                   *aFile);
 
 ERT_CHECKED int
 ert_armFileEventQueueActivity(
@@ -121,7 +126,8 @@ ert_armFileEventQueueActivity(
     struct Ert_FileEventQueueActivityMethod aMethod);
 
 ERT_CHECKED struct Ert_FileEventQueueActivity *
-ert_closeFileEventQueueActivity(struct Ert_FileEventQueueActivity *self);
+ert_closeFileEventQueueActivity(
+    struct Ert_FileEventQueueActivity *self);
 
 /* -------------------------------------------------------------------------- */
 

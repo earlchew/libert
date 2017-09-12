@@ -79,10 +79,13 @@ ert_testErrorLevel(void);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-Ert_Test_init(struct Ert_TestModule *self, const char *aErrorEnv);
+Ert_Test_init(
+    struct Ert_TestModule *self,
+    const char            *aErrorEnv);
 
 ERT_CHECKED struct Ert_TestModule *
-Ert_Test_exit(struct Ert_TestModule *self);
+Ert_Test_exit(
+    struct Ert_TestModule *self);
 
 /* -------------------------------------------------------------------------- */
 

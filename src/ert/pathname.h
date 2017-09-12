@@ -50,26 +50,35 @@ struct Ert_PathName
 
 enum Ert_PathNameStatus
 {
-    PathNameStatusError        = -1,
-    PathNameStatusOk           = 0,
-    PathNameStatusInaccessible = 1,
+    Ert_PathNameStatusError        = -1,
+    Ert_PathNameStatusOk           = 0,
+    Ert_PathNameStatusInaccessible = 1,
 };
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED enum Ert_PathNameStatus
-ert_createPathName(struct Ert_PathName *self, const char *aFileName);
+ert_createPathName(
+    struct Ert_PathName *self,
+    const char *aFileName);
 
 ERT_CHECKED struct Ert_PathName *
-ert_closePathName(struct Ert_PathName *self);
+ert_closePathName(
+    struct Ert_PathName *self);
 
 ERT_CHECKED int
-ert_openPathName(struct Ert_PathName *self, int aFlags, mode_t aMode);
+ert_openPathName(
+    struct Ert_PathName *self,
+    int aFlags, mode_t aMode);
 
 ERT_CHECKED int
-ert_unlinkPathName(struct Ert_PathName *self, int aFlags);
+ert_unlinkPathName(
+    struct Ert_PathName *self,
+    int aFlags);
 
 ERT_CHECKED int
-ert_fstatPathName(const struct Ert_PathName *self, struct stat *aStat, int aFlags);
+ert_fstatPathName(
+    const struct Ert_PathName *self,
+    struct stat *aStat, int aFlags);
 
 /* -------------------------------------------------------------------------- */
 

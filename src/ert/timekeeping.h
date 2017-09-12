@@ -66,11 +66,11 @@ struct Ert_BootClockTime
 
 struct Ert_PushedIntervalTimer
 {
-    int                  mType;
-    int                  mSignal;
+    int                      mType;
+    int                      mSignal;
     struct Ert_MonotonicTime mMark;
-    struct sigaction     mAction;
-    struct itimerval     mTimer;
+    struct sigaction         mAction;
+    struct itimerval         mTimer;
 };
 
 struct Ert_MonotonicDeadline
@@ -110,22 +110,26 @@ ert_procUptime(struct Ert_Duration *aUptime, const char *aFileName);
 
 /* -------------------------------------------------------------------------- */
 struct Ert_Duration
-ert_lapTimeSince(struct Ert_EventClockTime       *self,
-                 struct Ert_Duration              aPeriod,
-                 const struct Ert_EventClockTime *aTime);
+ert_lapTimeSince(
+    struct Ert_EventClockTime       *self,
+    struct Ert_Duration              aPeriod,
+    const struct Ert_EventClockTime *aTime);
 
 void
-ert_lapTimeRestart(struct Ert_EventClockTime       *self,
-                   const struct Ert_EventClockTime *aTime);
+ert_lapTimeRestart(
+    struct Ert_EventClockTime       *self,
+    const struct Ert_EventClockTime *aTime);
 
 void
-ert_lapTimeTrigger(struct Ert_EventClockTime       *self,
-                   struct Ert_Duration              aPeriod,
-                   const struct Ert_EventClockTime *aTime);
+ert_lapTimeTrigger(
+    struct Ert_EventClockTime       *self,
+    struct Ert_Duration              aPeriod,
+    const struct Ert_EventClockTime *aTime);
 
 void
-ert_lapTimeDelay(struct Ert_EventClockTime *self,
-                 struct Ert_Duration        aDelay);
+ert_lapTimeDelay(
+    struct Ert_EventClockTime *self,
+    struct Ert_Duration        aDelay);
 
 /* -------------------------------------------------------------------------- */
 bool
@@ -144,10 +148,12 @@ ert_monotonicDeadlineTimeExpired(
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-Ert_Timekeeping_init(struct Ert_TimeKeepingModule *self);
+Ert_Timekeeping_init(
+    struct Ert_TimeKeepingModule *self);
 
 ERT_CHECKED struct Ert_TimeKeepingModule *
-Ert_Timekeeping_exit(struct Ert_TimeKeepingModule *self);
+Ert_Timekeeping_exit(
+    struct Ert_TimeKeepingModule *self);
 
 /* -------------------------------------------------------------------------- */
 

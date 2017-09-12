@@ -43,9 +43,9 @@ struct Ert_EventPipe
 {
     struct Ert_ThreadSigMutex  mMutex_;
     struct Ert_ThreadSigMutex *mMutex;
-    struct Ert_Pipe        mPipe_;
-    struct Ert_Pipe       *mPipe;
-    bool                   mSignalled;
+    struct Ert_Pipe            mPipe_;
+    struct Ert_Pipe           *mPipe;
+    bool                       mSignalled;
 
     struct Ert_EventLatchList   mLatchList_;
     struct Ert_EventLatchList  *mLatchList;
@@ -53,29 +53,37 @@ struct Ert_EventPipe
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createEventPipe(struct Ert_EventPipe *self, unsigned aFlags);
+ert_createEventPipe(
+    struct Ert_EventPipe *self,
+    unsigned              aFlags);
 
 ERT_CHECKED struct Ert_EventPipe *
-ert_closeEventPipe(struct Ert_EventPipe *self);
+ert_closeEventPipe(
+    struct Ert_EventPipe *self);
 
 ERT_CHECKED int
-ert_setEventPipe(struct Ert_EventPipe *self);
+ert_setEventPipe(
+    struct Ert_EventPipe *self);
 
 ERT_CHECKED int
-ert_resetEventPipe(struct Ert_EventPipe *self);
+ert_resetEventPipe(
+    struct Ert_EventPipe *self);
 
 ERT_CHECKED int
-ert_pollEventPipe(struct Ert_EventPipe            *self,
-                  const struct Ert_EventClockTime *aPollTime);
+ert_pollEventPipe(
+    struct Ert_EventPipe            *self,
+    const struct Ert_EventClockTime *aPollTime);
 
 /* -------------------------------------------------------------------------- */
 void
-ert_attachEventPipeLatch_(struct Ert_EventPipe           *self,
-                          struct Ert_EventLatchListEntry *aEntry);
+ert_attachEventPipeLatch_(
+    struct Ert_EventPipe           *self,
+    struct Ert_EventLatchListEntry *aEntry);
 
 void
-ert_detachEventPipeLatch_(struct Ert_EventPipe           *self,
-                          struct Ert_EventLatchListEntry *aEntry);
+ert_detachEventPipeLatch_(
+    struct Ert_EventPipe           *self,
+    struct Ert_EventLatchListEntry *aEntry);
 
 /* -------------------------------------------------------------------------- */
 

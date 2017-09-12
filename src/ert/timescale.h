@@ -251,7 +251,7 @@ ert_timeSpecFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds);
 /* -------------------------------------------------------------------------- */
 struct itimerval
 ert_shortenIntervalTime(const struct itimerval *aTimer,
-                        struct Ert_Duration         aElapsed);
+                        struct Ert_Duration     aElapsed);
 
 /* -------------------------------------------------------------------------- */
 struct timespec

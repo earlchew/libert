@@ -49,16 +49,21 @@ struct Ert_ParseArgList
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
 ert_createParseArgListCopy(
-    struct Ert_ParseArgList *self, const char * const *aArgv);
+    struct Ert_ParseArgList *self,
+    const char * const      *aArgv);
 
 ERT_CHECKED int
-ert_createParseArgListCSV(struct Ert_ParseArgList *self, const char *aArg);
+ert_createParseArgListCSV(
+    struct Ert_ParseArgList *self,
+    const char              *aArg);
 
 ERT_CHECKED struct Ert_ParseArgList *
-ert_closeParseArgList(struct Ert_ParseArgList *self);
+ert_closeParseArgList(
+    struct Ert_ParseArgList *self);
 
 const char * const *
-ert_ownParseArgListArgv(const struct Ert_ParseArgList *self);
+ert_ownParseArgListArgv(
+    const struct Ert_ParseArgList *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int

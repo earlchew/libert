@@ -44,28 +44,39 @@ struct Ert_Pipe
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createPipe(struct Ert_Pipe *self, unsigned aFlags);
+ert_createPipe(
+    struct Ert_Pipe *self,
+    unsigned         aFlags);
 
 ERT_CHECKED struct Ert_Pipe *
-ert_closePipe(struct Ert_Pipe *self);
+ert_closePipe(
+    struct Ert_Pipe *self);
 
 ERT_CHECKED int
-ert_detachPipeReader(struct Ert_Pipe *self);
+ert_detachPipeReader(
+    struct Ert_Pipe *self);
 
 ERT_CHECKED int
-ert_detachPipeWriter(struct Ert_Pipe *self);
+ert_detachPipeWriter(
+    struct Ert_Pipe *self);
 
 void
-ert_closePipeReader(struct Ert_Pipe *self);
+ert_closePipeReader(
+    struct Ert_Pipe *self);
 
 void
-ert_closePipeWriter(struct Ert_Pipe *self);
+ert_closePipeWriter(
+    struct Ert_Pipe *self);
 
 ERT_CHECKED int
-ert_closePipeOnExec(struct Ert_Pipe *self, unsigned aCloseOnExec);
+ert_closePipeOnExec(
+    struct Ert_Pipe *self,
+    unsigned         aCloseOnExec);
 
 ERT_CHECKED int
-nonBlockingPipe(struct Ert_Pipe *self, unsigned aNonBlocking);
+nonBlockingPipe(
+    struct Ert_Pipe *self,
+    unsigned         aNonBlocking);
 
 /* -------------------------------------------------------------------------- */
 

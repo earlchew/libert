@@ -111,25 +111,25 @@ struct Ert_PollFdTimerAction
 
 struct Ert_PollFd
 {
-    struct pollfd                 *mPoll;
+    struct pollfd                     *mPoll;
     struct Ert_PollFdCompletionMethod  mCompletionQuery;
 
     struct
     {
         struct Ert_PollFdAction *mActions;
-        const char * const  *mNames;
-        size_t               mSize;
+        const char * const      *mNames;
+        size_t                   mSize;
     } mFdActions;
 
     struct
     {
         struct Ert_PollFdTimerAction *mActions;
-        const char * const       *mNames;
-        size_t                    mSize;
+        const char * const           *mNames;
+        size_t                        mSize;
     } mTimerActions;
 };
 
-struct PollEventText
+struct Ert_PollEventText
 {
     char mText[
         sizeof(unsigned) * CHAR_BIT +
@@ -145,32 +145,35 @@ struct PollEventText
 };
 
 /* -------------------------------------------------------------------------- */
-#define POLL_INPUTEVENTS       ((unsigned) (POLLHUP|POLLERR|POLLPRI|POLLIN))
-#define POLL_OUTPUTEVENTS      ((unsigned) (POLLHUP|POLLERR|POLLOUT))
-#define POLL_DISCONNECTEVENT   ((unsigned) (POLLHUP|POLLERR))
+#define ERT_POLL_INPUTEVENTS       ((unsigned) (POLLHUP|POLLERR|POLLPRI|POLLIN))
+#define ERT_POLL_OUTPUTEVENTS      ((unsigned) (POLLHUP|POLLERR|POLLOUT))
+#define ERT_POLL_DISCONNECTEVENT   ((unsigned) (POLLHUP|POLLERR))
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createPollFd(struct Ert_PollFd                 *self,
-             struct pollfd                 *aPoll,
-             struct Ert_PollFdAction           *aFdActions,
-             const char * const            *aFdNames,
-             size_t                         aNumFdActions,
-             struct Ert_PollFdTimerAction      *aTimerActions,
-             const char * const            *aTimerNames,
-             size_t                         aNumTimerActions,
-             struct Ert_PollFdCompletionMethod  aCompletionQuery);
+ert_createPollFd(
+    struct Ert_PollFd                 *self,
+    struct pollfd                     *aPoll,
+    struct Ert_PollFdAction           *aFdActions,
+    const char * const                *aFdNames,
+    size_t                             aNumFdActions,
+    struct Ert_PollFdTimerAction      *aTimerActions,
+    const char * const                *aTimerNames,
+    size_t                             aNumTimerActions,
+    struct Ert_PollFdCompletionMethod  aCompletionQuery);
 
 ERT_CHECKED int
-ert_runPollFdLoop(struct Ert_PollFd *self);
+ert_runPollFdLoop(
+    struct Ert_PollFd *self);
 
 ERT_CHECKED struct Ert_PollFd *
-ert_closePollFd(struct Ert_PollFd *self);
+ert_closePollFd(
+    struct Ert_PollFd *self);
 
 /* -------------------------------------------------------------------------- */
 const char *
 createPollEventText(
-    struct PollEventText *aPollEventText, unsigned aPollEventMask);
+    struct Ert_PollEventText *aPollEventText, unsigned aPollEventMask);
 
 /* -------------------------------------------------------------------------- */
 

@@ -83,86 +83,115 @@ struct Ert_File
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_temporaryFile(struct Ert_File *self);
+ert_temporaryFile(
+    struct Ert_File *self);
 
 ERT_CHECKED int
-ert_createFile(struct Ert_File *self, int aFd);
+ert_createFile(
+    struct Ert_File *self,
+    int              aFd);
 
 ERT_CHECKED int
-ert_detachFile(struct Ert_File *self);
+ert_detachFile(
+    struct Ert_File *self);
 
 ERT_CHECKED struct Ert_File *
-ert_closeFile(struct Ert_File *self);
+ert_closeFile(
+    struct Ert_File *self);
 
 void
-ert_walkFileList(struct Ert_FileVisitor aVisitor);
+ert_walkFileList(
+    struct Ert_FileVisitor aVisitor);
 
 ERT_CHECKED int
-ert_duplicateFile(struct Ert_File *self, const struct Ert_File *aOther);
+ert_duplicateFile(
+    struct Ert_File       *self,
+    const struct Ert_File *aOther);
 
 ERT_CHECKED int
-nonBlockingFile(struct Ert_File *self, unsigned aNonBlocking);
+nonBlockingFile(
+    struct Ert_File *self,
+    unsigned         aNonBlocking);
 
 ERT_CHECKED int
-ert_ownFileNonBlocking(const struct Ert_File *self);
+ert_ownFileNonBlocking(
+    const struct Ert_File *self);
 
 ERT_CHECKED int
-ert_closeFileOnExec(struct Ert_File *self, unsigned aCloseOnExec);
+ert_closeFileOnExec(
+    struct Ert_File *self,
+    unsigned         aCloseOnExec);
 
 ERT_CHECKED int
-ert_ownFileCloseOnExec(const struct Ert_File *self);
+ert_ownFileCloseOnExec(
+    const struct Ert_File *self);
 
 ERT_CHECKED off_t
-ert_lseekFile(struct Ert_File *self,
-              off_t aOffset, struct Ert_WhenceType aWhenceType);
+ert_lseekFile(
+    struct Ert_File       *self,
+    off_t                  aOffset,
+    struct Ert_WhenceType  aWhenceType);
 
 ERT_CHECKED int
-ert_fstatFile(struct Ert_File *self, struct stat *aStat);
+ert_fstatFile(
+    struct Ert_File *self,
+    struct stat     *aStat);
 
 ERT_CHECKED int
-ert_fcntlFileGetFlags(struct Ert_File *self);
+ert_fcntlFileGetFlags(
+    struct Ert_File *self);
 
 ERT_CHECKED int
-ert_ftruncateFile(struct Ert_File *self, off_t aLength);
+ert_ftruncateFile(
+    struct Ert_File *self,
+    off_t            aLength);
 
 bool
-ert_ownFileValid(const struct Ert_File *self);
+ert_ownFileValid(
+    const struct Ert_File *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-ert_writeFile(struct Ert_File *self,
-          const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_writeFile(
+    struct Ert_File *self,
+    const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
-ert_readFile(struct Ert_File *self,
-         char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
+ert_readFile(
+    struct Ert_File *self,
+    char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
-ert_writeFileDeadline(struct Ert_File *self,
-                  const char *aBuf, size_t aLen,
-                  struct Ert_Deadline *aDeadline);
+ert_writeFileDeadline(
+    struct Ert_File *self,
+    const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
 
 ERT_CHECKED ssize_t
-ert_readFileDeadline(struct Ert_File *self,
-                 char *aBuf, size_t aLen,
-                 struct Ert_Deadline *aDeadline);
+ert_readFileDeadline(
+    struct Ert_File *self,
+    char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_waitFileWriteReady(const struct Ert_File     *self,
-                   const struct Ert_Duration *aTimeout);
+ert_waitFileWriteReady(
+    const struct Ert_File     *self,
+    const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED int
-ert_waitFileReadReady(const struct Ert_File     *self,
-                  const struct Ert_Duration *aTimeout);
+ert_waitFileReadReady(
+    const struct Ert_File     *self,
+    const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_lockFile(struct Ert_File *self, struct Ert_LockType aLockType);
+ert_lockFile(
+    struct Ert_File    *self,
+    struct Ert_LockType aLockType);
 
 ERT_CHECKED int
-ert_unlockFile(struct Ert_File *self);
+ert_unlockFile(
+    struct Ert_File *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
@@ -171,10 +200,14 @@ ert_lockFileRegion(
     struct Ert_LockType aLockType, off_t aPos, off_t aLen);
 
 ERT_CHECKED int
-ert_unlockFileRegion(struct Ert_File *self, off_t aPos, off_t aLen);
+ert_unlockFileRegion(
+    struct Ert_File *self,
+    off_t aPos, off_t aLen);
 
 struct Ert_LockType
-ert_ownFileRegionLocked(const struct Ert_File *self, off_t aPos, off_t aLen);
+ert_ownFileRegionLocked(
+    const struct Ert_File *self,
+    off_t aPos, off_t aLen);
 
 /* -------------------------------------------------------------------------- */
 
