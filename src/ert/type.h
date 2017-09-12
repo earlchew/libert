@@ -33,13 +33,13 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct Type
+struct Ert_Type
 {
     const char *mName;
 };
 
 /* -------------------------------------------------------------------------- */
-#define TYPE(aType) (& (const struct Type) { .mName = (aType) })
+#define ERT_TYPE(Type) (& (const struct Ert_Type) { .mName = (Type) })
 
 /* -------------------------------------------------------------------------- */
 
