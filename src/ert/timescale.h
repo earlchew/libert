@@ -41,9 +41,9 @@ struct timeval;
 struct itimerval;
 
 #ifndef __cplusplus
-#define TIMESCALE_CTOR_(Struct_, Type_, Field_)
+#define ERT_TIMESCALE_CTOR_(Struct_, Type_, Field_)
 #else
-#define TIMESCALE_CTOR_(Struct_, Type_, Field_)         \
+#define ERT_TIMESCALE_CTOR_(Struct_, Type_, Field_)     \
     Struct_()                                           \
     { *this = Struct_ ## _(static_cast<Type_>(0)); }    \
                                                         \
@@ -51,211 +51,211 @@ struct itimerval;
     { *this = Struct_ ## _(Field_ ## _); }
 #endif
 
-enum TimeScale
+enum Ert_TimeScale
 {
-    TimeScale_ns = 1000 * 1000 * 1000,
-    TimeScale_us = 1000 * 1000,
-    TimeScale_ms = 1000,
-    TimeScale_s  = 1,
+    Ert_TimeScale_ns = 1000 * 1000 * 1000,
+    Ert_TimeScale_us = 1000 * 1000,
+    Ert_TimeScale_ms = 1000,
+    Ert_TimeScale_s  = 1,
 };
 
 /* -------------------------------------------------------------------------- */
-#define PRIu_NanoSeconds PRIu64
-#define PRIs_NanoSeconds PRIu64 ".%09" PRIu64 "s"
-#define FMTs_NanoSeconds(NanoSeconds) \
-    ((NanoSeconds).ns / TimeScale_ns), ((NanoSeconds).ns % TimeScale_ns)
+#define PRIu_Ert_NanoSeconds PRIu64
+#define PRIs_Ert_NanoSeconds PRIu64 ".%09" PRIu64 "s"
+#define FMTs_Ert_NanoSeconds(NanoSeconds) \
+    ((NanoSeconds).ns / Ert_TimeScale_ns), ((NanoSeconds).ns % Ert_TimeScale_ns)
 
-struct NanoSeconds
-NanoSeconds_(uint64_t ns);
+struct Ert_NanoSeconds
+Ert_NanoSeconds_(uint64_t ns);
 
-struct NanoSeconds
+struct Ert_NanoSeconds
 {
-    TIMESCALE_CTOR_(NanoSeconds, uint64_t, ns)
+    ERT_TIMESCALE_CTOR_(Ert_NanoSeconds, uint64_t, ns)
 
     union
     {
         uint64_t ns;
         uint64_t Value_;
-        char   (*Scale_)[TimeScale_ns];
+        char   (*Scale_)[Ert_TimeScale_ns];
     };
 };
 
 /* -------------------------------------------------------------------------- */
-#define PRIu_MicroSeconds PRIu64
-#define PRIs_MicroSeconds PRIu64 ".%06" PRIu64 "s"
-#define FMTs_MicroSeconds(MicroSeconds) \
+#define PRIu_Ert_MicroSeconds PRIu64
+#define PRIs_Ert_MicroSeconds PRIu64 ".%06" PRIu64 "s"
+#define FMTs_Ert_MicroSeconds(MicroSeconds) \
     ((MicroSeconds).us / 1000000), ((MicroSeconds).us % 1000000)
 
-struct MicroSeconds
-MicroSeconds_(uint64_t us);
+struct Ert_MicroSeconds
+Ert_MicroSeconds_(uint64_t us);
 
-struct MicroSeconds
+struct Ert_MicroSeconds
 {
-    TIMESCALE_CTOR_(MicroSeconds, uint64_t, us)
+    ERT_TIMESCALE_CTOR_(Ert_MicroSeconds, uint64_t, us)
 
     union
     {
         uint64_t us;
         uint64_t Value_;
-        char   (*Scale_)[TimeScale_us];
+        char   (*Scale_)[Ert_TimeScale_us];
     };
 };
 
 /* -------------------------------------------------------------------------- */
-#define PRIu_MilliSeconds PRIu64
-#define PRIs_MilliSeconds PRIu64 ".%03" PRIu64 "s"
-#define FMTs_MilliSeconds(MilliSeconds) \
+#define PRIu_Ert_MilliSeconds PRIu64
+#define PRIs_Ert_MilliSeconds PRIu64 ".%03" PRIu64 "s"
+#define FMTs_Ert_MilliSeconds(MilliSeconds) \
     ((MilliSeconds).ms / 1000), ((MilliSeconds).ms % 1000)
 
-struct MilliSeconds
-MilliSeconds_(uint64_t ms);
+struct Ert_MilliSeconds
+Ert_MilliSeconds_(uint64_t ms);
 
-struct MilliSeconds
+struct Ert_MilliSeconds
 {
-    TIMESCALE_CTOR_(MilliSeconds, uint64_t, ms)
+    ERT_TIMESCALE_CTOR_(Ert_MilliSeconds, uint64_t, ms)
 
     union
     {
         uint64_t ms;
         uint64_t Value_;
-        char   (*Scale_)[TimeScale_ms];
+        char   (*Scale_)[Ert_TimeScale_ms];
     };
 };
 
 /* -------------------------------------------------------------------------- */
-#define PRIu_Seconds PRIu64
-#define PRIs_Seconds PRIu64 "s"
-#define FMTs_Seconds(Seconds) ((Seconds).s)
+#define PRIu_Ert_Seconds PRIu64
+#define PRIs_Ert_Seconds PRIu64 "s"
+#define FMTs_Ert_Seconds(Seconds) ((Seconds).s)
 
-struct Seconds
-Seconds_(uint64_t s);
+struct Ert_Seconds
+Ert_Seconds_(uint64_t s);
 
-struct Seconds
+struct Ert_Seconds
 {
-    TIMESCALE_CTOR_(Seconds, uint64_t, s)
+    ERT_TIMESCALE_CTOR_(Ert_Seconds, uint64_t, s)
 
     union
     {
         uint64_t s;
         uint64_t Value_;
-        char   (*Scale_)[TimeScale_s];
+        char   (*Scale_)[Ert_TimeScale_s];
     };
 };
 
 /* -------------------------------------------------------------------------- */
-#define PRIs_Duration PRIs_NanoSeconds
-#define FMTs_Duration(Duration) FMTs_NanoSeconds((Duration).duration)
+#define PRIs_Ert_Duration PRIs_Ert_NanoSeconds
+#define FMTs_Ert_Duration(Duration) FMTs_Ert_NanoSeconds((Duration).duration)
 
-struct Duration
-Duration_(struct NanoSeconds duration);
+struct Ert_Duration
+Ert_Duration_(struct Ert_NanoSeconds duration);
 
-struct Duration
+struct Ert_Duration
 {
 #ifdef __cplusplus
-    explicit Duration()
-    : duration(NanoSeconds(0))
+    explicit Ert_Duration()
+    : duration(Ert_NanoSeconds(0))
     { }
 
-    explicit Duration(struct NanoSeconds duration_)
+    explicit Ert_Duration(struct Ert_NanoSeconds duration_)
     : duration(duration_)
     { }
 #endif
 
-    struct NanoSeconds duration;
+    struct Ert_NanoSeconds duration;
 };
 
-extern const struct Duration ZeroDuration;
+extern const struct Ert_Duration ZeroDuration;
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-static inline struct NanoSeconds
-NanoSeconds(uint64_t ns)
+static inline struct Ert_NanoSeconds
+Ert_NanoSeconds(uint64_t ns)
 {
-    return NanoSeconds_(ns);
+    return Ert_NanoSeconds_(ns);
 }
 
-static inline struct MicroSeconds
-MicroSeconds(uint64_t ns)
+static inline struct Ert_MicroSeconds
+Ert_MicroSeconds(uint64_t ns)
 {
-    return MicroSeconds_(ns);
+    return Ert_MicroSeconds_(ns);
 }
 
-static inline struct MilliSeconds
-MilliSeconds(uint64_t ms)
+static inline struct Ert_MilliSeconds
+Ert_MilliSeconds(uint64_t ms)
 {
-    return MilliSeconds_(ms);
+    return Ert_MilliSeconds_(ms);
 }
 
-static inline struct Seconds
-Seconds(uint64_t s)
+static inline struct Ert_Seconds
+Ert_Seconds(uint64_t s)
 {
-    return Seconds_(s);
+    return Ert_Seconds_(s);
 }
 
-static inline struct Duration
-Duration(struct NanoSeconds aDuration)
+static inline struct Ert_Duration
+Ert_Duration(struct Ert_NanoSeconds aDuration)
 {
-    return Duration_(aDuration);
+    return Ert_Duration_(aDuration);
 }
 #endif
 
 /* -------------------------------------------------------------------------- */
-#define NSECS(Time)                                             \
-    ( (struct NanoSeconds)                                      \
+#define ERT_NSECS(Time)                                         \
+    ( (struct Ert_NanoSeconds)                                  \
       { {                                                       \
-          Value_ : changeTimeScale_((Time).Value_,              \
+          Value_ : ert_changeTimeScale_((Time).Value_,          \
                                     sizeof(*(Time).Scale_),     \
-                                    TimeScale_ns)               \
+                                    Ert_TimeScale_ns)           \
       } } )
 
-#define USECS(Time)                                             \
-    ( (struct MicroSeconds)                                     \
+#define ERT_USECS(Time)                                         \
+    ( (struct Ert_MicroSeconds)                                 \
       { {                                                       \
-          Value_ : changeTimeScale_((Time).Value_,              \
+          Value_ : ert_changeTimeScale_((Time).Value_,          \
                                     sizeof(*(Time).Scale_),     \
-                                    TimeScale_us)               \
+                                    Ert_TimeScale_us)           \
       } } )
 
-#define MSECS(Time)                                             \
-    ( (struct MilliSeconds)                                     \
+#define ERT_MSECS(Time)                                         \
+    ( (struct Ert_MilliSeconds)                                 \
       { {                                                       \
-          Value_ : changeTimeScale_((Time).Value_,              \
+          Value_ : ert_changeTimeScale_((Time).Value_,          \
                                     sizeof(*(Time).Scale_),     \
-                                    TimeScale_ms)               \
+                                    Ert_TimeScale_ms)           \
       } } )
 
-#define SECS(Time)                                              \
-    ( (struct Seconds)                                          \
+#define ERT_SECS(Time)                                          \
+    ( (struct Ert_Seconds)                                      \
       { {                                                       \
-          Value_ : changeTimeScale_((Time).Value_,              \
+          Value_ : ert_changeTimeScale_((Time).Value_,          \
                                     sizeof(*(Time).Scale_),     \
-                                    TimeScale_s)                \
+                                    Ert_TimeScale_s)            \
       } } )
 
 uint64_t
-changeTimeScale_(uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale);
+ert_changeTimeScale_(uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale);
 
 /* -------------------------------------------------------------------------- */
-struct NanoSeconds
-timeValToNanoSeconds(const struct timeval *aTimeVal);
+struct Ert_NanoSeconds
+ert_timeValToNanoSeconds(const struct timeval *aTimeVal);
 
-struct NanoSeconds
-timeSpecToNanoSeconds(const struct timespec *aTimeSpec);
+struct Ert_NanoSeconds
+ert_timeSpecToNanoSeconds(const struct timespec *aTimeSpec);
 
 struct timeval
-timeValFromNanoSeconds(struct NanoSeconds aNanoSeconds);
+ert_timeValFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds);
 
 struct timespec
-timeSpecFromNanoSeconds(struct NanoSeconds aNanoSeconds);
+ert_timeSpecFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds);
 
 /* -------------------------------------------------------------------------- */
 struct itimerval
-shortenIntervalTime(const struct itimerval *aTimer,
-                    struct Duration         aElapsed);
+ert_shortenIntervalTime(const struct itimerval *aTimer,
+                        struct Ert_Duration         aElapsed);
 
 /* -------------------------------------------------------------------------- */
 struct timespec
-earliestTime(const struct timespec *aLhs, const struct timespec *aRhs);
+ert_earliestTime(const struct timespec *aLhs, const struct timespec *aRhs);
 
 /* -------------------------------------------------------------------------- */
 

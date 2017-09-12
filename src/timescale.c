@@ -33,43 +33,43 @@
 #include <sys/time.h>
 
 /* -------------------------------------------------------------------------- */
-const struct Duration ZeroDuration =
+const struct Ert_Duration ZeroDuration =
     { .duration = { { .ns = 0 } } };
 
 /* -------------------------------------------------------------------------- */
-struct NanoSeconds
-NanoSeconds_(uint64_t ns)
+struct Ert_NanoSeconds
+Ert_NanoSeconds_(uint64_t ns)
 {
-    return (struct NanoSeconds) { { .ns = ns } };
+    return (struct Ert_NanoSeconds) { { .ns = ns } };
 }
 
-struct MicroSeconds
-MicroSeconds_(uint64_t us)
+struct Ert_MicroSeconds
+Ert_MicroSeconds_(uint64_t us)
 {
-    return (struct MicroSeconds) { { .us = us } };
+    return (struct Ert_MicroSeconds) { { .us = us } };
 }
 
-struct MilliSeconds
-MilliSeconds_(uint64_t ms)
+struct Ert_MilliSeconds
+Ert_MilliSeconds_(uint64_t ms)
 {
-    return (struct MilliSeconds) { { .ms = ms } };
+    return (struct Ert_MilliSeconds) { { .ms = ms } };
 }
 
-struct Seconds
-Seconds_(uint64_t s)
+struct Ert_Seconds
+Ert_Seconds_(uint64_t s)
 {
-    return (struct Seconds) { { .s = s } };
+    return (struct Ert_Seconds) { { .s = s } };
 }
 
-struct Duration
-Duration_(struct NanoSeconds duration)
+struct Ert_Duration
+Ert_Duration_(struct Ert_NanoSeconds duration)
 {
-    return (struct Duration) { .duration = duration };
+    return (struct Ert_Duration) { .duration = duration };
 }
 
 /* -------------------------------------------------------------------------- */
 uint64_t
-changeTimeScale_(uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale)
+ert_changeTimeScale_(uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale)
 {
     if (aSrcScale < aDstScale)
     {
@@ -115,7 +115,7 @@ changeTimeScale_(uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale)
 
 /* -------------------------------------------------------------------------- */
 struct timespec
-earliestTime(const struct timespec *aLhs, const struct timespec *aRhs)
+ert_earliestTime(const struct timespec *aLhs, const struct timespec *aRhs)
 {
     if (aLhs->tv_sec < aRhs->tv_sec)
         return *aLhs;
@@ -130,17 +130,17 @@ earliestTime(const struct timespec *aLhs, const struct timespec *aRhs)
 }
 
 /* -------------------------------------------------------------------------- */
-struct NanoSeconds
-timeValToNanoSeconds(const struct timeval *aTimeVal)
+struct Ert_NanoSeconds
+ert_timeValToNanoSeconds(const struct timeval *aTimeVal)
 {
     uint64_t ns = aTimeVal->tv_sec;
 
-    return NanoSeconds((ns * 1000 * 1000 + aTimeVal->tv_usec) * 1000);
+    return Ert_NanoSeconds((ns * 1000 * 1000 + aTimeVal->tv_usec) * 1000);
 }
 
 /* -------------------------------------------------------------------------- */
 struct timeval
-timeValFromNanoSeconds(struct NanoSeconds aNanoSeconds)
+ert_timeValFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds)
 {
     return (struct timeval) {
         .tv_sec  = aNanoSeconds.ns / (1000 * 1000 * 1000),
@@ -149,17 +149,17 @@ timeValFromNanoSeconds(struct NanoSeconds aNanoSeconds)
 }
 
 /* -------------------------------------------------------------------------- */
-struct NanoSeconds
-timeSpecToNanoSeconds(const struct timespec *aTimeSpec)
+struct Ert_NanoSeconds
+ert_timeSpecToNanoSeconds(const struct timespec *aTimeSpec)
 {
     uint64_t ns = aTimeSpec->tv_sec;
 
-    return NanoSeconds((ns * 1000 * 1000 * 1000) + aTimeSpec->tv_nsec);
+    return Ert_NanoSeconds((ns * 1000 * 1000 * 1000) + aTimeSpec->tv_nsec);
 }
 
 /* -------------------------------------------------------------------------- */
 struct timespec
-timeSpecFromNanoSeconds(struct NanoSeconds aNanoSeconds)
+ert_timeSpecFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds)
 {
     return (struct timespec) {
         .tv_sec  = aNanoSeconds.ns / (1000 * 1000 * 1000),
@@ -169,21 +169,21 @@ timeSpecFromNanoSeconds(struct NanoSeconds aNanoSeconds)
 
 /* -------------------------------------------------------------------------- */
 struct itimerval
-shortenIntervalTime(const struct itimerval *aTimer,
-                    struct Duration         aElapsed)
+ert_shortenIntervalTime(const struct itimerval *aTimer,
+                        struct Ert_Duration         aElapsed)
 {
     struct itimerval shortenedTimer = *aTimer;
 
-    struct NanoSeconds alarmTime =
-        timeValToNanoSeconds(&shortenedTimer.it_value);
+    struct Ert_NanoSeconds alarmTime =
+        ert_timeValToNanoSeconds(&shortenedTimer.it_value);
 
-    struct NanoSeconds alarmPeriod =
-        timeValToNanoSeconds(&shortenedTimer.it_interval);
+    struct Ert_NanoSeconds alarmPeriod =
+        ert_timeValToNanoSeconds(&shortenedTimer.it_interval);
 
     if (alarmTime.ns > aElapsed.duration.ns)
     {
-        shortenedTimer.it_value = timeValFromNanoSeconds(
-            NanoSeconds(alarmTime.ns - aElapsed.duration.ns));
+        shortenedTimer.it_value = ert_timeValFromNanoSeconds(
+            Ert_NanoSeconds(alarmTime.ns - aElapsed.duration.ns));
     }
     else if (alarmTime.ns)
     {
@@ -191,8 +191,8 @@ shortenIntervalTime(const struct itimerval *aTimer,
             shortenedTimer.it_value = shortenedTimer.it_interval;
         else
         {
-            shortenedTimer.it_value = timeValFromNanoSeconds(
-                NanoSeconds(
+            shortenedTimer.it_value = ert_timeValFromNanoSeconds(
+                Ert_NanoSeconds(
                     alarmPeriod.ns - (
                         aElapsed.duration.ns - alarmTime.ns) % alarmPeriod.ns));
         }
