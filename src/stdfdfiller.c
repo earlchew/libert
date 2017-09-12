@@ -34,7 +34,7 @@
 
 /* -------------------------------------------------------------------------- */
 int
-createStdFdFiller(struct StdFdFiller *self)
+ert_createStdFdFiller(struct Ert_StdFdFiller *self)
 {
     int rc = -1;
 
@@ -86,15 +86,15 @@ Finally:
         fd[1] = ert_closeFd(fd[1]);
 
         if (rc)
-            self = closeStdFdFiller(self);
+            self = ert_closeStdFdFiller(self);
     });
 
     return rc;
 }
 
 /* -------------------------------------------------------------------------- */
-struct StdFdFiller *
-closeStdFdFiller(struct StdFdFiller *self)
+struct Ert_StdFdFiller *
+ert_closeStdFdFiller(struct Ert_StdFdFiller *self)
 {
     if (self)
     {

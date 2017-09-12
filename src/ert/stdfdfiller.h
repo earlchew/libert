@@ -34,7 +34,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct StdFdFiller
+struct Ert_StdFdFiller
 {
     struct Ert_File  mFile_[3];
     struct Ert_File *mFile[3];
@@ -42,10 +42,10 @@ struct StdFdFiller
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-createStdFdFiller(struct StdFdFiller *self);
+ert_createStdFdFiller(struct Ert_StdFdFiller *self);
 
-ERT_CHECKED struct StdFdFiller *
-closeStdFdFiller(struct StdFdFiller *self);
+ERT_CHECKED struct Ert_StdFdFiller *
+ert_closeStdFdFiller(struct Ert_StdFdFiller *self);
 
 /* -------------------------------------------------------------------------- */
 
