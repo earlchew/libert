@@ -36,50 +36,50 @@
 ERT_BEGIN_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
-struct Uid
-Uid_(uid_t aUid);
+struct Ert_Uid
+Ert_Uid_(uid_t aUid);
 
-#define PRId_Uid "jd"
-#define FMTd_Uid(Uid) ((intmax_t) (Uid).mUid)
-struct Uid
+#define PRId_Ert_Uid "jd"
+#define FMTd_Ert_Uid(Uid) ((intmax_t) (Uid).mUid)
+struct Ert_Uid
 {
 #ifdef __cplusplus
-    explicit Uid(uid_t aUid)
-    { *this = Uid_(aUid); }
+    explicit Ert_Uid(uid_t aUid)
+    { *this = Ert_Uid_(aUid); }
 #endif
 
     uid_t mUid;
 };
 
 #ifndef __cplusplus
-static inline struct Uid
-Uid(uid_t aUid)
+static inline struct Ert_Uid
+Ert_Uid(uid_t aUid)
 {
-    return Uid_(aUid);
+    return Ert_Uid_(aUid);
 }
 #endif
 
 /* -------------------------------------------------------------------------- */
-struct Gid
-Gid_(gid_t aGid);
+struct Ert_Gid
+Ert_Gid_(gid_t aGid);
 
-#define PRId_Gid "jd"
-#define FMTd_Gid(Gid) ((intmax_t) (Gid).mGid)
-struct Gid
+#define PRId_Ert_Gid "jd"
+#define FMTd_Ert_Gid(Gid) ((intmax_t) (Gid).mGid)
+struct Ert_Gid
 {
 #ifdef __cplusplus
-    explicit Gid(gid_t aGid)
-    { *this = Gid_(aGid); }
+    explicit Ert_Gid(gid_t aGid)
+    { *this = Ert_Gid_(aGid); }
 #endif
 
     gid_t mGid;
 };
 
 #ifndef __cplusplus
-static inline struct Gid
-Gid(gid_t aGid)
+static inline struct Ert_Gid
+Ert_Gid(gid_t aGid)
 {
-    return Gid_(aGid);
+    return Ert_Gid_(aGid);
 }
 #endif
 

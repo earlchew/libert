@@ -30,17 +30,17 @@
 #include "ert/uid.h"
 
 /* -------------------------------------------------------------------------- */
-struct Uid
-Uid_(uid_t aUid)
+struct Ert_Uid
+Ert_Uid_(uid_t aUid)
 {
-    return (struct Uid) { .mUid = aUid };
+    return (struct Ert_Uid) { .mUid = aUid };
 }
 
 /* -------------------------------------------------------------------------- */
-struct Gid
-Gid_(gid_t aGid)
+struct Ert_Gid
+Ert_Gid_(gid_t aGid)
 {
-    return (struct Gid) { .mGid = aGid };
+    return (struct Ert_Gid) { .mGid = aGid };
 }
 
 /* -------------------------------------------------------------------------- */
