@@ -967,12 +967,12 @@ caughtSignal_(int aSigNum, siginfo_t *aSigInfo, void *aUContext_)
         struct Ert_ProcessSignalName sigName;
 
         struct Ert_Pid pid = Ert_Pid(aSigInfo->si_pid);
-        struct Uid uid = Uid(aSigInfo->si_uid);
+        struct Ert_Uid uid = Ert_Uid(aSigInfo->si_uid);
 
-        debug(1, "observed %s pid %" PRId_Ert_Pid " uid %" PRId_Uid,
+        debug(1, "observed %s pid %" PRId_Ert_Pid " uid %" PRId_Ert_Uid,
               ert_formatProcessSignalName(&sigName, aSigNum),
               FMTd_Ert_Pid(pid),
-              FMTd_Uid(uid));
+              FMTd_Ert_Uid(uid));
 
         ert_callWatchProcessSignalMethod(
             processWatchedSignalMethod_, aSigNum, pid, uid);
@@ -2437,16 +2437,16 @@ forkProcessDaemonSignalHandler_(
     struct ForkProcessDaemonSigHandler *self,
     int                                 aSigNum,
     struct Ert_Pid                          aPid,
-    struct Uid                          aUid)
+    struct Ert_Uid                          aUid)
 {
     ++self->mHangUp;
 
     struct Ert_ProcessSignalName sigName;
     debug(1,
-          "daemon received %s pid %" PRId_Ert_Pid " uid %" PRId_Uid,
+          "daemon received %s pid %" PRId_Ert_Pid " uid %" PRId_Ert_Uid,
           ert_formatProcessSignalName(&sigName, aSigNum),
           FMTd_Ert_Pid(aPid),
-          FMTd_Uid(aUid));
+          FMTd_Ert_Uid(aUid));
 
     return 0;
 }

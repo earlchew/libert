@@ -192,7 +192,7 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_CONST_WatchProcessSignalMethod
 #define ERT_METHOD_ARG_LIST_WatchProcessSignalMethod  (int aSigNum_,         \
                                                        struct Ert_Pid aPid_, \
-                                                       struct Uid aUid_)
+                                                       struct Ert_Uid aUid_)
 #define ERT_METHOD_CALL_LIST_WatchProcessSignalMethod (aSigNum_, aPid_, aUid_)
 
 #define ERT_METHOD_TYPE_PREFIX     Ert_

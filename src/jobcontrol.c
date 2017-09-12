@@ -54,7 +54,7 @@ Finally:
 static ERT_CHECKED int
 ert_raiseJobControlSignal_(
     struct Ert_JobControl *self,
-    int aSigNum, struct Ert_Pid aPid, struct Uid aUid)
+    int aSigNum, struct Ert_Pid aPid, struct Ert_Uid aUid)
 {
     int rc = -1;
 
