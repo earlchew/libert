@@ -65,12 +65,13 @@ timedLock_(void *aLock,
 
         const unsigned timeout_s = 600;
 
-        struct WallClockTime tm = wallclockTime();
+        struct Ert_WallClockTime tm = ert_wallclockTime();
 
         struct timespec deadline =
-            timeSpecFromNanoSeconds(
-                NanoSeconds(
-                    tm.wallclock.ns + NSECS(Seconds(timeout_s * 60)).ns));
+            ert_timeSpecFromNanoSeconds(
+                Ert_NanoSeconds(
+                    tm.wallclock.ns
+                        + ERT_NSECS(Ert_Seconds(timeout_s * 60)).ns));
 
         ABORT_IF(
             (errno = aTimedLock(aLock, &deadline),

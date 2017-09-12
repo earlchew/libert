@@ -74,7 +74,7 @@ ert_ownSocketValid(const struct Ert_Socket *self)
 /* -------------------------------------------------------------------------- */
 ssize_t
 ert_writeSocket(struct Ert_Socket *self,
-            const char *aBuf, size_t aLen, const struct Duration *aTimeout)
+            const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_writeFile(self->mFile, aBuf, aLen, aTimeout);
 }
@@ -82,7 +82,7 @@ ert_writeSocket(struct Ert_Socket *self,
 /* -------------------------------------------------------------------------- */
 ssize_t
 ert_readSocket(struct Ert_Socket *self,
-           char *aBuf, size_t aLen, const struct Duration *aTimeout)
+           char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_readFile(self->mFile, aBuf, aLen, aTimeout);
 }
@@ -179,7 +179,7 @@ ert_listenSocket(struct Ert_Socket *self, unsigned aQueueLen)
 /* -------------------------------------------------------------------------- */
 int
 ert_waitSocketWriteReady(const struct Ert_Socket   *self,
-                     const struct Duration *aTimeout)
+                     const struct Ert_Duration *aTimeout)
 {
     return ert_waitFileWriteReady(self->mFile, aTimeout);
 }
@@ -187,7 +187,7 @@ ert_waitSocketWriteReady(const struct Ert_Socket   *self,
 /* -------------------------------------------------------------------------- */
 int
 ert_waitSocketReadReady(const struct Ert_Socket   *self,
-                    const struct Duration *aTimeout)
+                    const struct Ert_Duration *aTimeout)
 {
     return ert_waitFileReadReady(self->mFile, aTimeout);
 }

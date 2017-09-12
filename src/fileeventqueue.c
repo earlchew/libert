@@ -227,7 +227,7 @@ ert_purgeFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
 /* -------------------------------------------------------------------------- */
 int
 ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
-                           const struct Duration *aTimeout)
+                           const struct Ert_Duration *aTimeout)
 {
     int rc = -1;
 
@@ -237,11 +237,11 @@ ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
 
         if (aTimeout)
         {
-            struct MilliSeconds timeoutDuration = MSECS(aTimeout->duration);
+            struct Ert_MilliSeconds ert_timeoutDuration = ERT_MSECS(aTimeout->duration);
 
-            timeout_ms = timeoutDuration.ms;
+            timeout_ms = ert_timeoutDuration.ms;
 
-            if (0 > timeout_ms || timeoutDuration.ms != timeout_ms)
+            if (0 > timeout_ms || ert_timeoutDuration.ms != timeout_ms)
                 timeout_ms = INT_MAX;
         }
 

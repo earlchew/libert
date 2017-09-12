@@ -128,7 +128,7 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
 {
     int rc = -1;
 
-    struct EventClockTime polltm;
+    struct Ert_EventClockTime polltm;
 
     while ( ! ert_callPollFdCompletionMethod(self->mCompletionQuery))
     {
@@ -137,9 +137,9 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
          * order of operations is important to deal robustly with
          * slow clocks and stoppages. */
 
-        polltm = eventclockTime();
+        polltm = ert_eventclockTime();
 
-        struct Duration timeout   = ZeroDuration;
+        struct Ert_Duration timeout   = ZeroDuration;
         size_t          chosen    = self->mTimerActions.mSize;
         size_t          numActive = 0;
 
@@ -149,9 +149,9 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
             {
                 ++numActive;
 
-                struct Duration remaining;
+                struct Ert_Duration remaining;
 
-                if (deadlineTimeExpired(
+                if (ert_deadlineTimeExpired(
                         &self->mTimerActions.mActions[ix].mSince,
                         self->mTimerActions.mActions[ix].mPeriod,
                         &remaining,
@@ -180,11 +180,11 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
             timeout_ms = -1;
         else
         {
-            struct MilliSeconds timeoutDuration = MSECS(timeout.duration);
+            struct Ert_MilliSeconds ert_timeoutDuration = ERT_MSECS(timeout.duration);
 
-            timeout_ms = timeoutDuration.ms;
+            timeout_ms = ert_timeoutDuration.ms;
 
-            if (0 > timeout_ms || timeoutDuration.ms != timeout_ms)
+            if (0 > timeout_ms || ert_timeoutDuration.ms != timeout_ms)
                 timeout_ms = INT_MAX;
         }
 
@@ -202,7 +202,7 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
          * file descriptors again. Deadlines will be compared against
          * this latched time */
 
-        polltm = eventclockTime();
+        polltm = ert_eventclockTime();
 
         int events;
         ERT_TEST_RACE
@@ -286,7 +286,7 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
 
             if (timerAction->mPeriod.duration.ns)
             {
-                if (deadlineTimeExpired(
+                if (ert_deadlineTimeExpired(
                         &timerAction->mSince, timerAction->mPeriod, 0, &polltm))
                 {
                     /* Compute the lap time, and as a side-effect set
@@ -295,17 +295,19 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
                      * prepare for the next timer cycle, unless it needs
                      * to cancel or otherwise reschedule the timer. */
 
-                    (void) lapTimeSince(
+                    (void) ert_lapTimeSince(
                         &timerAction->mSince, timerAction->mPeriod, &polltm);
 
                     debug(
-                        1, "expire %s timer with period %" PRIs_MilliSeconds,
+                        1,
+                        "expire %s timer with period %" PRIs_Ert_MilliSeconds,
                         self->mTimerActions.mNames[ix],
-                        FMTs_MilliSeconds(
-                            MSECS(timerAction->mPeriod.duration)));
+                        FMTs_Ert_MilliSeconds(
+                            ERT_MSECS(timerAction->mPeriod.duration)));
 
                     ERROR_IF(
-                        ert_callPollFdCallbackMethod(timerAction->mAction, &polltm),
+                        ert_callPollFdCallbackMethod(
+                            timerAction->mAction, &polltm),
                         {
                             warn(errno,
                                  "Error dispatching timer %s",

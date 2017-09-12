@@ -56,126 +56,126 @@ operator==(const struct itimerval &aLhs, const struct itimerval &aRhs)
 TEST(TimeKeepingTest, NanoSecondConversion)
 {
     {
-        struct NanoSeconds tm = NanoSeconds(1);
+        struct Ert_NanoSeconds tm = Ert_NanoSeconds(1);
 
-        EXPECT_FALSE(MSECS(tm).ms - 1);
-        EXPECT_FALSE(SECS(tm).s - 1);
+        EXPECT_FALSE(ERT_MSECS(tm).ms - 1);
+        EXPECT_FALSE(ERT_SECS(tm).s - 1);
     }
 
     {
-        struct NanoSeconds tm = NanoSeconds(0 + 1000 * 1000);
+        struct Ert_NanoSeconds tm = Ert_NanoSeconds(0 + 1000 * 1000);
 
-        EXPECT_FALSE(MSECS(tm).ms - 1);
-        EXPECT_FALSE(SECS(tm).s - 1);
+        EXPECT_FALSE(ERT_MSECS(tm).ms - 1);
+        EXPECT_FALSE(ERT_SECS(tm).s - 1);
     }
 
     {
-        struct NanoSeconds tm = NanoSeconds(1 + 1000 * 1000);
+        struct Ert_NanoSeconds tm = Ert_NanoSeconds(1 + 1000 * 1000);
 
-        EXPECT_FALSE(MSECS(tm).ms - 2);
-        EXPECT_FALSE(SECS(tm).s - 1);
+        EXPECT_FALSE(ERT_MSECS(tm).ms - 2);
+        EXPECT_FALSE(ERT_SECS(tm).s - 1);
     }
 
     {
-        struct NanoSeconds tm = NanoSeconds(1000 * 1000 + 1000 * 1000 * 1000);
+        struct Ert_NanoSeconds tm = Ert_NanoSeconds(1000 * 1000 + 1000 * 1000 * 1000);
 
-        EXPECT_FALSE(MSECS(tm).ms - 1001);
-        EXPECT_FALSE(SECS(tm).s - 2);
+        EXPECT_FALSE(ERT_MSECS(tm).ms - 1001);
+        EXPECT_FALSE(ERT_SECS(tm).s - 2);
     }
 }
 
 TEST(TimeKeepingTest, MicroSecondConversion)
 {
     {
-        struct MicroSeconds tm = MicroSeconds(1);
+        struct Ert_MicroSeconds tm = Ert_MicroSeconds(1);
 
-        EXPECT_EQ(tm.us, USECS(NSECS(tm)).us);
+        EXPECT_EQ(tm.us, ERT_USECS(ERT_NSECS(tm)).us);
 
-        EXPECT_FALSE(SECS(tm).s - 1);
+        EXPECT_FALSE(ERT_SECS(tm).s - 1);
     }
 
     {
-        struct MicroSeconds tm = MicroSeconds(999999);
+        struct Ert_MicroSeconds tm = Ert_MicroSeconds(999999);
 
-        EXPECT_EQ(tm.us, USECS(NSECS(tm)).us);
+        EXPECT_EQ(tm.us, ERT_USECS(ERT_NSECS(tm)).us);
 
-        EXPECT_FALSE(SECS(tm).s - 1);
+        EXPECT_FALSE(ERT_SECS(tm).s - 1);
     }
 }
 
 TEST(TimeKeepingTest, MilliSecondConversion)
 {
     {
-        struct MilliSeconds tm = MilliSeconds(1);
+        struct Ert_MilliSeconds tm = Ert_MilliSeconds(1);
 
-        EXPECT_EQ(tm.ms, MSECS(NSECS(tm)).ms);
+        EXPECT_EQ(tm.ms, ERT_MSECS(ERT_NSECS(tm)).ms);
 
-        EXPECT_FALSE(SECS(tm).s - 1);
+        EXPECT_FALSE(ERT_SECS(tm).s - 1);
     }
 
     {
-        struct MilliSeconds tm = MilliSeconds(999);
+        struct Ert_MilliSeconds tm = Ert_MilliSeconds(999);
 
-        EXPECT_EQ(tm.ms, MSECS(NSECS(tm)).ms);
+        EXPECT_EQ(tm.ms, ERT_MSECS(ERT_NSECS(tm)).ms);
 
-        EXPECT_FALSE(SECS(tm).s - 1);
+        EXPECT_FALSE(ERT_SECS(tm).s - 1);
     }
 }
 
 TEST(TimeKeepingTest, SecondConversion)
 {
     {
-        struct Seconds tm = Seconds(0);
+        struct Ert_Seconds tm = Ert_Seconds(0);
 
-        EXPECT_FALSE(MSECS(tm).ms);
-        EXPECT_FALSE(NSECS(tm).ns);
+        EXPECT_FALSE(ERT_MSECS(tm).ms);
+        EXPECT_FALSE(ERT_NSECS(tm).ns);
     }
 
     {
-        struct Seconds tm = Seconds(1);
+        struct Ert_Seconds tm = Ert_Seconds(1);
 
-        EXPECT_FALSE(MSECS(tm).ms - 1000);
-        EXPECT_FALSE(NSECS(tm).ns - 1000 * 1000 * 1000);
+        EXPECT_FALSE(ERT_MSECS(tm).ms - 1000);
+        EXPECT_FALSE(ERT_NSECS(tm).ns - 1000 * 1000 * 1000);
     }
 }
 
 TEST(TimeKeepingTest, DeadlineRunsOnce)
 {
-    struct EventClockTime since = EVENTCLOCKTIME_INIT;
+    struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
 
-    EXPECT_FALSE(deadlineTimeExpired(&since, ZeroDuration, 0, 0));
+    EXPECT_FALSE(ert_deadlineTimeExpired(&since, ZeroDuration, 0, 0));
 }
 
 TEST(TimeKeepingTest, DeadlineExpires)
 {
-    auto period = Duration(NSECS(MilliSeconds(1000)));
+    auto period = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(1000)));
 
-    struct EventClockTime since     = EVENTCLOCKTIME_INIT;
-    struct Duration       remaining = ZeroDuration;
+    struct Ert_EventClockTime since     = ERT_EVENTCLOCKTIME_INIT;
+    struct Ert_Duration       remaining = ZeroDuration;
 
-    auto startTimeOuter = monotonicTime();
-    EXPECT_FALSE(deadlineTimeExpired(&since, period, &remaining, 0));
+    auto startTimeOuter = ert_monotonicTime();
+    EXPECT_FALSE(ert_deadlineTimeExpired(&since, period, &remaining, 0));
     EXPECT_EQ(period.duration.ns, remaining.duration.ns);
-    auto startTimeInner = monotonicTime();
+    auto startTimeInner = ert_monotonicTime();
 
     bool firstiteration = true;
-    while ( ! deadlineTimeExpired(&since, period, &remaining, 0))
+    while ( ! ert_deadlineTimeExpired(&since, period, &remaining, 0))
     {
         EXPECT_TRUE(firstiteration || remaining.duration.ns);
         firstiteration = false;
     }
     EXPECT_TRUE( ! remaining.duration.ns);
 
-    auto stopTime = monotonicTime();
+    auto stopTime = ert_monotonicTime();
 
-    auto elapsedInner = MSECS(
-        NanoSeconds(stopTime.monotonic.ns -
+    auto elapsedInner = ERT_MSECS(
+        Ert_NanoSeconds(stopTime.monotonic.ns -
                     startTimeInner.monotonic.ns)).ms / 100;
-    auto elapsedOuter = MSECS(
-        NanoSeconds(stopTime.monotonic.ns -
+    auto elapsedOuter = ERT_MSECS(
+        Ert_NanoSeconds(stopTime.monotonic.ns -
                     startTimeOuter.monotonic.ns)).ms / 100;
 
-    auto interval = MSECS(period.duration).ms / 100;
+    auto interval = ERT_MSECS(period.duration).ms / 100;
 
     EXPECT_LE(elapsedInner, interval);
     EXPECT_GE(elapsedOuter, interval);
@@ -183,42 +183,44 @@ TEST(TimeKeepingTest, DeadlineExpires)
 
 TEST(TimeKeepingTest, MonotonicDeadlineRunsOnce)
 {
-    struct MonotonicDeadline deadline = MONOTONICDEADLINE_INIT;
+    struct Ert_MonotonicDeadline deadline = ERT_MONOTONICDEADLINE_INIT;
 
-    EXPECT_FALSE(monotonicDeadlineTimeExpired(&deadline, ZeroDuration, 0, 0));
+    EXPECT_FALSE(
+        ert_monotonicDeadlineTimeExpired(&deadline, ZeroDuration, 0, 0));
 }
 
 TEST(TimeKeepingTest, MonotonicDeadlineExpires)
 {
-    auto period = Duration(NSECS(MilliSeconds(1000)));
+    auto period = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(1000)));
 
-    struct MonotonicDeadline deadline  = MONOTONICDEADLINE_INIT;
-    struct Duration          remaining = ZeroDuration;
+    struct Ert_MonotonicDeadline deadline  = ERT_MONOTONICDEADLINE_INIT;
+    struct Ert_Duration          remaining = ZeroDuration;
 
-    auto startTimeOuter = monotonicTime();
+    auto startTimeOuter = ert_monotonicTime();
     EXPECT_FALSE(
-        monotonicDeadlineTimeExpired(&deadline, period, &remaining, 0));
+        ert_monotonicDeadlineTimeExpired(&deadline, period, &remaining, 0));
     EXPECT_EQ(period.duration.ns, remaining.duration.ns);
-    auto startTimeInner = monotonicTime();
+    auto startTimeInner = ert_monotonicTime();
 
     bool firstiteration = true;
-    while ( ! monotonicDeadlineTimeExpired(&deadline, period, &remaining, 0))
+    while ( ! ert_monotonicDeadlineTimeExpired(
+                &deadline, period, &remaining, 0))
     {
         EXPECT_TRUE(firstiteration || remaining.duration.ns);
         firstiteration = false;
     }
     EXPECT_TRUE( ! remaining.duration.ns);
 
-    auto stopTime = monotonicTime();
+    auto stopTime = ert_monotonicTime();
 
-    auto elapsedInner = MSECS(
-        NanoSeconds(stopTime.monotonic.ns -
+    auto elapsedInner = ERT_MSECS(
+        Ert_NanoSeconds(stopTime.monotonic.ns -
                     startTimeInner.monotonic.ns)).ms / 100;
-    auto elapsedOuter = MSECS(
-        NanoSeconds(stopTime.monotonic.ns -
+    auto elapsedOuter = ERT_MSECS(
+        Ert_NanoSeconds(stopTime.monotonic.ns -
                     startTimeOuter.monotonic.ns)).ms / 100;
 
-    auto interval = MSECS(period.duration).ms / 100;
+    auto interval = ERT_MSECS(period.duration).ms / 100;
 
     EXPECT_LE(elapsedInner, interval);
     EXPECT_GE(elapsedOuter, interval);
@@ -226,56 +228,56 @@ TEST(TimeKeepingTest, MonotonicDeadlineExpires)
 
 TEST(TimeKeepingTest, MonotonicSleep)
 {
-    auto period = Duration(NSECS(MilliSeconds(1000)));
+    auto period = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(1000)));
 
-    auto startTime = monotonicTime();
-    monotonicSleep(period);
-    auto stopTime = monotonicTime();
+    auto startTime = ert_monotonicTime();
+    ert_monotonicSleep(period);
+    auto stopTime = ert_monotonicTime();
 
-    auto elapsedTime = MSECS(
-        NanoSeconds(stopTime.monotonic.ns - startTime.monotonic.ns)).ms / 100;
+    auto elapsedTime = ERT_MSECS(
+        Ert_NanoSeconds(stopTime.monotonic.ns - startTime.monotonic.ns)).ms / 100;
 
-    auto interval = MSECS(period.duration).ms / 100;
+    auto interval = ERT_MSECS(period.duration).ms / 100;
 
     EXPECT_EQ(interval, elapsedTime);
 }
 
 TEST(TimeKeepingTest, LapTimeSinceNoPeriod)
 {
-    auto period = Duration(NSECS(MilliSeconds(1000)));
+    auto period = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(1000)));
 
-    struct EventClockTime since = EVENTCLOCKTIME_INIT;
+    struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
 
-    EXPECT_FALSE(lapTimeSince(&since, ZeroDuration, 0).duration.ns);
+    EXPECT_FALSE(ert_lapTimeSince(&since, ZeroDuration, 0).duration.ns);
 
     {
-        monotonicSleep(period);
+        ert_monotonicSleep(period);
 
-        auto lapTime = MSECS(
-            lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+        auto lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
 
-        auto interval = MSECS(period.duration).ms / 100;
+        auto interval = ERT_MSECS(period.duration).ms / 100;
 
         EXPECT_EQ(1 * interval, lapTime);
 
-        lapTime = MSECS(
-            lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+        lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
 
         EXPECT_EQ(1 * interval, lapTime);
     }
 
     {
-        monotonicSleep(period);
+        ert_monotonicSleep(period);
 
-        auto lapTime = MSECS(
-            lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+        auto lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
 
-        auto interval = MSECS(period.duration).ms / 100;
+        auto interval = ERT_MSECS(period.duration).ms / 100;
 
         EXPECT_EQ(2 * interval, lapTime);
 
-        lapTime = MSECS(
-            lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+        lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
 
         EXPECT_EQ(2 * interval, lapTime);
     }
@@ -283,41 +285,41 @@ TEST(TimeKeepingTest, LapTimeSinceNoPeriod)
 
 TEST(TimeKeepingTest, LapTimeSinceWithPeriod)
 {
-    auto sleepPeriod = Duration(NSECS(MilliSeconds(1000)));
-    auto period      = Duration(NSECS(MilliSeconds(5000)));
+    auto sleepPeriod = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(1000)));
+    auto period      = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(5000)));
 
-    struct EventClockTime since = EVENTCLOCKTIME_INIT;
+    struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
 
-    EXPECT_FALSE(lapTimeSince(&since, ZeroDuration, 0).duration.ns);
+    EXPECT_FALSE(ert_lapTimeSince(&since, ZeroDuration, 0).duration.ns);
 
     {
-        monotonicSleep(sleepPeriod);
+        ert_monotonicSleep(sleepPeriod);
 
-        uint64_t lapTime = MSECS(
-            lapTimeSince(&since, period, 0).duration).ms / 100;
+        uint64_t lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, period, 0).duration).ms / 100;
 
-        auto interval = MSECS(sleepPeriod.duration).ms / 100;
+        auto interval = ERT_MSECS(sleepPeriod.duration).ms / 100;
 
         EXPECT_EQ(1 * interval, lapTime);
 
-        lapTime = MSECS(
-            lapTimeSince(&since, period, 0).duration).ms / 100;
+        lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, period, 0).duration).ms / 100;
 
         EXPECT_EQ(1 * interval, lapTime);
     }
 
     {
-        monotonicSleep(sleepPeriod);
+        ert_monotonicSleep(sleepPeriod);
 
-        uint64_t lapTime = MSECS(
-            lapTimeSince(&since, period, 0).duration).ms / 100;
+        uint64_t lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, period, 0).duration).ms / 100;
 
-        auto interval = MSECS(sleepPeriod.duration).ms / 100;
+        auto interval = ERT_MSECS(sleepPeriod.duration).ms / 100;
 
         EXPECT_EQ(2 * interval, lapTime);
 
-        lapTime = MSECS(
-            lapTimeSince(&since, period, 0).duration).ms / 100;
+        lapTime = ERT_MSECS(
+            ert_lapTimeSince(&since, period, 0).duration).ms / 100;
 
         EXPECT_EQ(2 * interval, lapTime);
     }
@@ -337,18 +339,18 @@ TEST(TimeKeepingTest, EarliestTime)
     large.tv_sec  = 2;
     large.tv_nsec = 1000;
 
-    EXPECT_EQ(small,  earliestTime(&small,  &small));
-    EXPECT_EQ(large,  earliestTime(&large,  &large));
-    EXPECT_EQ(medium, earliestTime(&medium, &medium));
+    EXPECT_EQ(small,  ert_earliestTime(&small,  &small));
+    EXPECT_EQ(large,  ert_earliestTime(&large,  &large));
+    EXPECT_EQ(medium, ert_earliestTime(&medium, &medium));
 
-    EXPECT_EQ(small, earliestTime(&small,  &medium));
-    EXPECT_EQ(small, earliestTime(&medium, &small));
+    EXPECT_EQ(small, ert_earliestTime(&small,  &medium));
+    EXPECT_EQ(small, ert_earliestTime(&medium, &small));
 
-    EXPECT_EQ(small, earliestTime(&small, &large));
-    EXPECT_EQ(small, earliestTime(&large, &small));
+    EXPECT_EQ(small, ert_earliestTime(&small, &large));
+    EXPECT_EQ(small, ert_earliestTime(&large, &small));
 
-    EXPECT_EQ(medium, earliestTime(&large,  &medium));
-    EXPECT_EQ(medium, earliestTime(&medium, &large));
+    EXPECT_EQ(medium, ert_earliestTime(&large,  &medium));
+    EXPECT_EQ(medium, ert_earliestTime(&medium, &large));
 }
 
 TEST(TimeKeepingTest, TimeVal)
@@ -359,10 +361,13 @@ TEST(TimeKeepingTest, TimeVal)
 
     uint64_t nsTime = (1000 * 1000 + 2) * 1000;
 
-    EXPECT_EQ(NanoSeconds(nsTime).ns, timeValToNanoSeconds(&timeVal).ns);
+    EXPECT_EQ(Ert_NanoSeconds(nsTime).ns,
+              ert_timeValToNanoSeconds(&timeVal).ns);
 
-    EXPECT_EQ(timeVal, timeValFromNanoSeconds(NanoSeconds(nsTime +    1)));
-    EXPECT_EQ(timeVal, timeValFromNanoSeconds(NanoSeconds(nsTime + 1000 - 1)));
+    EXPECT_EQ(timeVal,
+              ert_timeValFromNanoSeconds(Ert_NanoSeconds(nsTime +    1)));
+    EXPECT_EQ(timeVal,
+              ert_timeValFromNanoSeconds(Ert_NanoSeconds(nsTime + 1000 - 1)));
 }
 
 TEST(TimeKeepingTest, ShortenTimeInterval)
@@ -395,8 +400,9 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = one;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 1))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 1))));
 
     // Elapsed time is less that the outstanding alarm time.
     alarmVal.it_value    = two;
@@ -406,8 +412,9 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = three;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 1))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 1))));
 
     // Elapsed time equals the outstanding alarm time.
     alarmVal.it_value    = two;
@@ -417,8 +424,9 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = three;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 2))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 2))));
 
     // Elapsed time exceeds the outstanding alarm time.
     alarmVal.it_value    = two;
@@ -428,8 +436,9 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = three;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 3))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 3))));
 
     // Elapsed time exceeds the outstanding alarm time and the next interval.
     alarmVal.it_value    = two;
@@ -439,8 +448,9 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = three;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 8))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 8))));
 
     alarmVal.it_value    = two;
     alarmVal.it_interval = three;
@@ -449,8 +459,9 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = three;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 9))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 9))));
 
     alarmVal.it_value    = two;
     alarmVal.it_interval = three;
@@ -459,8 +470,9 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = three;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 10))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 10))));
 
     alarmVal.it_value    = two;
     alarmVal.it_interval = three;
@@ -469,11 +481,12 @@ TEST(TimeKeepingTest, ShortenTimeInterval)
     shortenedVal.it_interval = three;
 
     EXPECT_EQ(shortenedVal,
-              shortenIntervalTime(&alarmVal,
-                                  Duration(NanoSeconds(nsTime_1_0 * 11))));
+              ert_shortenIntervalTime(
+                  &alarmVal,
+                  Ert_Duration(Ert_NanoSeconds(nsTime_1_0 * 11))));
 }
 
-static struct Duration
+static struct Ert_Duration
 uptime()
 {
     struct Ert_Pipe  pipe_;
@@ -528,18 +541,18 @@ uptime()
 
     EXPECT_EQ(0, exitcode.mStatus);
 
-    return Duration(NSECS(Seconds(seconds)));
+    return Ert_Duration(ERT_NSECS(Ert_Seconds(seconds)));
 }
 
 TEST(TimeKeepingTest, BootClockTime)
 {
-    struct Duration before = uptime();
+    struct Ert_Duration before = uptime();
 
-    struct BootClockTime bootclocktime = bootclockTime();
+    struct Ert_BootClockTime bootclocktime = ert_bootclockTime();
 
-    monotonicSleep(Duration(NSECS(Seconds(1))));
+    ert_monotonicSleep(Ert_Duration(ERT_NSECS(Ert_Seconds(1))));
 
-    struct Duration after = uptime();
+    struct Ert_Duration after = uptime();
 
     EXPECT_LE(before.duration.ns, bootclocktime.bootclock.ns);
     EXPECT_GE(after.duration.ns,  bootclocktime.bootclock.ns);

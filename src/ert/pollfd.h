@@ -68,7 +68,7 @@
     int
 #define ERT_METHOD_CONST_PollFdCallbackMethod
 #define ERT_METHOD_ARG_LIST_PollFdCallbackMethod \
-    (const struct EventClockTime *aPollTime_)
+    (const struct Ert_EventClockTime *aPollTime_)
 #define ERT_METHOD_CALL_LIST_PollFdCallbackMethod \
     (aPollTime_)
 
@@ -105,8 +105,8 @@ struct Ert_PollFdAction
 struct Ert_PollFdTimerAction
 {
     struct Ert_PollFdCallbackMethod mAction;
-    struct Duration             mPeriod;
-    struct EventClockTime       mSince;
+    struct Ert_Duration             mPeriod;
+    struct Ert_EventClockTime       mSince;
 };
 
 struct Ert_PollFd

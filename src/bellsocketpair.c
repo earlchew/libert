@@ -124,7 +124,7 @@ ert_ringBellSocketPairChild(struct Ert_BellSocketPair *self)
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
 ert_waitBellSocketPair_(struct UnixSocket     *aSocket,
-                    const struct Duration *aTimeout)
+                    const struct Ert_Duration *aTimeout)
 {
     int rc = -1;
 
@@ -154,14 +154,14 @@ Finally:
 
 int
 ert_waitBellSocketPairParent(struct Ert_BellSocketPair *self,
-                         const struct Duration *aTimeout)
+                         const struct Ert_Duration *aTimeout)
 {
     return ert_waitBellSocketPair_(self->mSocketPair->mParentSocket, aTimeout);
 }
 
 int
 ert_waitBellSocketPairChild(struct Ert_BellSocketPair *self,
-                        const struct Duration *aTimeout)
+                        const struct Ert_Duration *aTimeout)
 {
     return ert_waitBellSocketPair_(self->mSocketPair->mChildSocket, aTimeout);
 }

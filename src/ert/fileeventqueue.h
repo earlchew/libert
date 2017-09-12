@@ -66,7 +66,7 @@ ERT_END_C_SCOPE;
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
 
-struct Duration;
+struct Ert_Duration;
 
 enum Ert_FileEventQueuePollTrigger
 {
@@ -106,7 +106,7 @@ ert_closeFileEventQueue(struct Ert_FileEventQueue *self);
 
 ERT_CHECKED int
 ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
-                               const struct Duration     *aTimeout);
+                               const struct Ert_Duration     *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int

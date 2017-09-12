@@ -55,11 +55,11 @@ ert_ownSocketValid(const struct Ert_Socket *self);
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
 ert_writeSocket(struct Ert_Socket *self,
-            const char *aBuf, size_t aLen, const struct Duration *aTimeout);
+            const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
 ert_readSocket(struct Ert_Socket *self,
-           char *aBuf, size_t aLen, const struct Duration *aTimeout);
+           char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
@@ -75,11 +75,11 @@ ert_readSocketDeadline(struct Ert_Socket *self,
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
 ert_waitSocketWriteReady(const struct Ert_Socket   *self,
-                     const struct Duration *aTimeout);
+                     const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED int
 ert_waitSocketReadReady(const struct Ert_Socket   *self,
-                    const struct Duration *aTimeout);
+                    const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int

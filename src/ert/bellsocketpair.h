@@ -34,7 +34,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct Duration;
+struct Ert_Duration;
 
 struct Ert_BellSocketPair
 {
@@ -63,11 +63,11 @@ ert_ringBellSocketPairParent(struct Ert_BellSocketPair *self);
 
 ERT_CHECKED int
 ert_waitBellSocketPairChild(struct Ert_BellSocketPair *self,
-                            const struct Duration *aTimeout);
+                            const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED int
 ert_waitBellSocketPairParent(struct Ert_BellSocketPair *self,
-                             const struct Duration *aTimeout);
+                             const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 

@@ -60,13 +60,14 @@ ert_monotonicTime(void)
                 "Unable to fetch monotonic time");
         });
 
-    return (struct Ert_MonotonicTime) { .monotonic = timeSpecToNanoSeconds(&ts) };
+    return (struct Ert_MonotonicTime)
+    { .monotonic = ert_timeSpecToNanoSeconds(&ts) };
 }
 
 /* -------------------------------------------------------------------------- */
 #if __linux__
 int
-ert_procUptime(struct Duration *aUptime, const char *aFileName)
+ert_procUptime(struct Ert_Duration *aUptime, const char *aFileName)
 {
     int   rc  = -1;
     char *buf = 0;
@@ -166,7 +167,7 @@ ert_procUptime(struct Duration *aUptime, const char *aFileName)
     case 9: uptime_ns *=          1; break;
     }
 
-    *aUptime = Duration(NanoSeconds(uptime_ns));
+    *aUptime = Ert_Duration(Ert_NanoSeconds(uptime_ns));
 
     rc = 0;
 
@@ -198,7 +199,7 @@ ert_bootclockTime(void)
             {
                 static const char procUptimeFileName[] = "/proc/uptime";
 
-                struct Duration uptime;
+                struct Ert_Duration uptime;
 
                 ABORT_IF(
                     ert_procUptime(&uptime, procUptimeFileName),
@@ -208,8 +209,8 @@ ert_bootclockTime(void)
                             "Unable to read %s", procUptimeFileName);
                     });
 
-                ts.tv_nsec = uptime.duration.ns % TimeScale_ns;
-                ts.tv_sec  = uptime.duration.ns / TimeScale_ns;
+                ts.tv_nsec = uptime.duration.ns % Ert_TimeScale_ns;
+                ts.tv_sec  = uptime.duration.ns / Ert_TimeScale_ns;
                 break;
             }
 #endif
@@ -225,7 +226,8 @@ ert_bootclockTime(void)
         } while (0);
     }
 
-    return (struct Ert_BootClockTime) { .bootclock = timeSpecToNanoSeconds(&ts) };
+    return (struct Ert_BootClockTime)
+    { .bootclock = ert_timeSpecToNanoSeconds(&ts) };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -236,14 +238,14 @@ eventclockTime_init_(void)
      * the event clock will subsequently always return a non-zero result. */
 
     eventClockTimeBase_ = (struct Ert_MonotonicTime) {
-        .monotonic = NanoSeconds(ert_monotonicTime().monotonic.ns - 1) };
+        .monotonic = Ert_NanoSeconds(ert_monotonicTime().monotonic.ns - 1) };
 }
 
 struct Ert_EventClockTime
 ert_eventclockTime(void)
 {
     struct Ert_EventClockTime tm = {
-        .eventclock = NanoSeconds(
+        .eventclock = Ert_NanoSeconds(
             ert_monotonicTime().monotonic.ns
                 - eventClockTimeBase_.monotonic.ns) };
 
@@ -267,15 +269,15 @@ ert_wallclockTime(void)
         });
 
     return (struct Ert_WallClockTime)
-    { .wallclock = timeSpecToNanoSeconds(&ts) };
+    { .wallclock = ert_timeSpecToNanoSeconds(&ts) };
 }
 
 /* -------------------------------------------------------------------------- */
 bool
 ert_deadlineTimeExpired(
     struct Ert_EventClockTime       *self,
-    struct Duration              aPeriod,
-    struct Duration             *aRemaining,
+    struct Ert_Duration              aPeriod,
+    struct Ert_Duration             *aRemaining,
     const struct Ert_EventClockTime *aTime)
 {
     bool                  expired;
@@ -328,8 +330,8 @@ ert_deadlineTimeExpired(
 bool
 ert_monotonicDeadlineTimeExpired(
     struct Ert_MonotonicDeadline   *self,
-    struct Duration             aPeriod,
-    struct Duration            *aRemaining,
+    struct Ert_Duration             aPeriod,
+    struct Ert_Duration            *aRemaining,
     const struct Ert_MonotonicTime *aTime)
 {
     bool                 expired;
@@ -381,10 +383,10 @@ ert_monotonicDeadlineTimeExpired(
 /* -------------------------------------------------------------------------- */
 void
 ert_lapTimeTrigger(struct Ert_EventClockTime       *self,
-                   struct Duration              aPeriod,
+                   struct Ert_Duration              aPeriod,
                    const struct Ert_EventClockTime *aTime)
 {
-    self->eventclock = NanoSeconds(
+    self->eventclock = Ert_NanoSeconds(
         (aTime ? *aTime
                : ert_eventclockTime()).eventclock.ns - aPeriod.duration.ns);
 }
@@ -402,7 +404,7 @@ ert_lapTimeRestart(struct Ert_EventClockTime       *self,
 /* -------------------------------------------------------------------------- */
 void
 ert_lapTimeDelay(struct Ert_EventClockTime *self,
-                 struct Duration        aDelay)
+                 struct Ert_Duration        aDelay)
 {
     ensure(self->eventclock.ns);
 
@@ -410,9 +412,9 @@ ert_lapTimeDelay(struct Ert_EventClockTime *self,
 }
 
 /* -------------------------------------------------------------------------- */
-struct Duration
+struct Ert_Duration
 ert_lapTimeSince(struct Ert_EventClockTime       *self,
-                 struct Duration              aPeriod,
+                 struct Ert_Duration              aPeriod,
                  const struct Ert_EventClockTime *aTime)
 {
     struct Ert_EventClockTime tm;
@@ -442,18 +444,18 @@ ert_lapTimeSince(struct Ert_EventClockTime       *self,
         ensure(self->eventclock.ns);
     }
 
-    return Duration(NanoSeconds(lapTime_ns));
+    return Ert_Duration(Ert_NanoSeconds(lapTime_ns));
 }
 
 /* -------------------------------------------------------------------------- */
 void
-ert_monotonicSleep(struct Duration aPeriod)
+ert_monotonicSleep(struct Ert_Duration aPeriod)
 {
     int rc;
 
     struct timespec sleepTime =
-        timeSpecFromNanoSeconds(
-            NanoSeconds(
+        ert_timeSpecFromNanoSeconds(
+            Ert_NanoSeconds(
                 ert_monotonicTime().monotonic.ns + aPeriod.duration.ns));
 
     do

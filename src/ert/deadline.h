@@ -37,7 +37,7 @@
 #include <stdbool.h>
 
 ERT_BEGIN_C_SCOPE;
-struct Duration;
+struct Ert_Duration;
 ERT_END_C_SCOPE;
 
 /* -------------------------------------------------------------------------- */
@@ -71,7 +71,7 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_RETURN_DeadlineWaitMethod    int
 #define ERT_METHOD_CONST_DeadlineWaitMethod
 #define ERT_METHOD_ARG_LIST_DeadlineWaitMethod  \
-    (const struct Duration *aTimeout_)
+    (const struct Ert_Duration *aTimeout_)
 #define ERT_METHOD_CALL_LIST_DeadlineWaitMethod (aTimeout_)
 
 #define ERT_METHOD_TYPE_PREFIX     Ert_
@@ -98,18 +98,18 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_Deadline
 {
-    struct EventClockTime            mSince;
-    struct EventClockTime            mTime;
-    struct Duration                  mRemaining;
+    struct Ert_EventClockTime            mSince;
+    struct Ert_EventClockTime            mTime;
+    struct Ert_Duration                  mRemaining;
     struct Ert_ProcessSigContTracker mSigContTracker;
-    struct Duration                  mDuration_;
-    struct Duration                 *mDuration;
+    struct Ert_Duration                  mDuration_;
+    struct Ert_Duration                 *mDuration;
     bool                             mExpired;
 };
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_createDeadline(struct Ert_Deadline *self, const struct Duration *aDuration);
+ert_createDeadline(struct Ert_Deadline *self, const struct Ert_Duration *aDuration);
 
 ERT_CHECKED int
 ert_checkDeadlineExpired(struct Ert_Deadline *self,

@@ -38,7 +38,7 @@
 ERT_BEGIN_C_SCOPE;
 
 struct Ert_Deadline;
-struct Duration;
+struct Ert_Duration;
 struct Ert_FdSet;
 
 /* -------------------------------------------------------------------------- */
@@ -151,19 +151,19 @@ ert_readFdFully(int aFd, char **aBuf, size_t aBufSize);
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
 ert_writeFd(int aFd,
-            const char *aBuf, size_t aLen, const struct Duration *aTimeout);
+            const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
 ert_writeFdRaw(int aFd,
-               const char *aBuf, size_t aLen, const struct Duration *aTimeout);
+               const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
 ert_readFd(int aFd,
-           char *aBuf, size_t aLen, const struct Duration *aTimeout);
+           char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
 ert_readFdRaw(int aFd,
-              char *aBuf, size_t aLen, const struct Duration *aTimeout);
+              char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
@@ -198,10 +198,10 @@ ert_ownFdRegionLocked(
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
-ert_waitFdWriteReady(int aFd, const struct Duration *aTimeout);
+ert_waitFdWriteReady(int aFd, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED int
-ert_waitFdReadReady(int aFd, const struct Duration *aTimeout);
+ert_waitFdReadReady(int aFd, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int

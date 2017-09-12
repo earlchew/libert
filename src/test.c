@@ -81,9 +81,9 @@ ert_testSleep(enum Ert_TestLevel aLevel)
         if (ert_testAction(aLevel))
         {
             slept = true;
-            monotonicSleep(
-                Duration(
-                    NSECS(MicroSeconds(ert_fetchRandomRange(500 * 1000)))));
+            ert_monotonicSleep(
+                Ert_Duration(
+                    ERT_NSECS(Ert_MicroSeconds(ert_fetchRandomRange(500 * 1000)))));
         }
     }
 

@@ -802,7 +802,7 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
+waitFdReady_(int aFd, unsigned aPollMask, const struct Ert_Duration *aTimeout)
 {
     int rc = -1;
 
@@ -815,17 +815,17 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
         },
     };
 
-    struct EventClockTime since = EVENTCLOCKTIME_INIT;
-    struct Duration       remaining;
+    struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
+    struct Ert_Duration       remaining;
 
-    const struct Duration timeout = aTimeout ? *aTimeout : ZeroDuration;
+    const struct Ert_Duration timeout = aTimeout ? *aTimeout : ZeroDuration;
 
     struct Ert_ProcessSigContTracker sigContTracker =
         Ert_ProcessSigContTracker();
 
     while (1)
     {
-        struct EventClockTime tm = eventclockTime();
+        struct Ert_EventClockTime tm = ert_eventclockTime();
 
         ERT_TEST_RACE
         ({
@@ -849,18 +849,18 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Duration *aTimeout)
             timeout_ms = -1;
         else
         {
-            if (deadlineTimeExpired(&since, timeout, &remaining, &tm))
+            if (ert_deadlineTimeExpired(&since, timeout, &remaining, &tm))
             {
                 if (ert_checkProcessSigContTracker(&sigContTracker))
                 {
-                    since = (struct EventClockTime) EVENTCLOCKTIME_INIT;
+                    since = ERT_EVENTCLOCKTIME_INIT;
                     continue;
                 }
 
                 break;
             }
 
-            uint64_t remaining_ms = MSECS(remaining.duration).ms;
+            uint64_t remaining_ms = ERT_MSECS(remaining.duration).ms;
 
             timeout_ms = remaining_ms;
 
@@ -899,13 +899,13 @@ Finally:
 }
 
 int
-ert_waitFdWriteReady(int aFd, const struct Duration *aTimeout)
+ert_waitFdWriteReady(int aFd, const struct Ert_Duration *aTimeout)
 {
     return waitFdReady_(aFd, POLLOUT, aTimeout);
 }
 
 int
-ert_waitFdReadReady(int aFd, const struct Duration *aTimeout)
+ert_waitFdReadReady(int aFd, const struct Ert_Duration *aTimeout)
 {
     return waitFdReady_(aFd, POLLPRI | POLLIN, aTimeout);
 }
@@ -950,7 +950,7 @@ waitFdReadyDeadline_(
                     &readyDeadline,
                     ERT_LAMBDA(
                         int, (struct FdReadyDeadline *self_,
-                              const struct Duration  *aTimeout),
+                              const struct Ert_Duration  *aTimeout),
                         {
                             return waitFdReady_(
                                 self_->mFd,
@@ -1012,7 +1012,7 @@ readFdDeadline_(int aFd,
                         &aFd,
                         ERT_LAMBDA(
                             int, (int *fd,
-                                  const struct Duration *aTimeout),
+                                  const struct Ert_Duration *aTimeout),
                             {
                                 return ert_waitFdReadReady(*fd, aTimeout);
                             }))),
@@ -1105,7 +1105,7 @@ writeFdDeadline_(int aFd,
                         &aFd,
                         ERT_LAMBDA(
                             int, (int *fd,
-                                  const struct Duration *aTimeout),
+                                  const struct Ert_Duration *aTimeout),
                             {
                                 return ert_waitFdWriteReady(*fd, aTimeout);
                             }))),
@@ -1171,7 +1171,7 @@ ert_writeFdDeadline(
 /* -------------------------------------------------------------------------- */
 static ssize_t
 readFd_(int aFd,
-        char *aBuf, size_t aLen, const struct Duration *aTimeout,
+        char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout,
         ssize_t aReader(int, void *, size_t))
 {
     ssize_t rc = -1;
@@ -1200,14 +1200,14 @@ Finally:
 
 ssize_t
 ert_readFd(int aFd,
-           char *aBuf, size_t aLen, const struct Duration *aTimeout)
+           char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return readFd_(aFd, aBuf, aLen, aTimeout, read);
 }
 
 ssize_t
 ert_readFdRaw(int aFd,
-              char *aBuf, size_t aLen, const struct Duration *aTimeout)
+              char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return readFd_(aFd, aBuf, aLen, aTimeout, read_raw);
 }
@@ -1215,7 +1215,7 @@ ert_readFdRaw(int aFd,
 /* -------------------------------------------------------------------------- */
 static ssize_t
 writeFd_(int aFd,
-         const char *aBuf, size_t aLen, const struct Duration *aTimeout,
+         const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout,
          ssize_t aWriter(int, const void *, size_t))
 {
     ssize_t rc = -1;
@@ -1244,14 +1244,14 @@ Finally:
 
 ssize_t
 ert_writeFd(int aFd,
-            const char *aBuf, size_t aLen, const struct Duration *aTimeout)
+            const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return writeFd_(aFd, aBuf, aLen, aTimeout, write);
 }
 
 ssize_t
 ert_writeFdRaw(int aFd,
-               const char *aBuf, size_t aLen, const struct Duration *aTimeout)
+               const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return writeFd_(aFd, aBuf, aLen, aTimeout, write_raw);
 }

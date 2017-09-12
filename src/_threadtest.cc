@@ -62,7 +62,7 @@ TEST_F(ThreadTest, MutexDestroy)
     pthread_mutex_t  mutex_ = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_t *mutex  = &mutex_;
 
-    mutex = destroyMutex(mutex);
+    mutex = ert_destroyMutex(mutex);
 }
 
 TEST_F(ThreadTest, CondDestroy)
@@ -70,7 +70,7 @@ TEST_F(ThreadTest, CondDestroy)
     pthread_cond_t  cond_ = PTHREAD_COND_INITIALIZER;
     pthread_cond_t *cond  = &cond_;
 
-    cond = destroyCond(cond);
+    cond = ert_destroyCond(cond);
 }
 
 TEST_F(ThreadTest, RWMutexDestroy)
@@ -78,7 +78,7 @@ TEST_F(ThreadTest, RWMutexDestroy)
     pthread_rwlock_t  rwlock_ = PTHREAD_RWLOCK_INITIALIZER;
     pthread_rwlock_t *rwlock  = &rwlock_;
 
-    rwlock = destroyRWMutex(rwlock);
+    rwlock = ert_destroyRWMutex(rwlock);
 }
 
 static int sigTermCount_;
@@ -91,10 +91,10 @@ sigTermAction_(int)
 
 TEST_F(ThreadTest, ThreadSigMutex)
 {
-    struct ThreadSigMutex  sigMutex_;
-    struct ThreadSigMutex *sigMutex = 0;
+    struct Ert_ThreadSigMutex  sigMutex_;
+    struct Ert_ThreadSigMutex *sigMutex = 0;
 
-    sigMutex = createThreadSigMutex(&sigMutex_);
+    sigMutex = ert_createThreadSigMutex(&sigMutex_);
 
     struct sigaction prevAction;
     struct sigaction nextAction;
@@ -111,7 +111,7 @@ TEST_F(ThreadTest, ThreadSigMutex)
     EXPECT_FALSE(raise(SIGTERM));
     EXPECT_EQ(2, sigTermCount_);
 
-    struct ThreadSigMutex *lock = lockThreadSigMutex(sigMutex);
+    struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(sigMutex);
     {
         // Verify that the lock also excludes the delivery of signals
         // while the lock is taken.
@@ -122,7 +122,7 @@ TEST_F(ThreadTest, ThreadSigMutex)
         EXPECT_FALSE(raise(SIGTERM));
         EXPECT_EQ(2, sigTermCount_);
     }
-    lock = unlockThreadSigMutex(lock);
+    lock = ert_unlockThreadSigMutex(lock);
 
     EXPECT_EQ(3, sigTermCount_);
 
@@ -134,36 +134,36 @@ TEST_F(ThreadTest, ThreadSigMutex)
 
     EXPECT_FALSE(sigaction(SIGTERM, &prevAction, 0));
 
-    sigMutex = destroyThreadSigMutex(sigMutex);
+    sigMutex = ert_destroyThreadSigMutex(sigMutex);
 }
 
-struct SharedMutexTestState
+struct Ert_SharedMutexTestState
 {
-    struct SharedMutex  mMutex_;
-    struct SharedMutex *mMutex;
+    struct Ert_SharedMutex  mMutex_;
+    struct Ert_SharedMutex *mMutex;
     bool                mRepaired;
 };
 
 TEST_F(ThreadTest, ThreadSharedMutex)
 {
     void *state_ = mmap(0,
-                        sizeof(struct SharedMutexTestState),
+                        sizeof(struct Ert_SharedMutexTestState),
                         PROT_READ | PROT_WRITE,
                         MAP_ANONYMOUS | MAP_SHARED, -1, 0);
     EXPECT_FALSE(MAP_FAILED == state_);
 
-    auto *state = reinterpret_cast<struct SharedMutexTestState *>(state_);
+    auto *state = reinterpret_cast<struct Ert_SharedMutexTestState *>(state_);
 
     {
-        state->mMutex = createSharedMutex(&state->mMutex_);
+        state->mMutex = ert_createSharedMutex(&state->mMutex_);
         EXPECT_TRUE(state->mMutex);
 
-        state->mMutex = destroySharedMutex(state->mMutex);
+        state->mMutex = ert_destroySharedMutex(state->mMutex);
         EXPECT_FALSE(state->mMutex);
     }
 
     {
-        state->mMutex = createSharedMutex(&state->mMutex_);
+        state->mMutex = ert_createSharedMutex(&state->mMutex_);
         EXPECT_TRUE(state->mMutex);
         EXPECT_EQ(&state->mMutex_, state->mMutex);
 
@@ -174,12 +174,12 @@ TEST_F(ThreadTest, ThreadSharedMutex)
         if ( ! childpid)
         {
             auto mutex =
-                lockSharedMutex(
+                ert_lockSharedMutex(
                     state->mMutex,
-                    MutexRepairMethod(
+                    Ert_MutexRepairMethod(
                         state,
                         ERT_LAMBDA(
-                            int, (struct SharedMutexTestState *),
+                            int, (struct Ert_SharedMutexTestState *),
                             {
                                 return -1;
                             })));
@@ -204,12 +204,12 @@ TEST_F(ThreadTest, ThreadSharedMutex)
             state->mRepaired = false;
 
             auto mutex =
-                lockSharedMutex(
+                ert_lockSharedMutex(
                     state->mMutex,
-                    MutexRepairMethod(
+                    Ert_MutexRepairMethod(
                         state,
                         ERT_LAMBDA(
-                            int, (struct SharedMutexTestState *self),
+                            int, (struct Ert_SharedMutexTestState *self),
                             {
                                 self->mRepaired = true;
                                 return 0;

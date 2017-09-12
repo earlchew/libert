@@ -51,10 +51,10 @@ malloc(size_t aSize)
 {
     void *block = 0;
 
-    struct ThreadSigMask threadSigMask;
+    struct Ert_ThreadSigMask threadSigMask;
 
-    struct ThreadSigMask *sigMask = pushThreadSigMask(
-        &threadSigMask, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask *sigMask = ert_pushThreadSigMask(
+        &threadSigMask, Ert_ThreadSigMaskBlock, 0);
 
     ERROR_UNLESS(
         (block = __libc_malloc(aSize)));
@@ -63,7 +63,7 @@ Finally:
 
     FINALLY
     ({
-        sigMask = popThreadSigMask(sigMask);
+        sigMask = ert_popThreadSigMask(sigMask);
     });
 
     return block;
@@ -75,9 +75,9 @@ valloc(size_t aSize)
 {
     void *block = 0;
 
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask =
-        pushThreadSigMask(&threadSigMask_, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask =
+        ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     ERROR_UNLESS(
         (block = __libc_valloc(aSize)));
@@ -86,7 +86,7 @@ Finally:
 
     FINALLY
     ({
-        threadSigMask = popThreadSigMask(threadSigMask);
+        threadSigMask = ert_popThreadSigMask(threadSigMask);
     });
 
     return block;
@@ -98,9 +98,9 @@ pvalloc(size_t aSize)
 {
     void *block = 0;
 
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask =
-        pushThreadSigMask(&threadSigMask_, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask =
+        ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     ERROR_UNLESS(
         (block = __libc_pvalloc(aSize)));
@@ -109,7 +109,7 @@ Finally:
 
     FINALLY
     ({
-        threadSigMask = popThreadSigMask(threadSigMask);
+        threadSigMask = ert_popThreadSigMask(threadSigMask);
     });
 
     return block;
@@ -119,13 +119,13 @@ Finally:
 void
 free(void *aBlock)
 {
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask =
-        pushThreadSigMask(&threadSigMask_, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask =
+        ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     __libc_free(aBlock);
 
-    threadSigMask = popThreadSigMask(threadSigMask);
+    threadSigMask = ert_popThreadSigMask(threadSigMask);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -141,9 +141,9 @@ memalign(size_t aAlign, size_t aSize)
 {
     void *block = 0;
 
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask =
-        pushThreadSigMask(&threadSigMask_, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask =
+        ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     ERROR_UNLESS(
         (block = __libc_memalign(aAlign, aSize)));
@@ -152,7 +152,7 @@ Finally:
 
     FINALLY
     ({
-        threadSigMask = popThreadSigMask(threadSigMask);
+        threadSigMask = ert_popThreadSigMask(threadSigMask);
     });
 
     return block;
@@ -171,9 +171,9 @@ realloc(void *aBlock, size_t aSize)
 {
     void *block = 0;
 
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask =
-        pushThreadSigMask(&threadSigMask_, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask =
+        ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     ERROR_UNLESS(
         (block = __libc_realloc(aBlock, aSize)));
@@ -182,7 +182,7 @@ Finally:
 
     FINALLY
     ({
-        threadSigMask = popThreadSigMask(threadSigMask);
+        threadSigMask = ert_popThreadSigMask(threadSigMask);
     });
 
     return block;
@@ -194,9 +194,9 @@ calloc(size_t aSize, size_t aElems)
 {
     void *block = 0;
 
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask =
-        pushThreadSigMask(&threadSigMask_, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask =
+        ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     ERROR_UNLESS(
         (block = __libc_calloc(aSize, aElems)));
@@ -205,7 +205,7 @@ Finally:
 
     FINALLY
     ({
-        threadSigMask = popThreadSigMask(threadSigMask);
+        threadSigMask = ert_popThreadSigMask(threadSigMask);
     });
 
     return block;
@@ -217,9 +217,9 @@ posix_memalign(void **aBlock, size_t aAlign, size_t aSize)
 {
     int rc;
 
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask =
-        pushThreadSigMask(&threadSigMask_, ThreadSigMaskBlock, 0);
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask =
+        ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     size_t words = aAlign / sizeof(void *);
 
@@ -244,7 +244,7 @@ Finally:
 
     FINALLY
     ({
-        threadSigMask = popThreadSigMask(threadSigMask);
+        threadSigMask = ert_popThreadSigMask(threadSigMask);
     });
 
     return rc;

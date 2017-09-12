@@ -41,8 +41,8 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_EventPipe
 {
-    struct ThreadSigMutex  mMutex_;
-    struct ThreadSigMutex *mMutex;
+    struct Ert_ThreadSigMutex  mMutex_;
+    struct Ert_ThreadSigMutex *mMutex;
     struct Ert_Pipe        mPipe_;
     struct Ert_Pipe       *mPipe;
     bool                   mSignalled;
@@ -66,7 +66,7 @@ ert_resetEventPipe(struct Ert_EventPipe *self);
 
 ERT_CHECKED int
 ert_pollEventPipe(struct Ert_EventPipe            *self,
-                  const struct EventClockTime *aPollTime);
+                  const struct Ert_EventClockTime *aPollTime);
 
 /* -------------------------------------------------------------------------- */
 void

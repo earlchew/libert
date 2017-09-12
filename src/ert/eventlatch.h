@@ -38,7 +38,7 @@
 
 /* -------------------------------------------------------------------------- */
 ERT_BEGIN_C_SCOPE;
-struct EventClockTime;
+struct Ert_EventClockTime;
 ERT_END_C_SCOPE;
 
 #define ERT_METHOD_DEFINITION
@@ -46,7 +46,7 @@ ERT_END_C_SCOPE;
 #define ERT_METHOD_CONST_EventLatchMethod
 #define ERT_METHOD_ARG_LIST_EventLatchMethod  ( \
     bool                         aEnabled_,     \
-    const struct EventClockTime *aPollTime_)
+    const struct Ert_EventClockTime *aPollTime_)
 #define ERT_METHOD_CALL_LIST_EventLatchMethod (aEnabled_, aPollTime_)
 
 #define ERT_METHOD_TYPE_PREFIX     Ert_
@@ -88,8 +88,8 @@ struct Ert_EventLatchList
 
 struct Ert_EventLatch
 {
-    struct ThreadSigMutex           mMutex_;
-    struct ThreadSigMutex          *mMutex;
+    struct Ert_ThreadSigMutex           mMutex_;
+    struct Ert_ThreadSigMutex          *mMutex;
     unsigned                        mEvent;
     struct Ert_EventPipe               *mPipe;
     char                           *mName;
@@ -107,7 +107,7 @@ enum Ert_EventLatchSetting
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
 ert_pollEventLatchListEntry(struct Ert_EventLatchListEntry  *self,
-                            const struct EventClockTime *aPollTime);
+                            const struct Ert_EventClockTime *aPollTime);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int

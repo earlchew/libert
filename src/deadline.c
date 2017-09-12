@@ -31,11 +31,11 @@
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createDeadline(struct Ert_Deadline *self, const struct Duration *aDuration)
+ert_createDeadline(struct Ert_Deadline *self, const struct Ert_Duration *aDuration)
 {
     int rc = -1;
 
-    self->mSince          = (struct EventClockTime) EVENTCLOCKTIME_INIT;
+    self->mSince          = ERT_EVENTCLOCKTIME_INIT;
     self->mTime           = self->mSince;
     self->mRemaining      = ZeroDuration;
     self->mSigContTracker = Ert_ProcessSigContTracker();
@@ -71,7 +71,7 @@ ert_checkDeadlineExpired(struct Ert_Deadline *self,
 {
     int rc = -1;
 
-    self->mTime = eventclockTime();
+    self->mTime = ert_eventclockTime();
 
     int ready;
 
@@ -96,14 +96,13 @@ ert_checkDeadlineExpired(struct Ert_Deadline *self,
              * that the deadline has not yet expired on the first
              * iteration. */
 
-            if (deadlineTimeExpired(
+            if (ert_deadlineTimeExpired(
                     &self->mSince,
                     *self->mDuration, &self->mRemaining, &self->mTime))
             {
                 if (ert_checkProcessSigContTracker(&self->mSigContTracker))
                 {
-                    self->mSince =
-                        (struct EventClockTime) EVENTCLOCKTIME_INIT;
+                    self->mSince = ERT_EVENTCLOCKTIME_INIT;
 
                     ready = 0;
                     break;

@@ -60,9 +60,9 @@ fileList_ =
     .mMutex = PTHREAD_MUTEX_INITIALIZER,
 };
 
-THREAD_FORK_SENTRY(
-    lockMutex(&fileList_.mMutex),
-    unlockMutex(&fileList_.mMutex));
+ERT_THREAD_FORK_SENTRY(
+    ert_lockMutex(&fileList_.mMutex),
+    ert_unlockMutex(&fileList_.mMutex));
 
 /* -------------------------------------------------------------------------- */
 int
@@ -83,11 +83,11 @@ ert_createFile(struct Ert_File *self, int aFd)
             errno = err;
         });
 
-    pthread_mutex_t *lock = lockMutex(&fileList_.mMutex);
+    pthread_mutex_t *lock = ert_lockMutex(&fileList_.mMutex);
     {
         LIST_INSERT_HEAD(&fileList_.mHead, self, mList);
     }
-    lock = unlockMutex(lock);
+    lock = ert_unlockMutex(lock);
 
     rc = 0;
 
@@ -158,7 +158,7 @@ temporaryFileCreate_(const char *aDirName)
          -1 == dirFd));
 
     uint32_t rnd =
-        ert_ownProcessId().mPid ^ MSECS(monotonicTime().monotonic).ms;
+        ert_ownProcessId().mPid ^ ERT_MSECS(ert_monotonicTime().monotonic).ms;
 
     struct TemporaryFileName_ fileName;
 
@@ -205,8 +205,8 @@ struct TemporaryFileProcess_
     const char        *mDirName;
     struct Ert_SocketPair  mSocketPair_;
     struct Ert_SocketPair *mSocketPair;
-    struct Thread      mThread_;
-    struct Thread     *mThread;
+    struct Ert_Thread      mThread_;
+    struct Ert_Thread     *mThread;
 };
 
 static ERT_CHECKED struct TemporaryFileProcess_ *
@@ -215,7 +215,7 @@ closeTemporaryFileProcess_(struct TemporaryFileProcess_ *self)
     if (self)
     {
         self->mSocketPair = ert_closeSocketPair(self->mSocketPair);
-        self->mThread     = closeThread(self->mThread);
+        self->mThread     = ert_closeThread(self->mThread);
     }
 
     return 0;
@@ -276,7 +276,7 @@ waitTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self)
     int rc = -1;
 
     ERROR_IF(
-        joinThread(self->mThread));
+        ert_joinThread(self->mThread));
 
     rc = 0;
 
@@ -298,11 +298,11 @@ prepareTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self,
     self->mSocketPair = &self->mSocketPair_;
 
     ERROR_UNLESS(
-        self->mThread = createThread(
+        self->mThread = ert_createThread(
             &self->mThread_,
             0,
             0,
-            ThreadMethod(self, recvTemporaryFileProcessFd_)));
+            Ert_ThreadMethod(self, recvTemporaryFileProcessFd_)));
 
     ERROR_IF(
         ert_insertFdSetFile(
@@ -334,14 +334,14 @@ sendTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
 
     int fd;
     {
-        struct ThreadSigMask  sigMask_;
-        struct ThreadSigMask *sigMask = 0;
+        struct Ert_ThreadSigMask  sigMask_;
+        struct Ert_ThreadSigMask *sigMask = 0;
 
-        sigMask = pushThreadSigMask(&sigMask_, ThreadSigMaskBlock, 0);
+        sigMask = ert_pushThreadSigMask(&sigMask_, Ert_ThreadSigMaskBlock, 0);
 
         fd  = temporaryFileCreate_(self->mDirName);
 
-        sigMask = popThreadSigMask(sigMask);
+        sigMask = ert_popThreadSigMask(sigMask);
     }
 
     self->mErr = -1 != fd ? 0 : (errno ? errno : EIO);
@@ -527,11 +527,11 @@ ert_detachFile(struct Ert_File *self)
         ERROR_IF(
             -1 == self->mFd);
 
-        pthread_mutex_t *lock = lockMutex(&fileList_.mMutex);
+        pthread_mutex_t *lock = ert_lockMutex(&fileList_.mMutex);
         {
             LIST_REMOVE(self, mList);
         }
-        lock = unlockMutex(lock);
+        lock = ert_unlockMutex(lock);
 
         self->mFd = -1;
     }
@@ -551,11 +551,11 @@ ert_closeFile(struct Ert_File *self)
 {
     if (self && -1 != self->mFd)
     {
-        pthread_mutex_t *lock = lockMutex(&fileList_.mMutex);
+        pthread_mutex_t *lock = ert_lockMutex(&fileList_.mMutex);
         {
             LIST_REMOVE(self, mList);
         }
-        lock = unlockMutex(lock);
+        lock = ert_unlockMutex(lock);
 
         self->mFd = ert_closeFd(self->mFd);
     }
@@ -574,7 +574,7 @@ ert_ownFileValid(const struct Ert_File *self)
 void
 ert_walkFileList(struct Ert_FileVisitor aVisitor)
 {
-    pthread_mutex_t *lock = lockMutex(&fileList_.mMutex);
+    pthread_mutex_t *lock = ert_lockMutex(&fileList_.mMutex);
     {
         const struct Ert_File *filePtr;
 
@@ -584,7 +584,7 @@ ert_walkFileList(struct Ert_FileVisitor aVisitor)
                 break;
         }
     }
-    lock = unlockMutex(lock);
+    lock = ert_unlockMutex(lock);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -673,7 +673,7 @@ ert_ownFileRegionLocked(const struct Ert_File *self, off_t aPos, off_t aLen)
 /* -------------------------------------------------------------------------- */
 ssize_t
 ert_writeFile(struct Ert_File *self,
-          const char *aBuf, size_t aLen, const struct Duration *aTimeout)
+          const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_writeFd(self->mFd, aBuf, aLen, aTimeout);
 }
@@ -681,7 +681,7 @@ ert_writeFile(struct Ert_File *self,
 /* -------------------------------------------------------------------------- */
 ssize_t
 ert_readFile(struct Ert_File *self,
-         char *aBuf, size_t aLen, const struct Duration *aTimeout)
+         char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_readFd(self->mFd, aBuf, aLen, aTimeout);
 }
@@ -734,7 +734,7 @@ ert_ftruncateFile(struct Ert_File *self, off_t aLength)
 /* -------------------------------------------------------------------------- */
 int
 ert_waitFileWriteReady(const struct Ert_File     *self,
-                   const struct Duration *aTimeout)
+                   const struct Ert_Duration *aTimeout)
 {
     return ert_waitFdWriteReady(self->mFd, aTimeout);
 }
@@ -742,7 +742,7 @@ ert_waitFileWriteReady(const struct Ert_File     *self,
 /* -------------------------------------------------------------------------- */
 int
 ert_waitFileReadReady(const struct Ert_File     *self,
-                  const struct Duration *aTimeout)
+                  const struct Ert_Duration *aTimeout)
 {
     return ert_waitFdReadReady(self->mFd, aTimeout);
 }

@@ -34,7 +34,7 @@
 
 ERT_BEGIN_C_SCOPE;
 
-struct Duration;
+struct Ert_Duration;
 
 struct sockaddr_un;
 struct ucred;
@@ -86,11 +86,11 @@ shutdownUnixSocketWriter(struct UnixSocket *self);
 
 ERT_CHECKED int
 waitUnixSocketWriteReady(const struct UnixSocket *self,
-                         const struct Duration   *aTimeout);
+                         const struct Ert_Duration   *aTimeout);
 
 ERT_CHECKED int
 waitUnixSocketReadReady(const struct UnixSocket *self,
-                        const struct Duration   *aTimeout);
+                        const struct Ert_Duration   *aTimeout);
 
 ERT_CHECKED int
 ownUnixSocketPeerName(const struct UnixSocket *self,
@@ -114,11 +114,11 @@ recvUnixSocket(struct UnixSocket *self, char *aBuf, size_t aLen);
 
 ERT_CHECKED ssize_t
 writeUnixSocket(struct UnixSocket *self,
-                const char *aBuf, size_t aLen, const struct Duration *aTimeout);
+                const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
 readUnixSocket(struct UnixSocket *self,
-               char *aBuf, size_t aLen, const struct Duration *aTimeout);
+               char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 

@@ -75,7 +75,7 @@ TEST_F(DeadlineTest, ErrorReturn)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_TRUE(false);
                               return 0;
@@ -98,7 +98,7 @@ TEST_F(DeadlineTest, ErrorReturn)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_FALSE(aTimeout);
                               errno = EINVAL;
@@ -136,7 +136,7 @@ TEST_F(DeadlineTest, SuccessReturn)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *self,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_TRUE(false);
                               self->mResult = 2;
@@ -161,7 +161,7 @@ TEST_F(DeadlineTest, SuccessReturn)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *self,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               self->mResult = 2;
                               return 1;
@@ -200,7 +200,7 @@ TEST_F(DeadlineTest, InfiniteTimeout)
                           fixture,
                           ERT_LAMBDA(
                               int, (class DeadlineTest *,
-                                    const struct Duration *aTimeout),
+                                    const struct Ert_Duration *aTimeout),
                               {
                                   EXPECT_FALSE(aTimeout);
                                   return 0;
@@ -237,7 +237,7 @@ TEST_F(DeadlineTest, ZeroTimeout)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_FALSE(aTimeout->duration.ns);
                               return 0;
@@ -258,7 +258,7 @@ TEST_F(DeadlineTest, ZeroTimeout)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_TRUE(false);
                               return 0;
@@ -282,7 +282,7 @@ TEST_F(DeadlineTest, ZeroTimeout)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_TRUE(false);
                               return 0;
@@ -300,7 +300,7 @@ TEST_F(DeadlineTest, NonZeroTimeout)
     struct Ert_Deadline  deadline_;
     struct Ert_Deadline *deadline = 0;
 
-    struct Duration oneSecond = Duration(NSECS(Seconds(1)));
+    struct Ert_Duration oneSecond = Ert_Duration(ERT_NSECS(Ert_Seconds(1)));
 
     EXPECT_EQ(0, ert_createDeadline(&deadline_, &oneSecond));
     deadline = &deadline_;
@@ -321,7 +321,7 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_TRUE(aTimeout);
                               return 0;
@@ -344,10 +344,10 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_TRUE(aTimeout);
-                              monotonicSleep(*aTimeout);
+                              ert_monotonicSleep(*aTimeout);
                               return 0;
                           }))));
     EXPECT_FALSE(ert_ownDeadlineExpired(deadline));
@@ -368,7 +368,7 @@ TEST_F(DeadlineTest, NonZeroTimeout)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_FALSE(true);
                               return 0;
@@ -386,7 +386,7 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
     struct Ert_Deadline  deadline_;
     struct Ert_Deadline *deadline = 0;
 
-    struct Duration oneNanosecond = Duration(NanoSeconds(1));
+    struct Ert_Duration oneNanosecond = Ert_Duration(Ert_NanoSeconds(1));
 
     EXPECT_EQ(0, ert_createDeadline(&deadline_, &oneNanosecond));
     deadline = &deadline_;
@@ -407,7 +407,7 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_FALSE(aTimeout);
                               EXPECT_TRUE(false);
@@ -417,7 +417,7 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
 
     // Verify that the second iteration expires.
 
-    monotonicSleep(Duration(NSECS(Seconds(1))));
+    ert_monotonicSleep(Ert_Duration(ERT_NSECS(Ert_Seconds(1))));
 
     EXPECT_EQ(-1,
               ert_checkDeadlineExpired(
@@ -433,7 +433,7 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
                       fixture,
                       ERT_LAMBDA(
                           int, (class DeadlineTest *,
-                                const struct Duration *aTimeout),
+                                const struct Ert_Duration *aTimeout),
                           {
                               EXPECT_FALSE(aTimeout);
                               EXPECT_TRUE(false);

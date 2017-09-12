@@ -47,7 +47,7 @@ ert_createEventLatch(struct Ert_EventLatch *self, const char *aName)
 {
     int rc = -1;
 
-    self->mMutex = createThreadSigMutex(&self->mMutex_);
+    self->mMutex = ert_createThreadSigMutex(&self->mMutex_);
     self->mEvent = 0;
     self->mPipe  = 0;
     self->mName  = 0;
@@ -83,7 +83,7 @@ ert_closeEventLatch(struct Ert_EventLatch *self)
             ABORT_IF(
                 Ert_EventLatchSettingError == ert_unbindEventLatchPipe(self));
 
-        self->mMutex = destroyThreadSigMutex(self->mMutex);
+        self->mMutex = ert_destroyThreadSigMutex(self->mMutex);
 
         free(self->mName);
     }
@@ -136,7 +136,7 @@ ert_bindEventLatchPipe_(struct Ert_EventLatch       *self,
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
-    struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
+    struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
     enum Ert_EventLatchSetting setting;
 
@@ -176,7 +176,7 @@ Finally:
 
     FINALLY
     ({
-        lock = unlockThreadSigMutex(lock);
+        lock = ert_unlockThreadSigMutex(lock);
     });
 
     return rc;
@@ -205,7 +205,7 @@ ert_disableEventLatch(struct Ert_EventLatch *self)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
-    struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
+    struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
     enum Ert_EventLatchSetting setting;
 
@@ -231,7 +231,7 @@ Finally:
 
     FINALLY
     ({
-        lock = unlockThreadSigMutex(lock);
+        lock = ert_unlockThreadSigMutex(lock);
     });
 
     return rc;
@@ -243,7 +243,7 @@ ert_setEventLatch(struct Ert_EventLatch *self)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
-    struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
+    struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
     enum Ert_EventLatchSetting setting;
 
@@ -269,7 +269,7 @@ Finally:
 
     FINALLY
     ({
-        lock = unlockThreadSigMutex(lock);
+        lock = ert_unlockThreadSigMutex(lock);
     });
 
     return rc;
@@ -281,7 +281,7 @@ ert_resetEventLatch(struct Ert_EventLatch *self)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
-    struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
+    struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
     enum Ert_EventLatchSetting setting;
 
@@ -304,7 +304,7 @@ Finally:
 
     FINALLY
     ({
-        lock = unlockThreadSigMutex(lock);
+        lock = ert_unlockThreadSigMutex(lock);
     });
 
     return rc;
@@ -318,7 +318,7 @@ ert_ownEventLatchSetting(const struct Ert_EventLatch *self_)
 
     struct Ert_EventLatch *self = (struct Ert_EventLatch *) self_;
 
-    struct ThreadSigMutex *lock = lockThreadSigMutex(self->mMutex);
+    struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
     enum Ert_EventLatchSetting setting;
 
@@ -337,7 +337,7 @@ Finally:
 
     FINALLY
     ({
-        lock = unlockThreadSigMutex(lock);
+        lock = ert_unlockThreadSigMutex(lock);
     });
 
     return rc;
@@ -346,7 +346,7 @@ Finally:
 /* -------------------------------------------------------------------------- */
 int
 ert_pollEventLatchListEntry(struct Ert_EventLatchListEntry  *self,
-                        const struct EventClockTime *aPollTime)
+                        const struct Ert_EventClockTime *aPollTime)
 {
     int rc = -1;
 

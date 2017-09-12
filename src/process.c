@@ -64,13 +64,13 @@ static unsigned processQuit_;
 
 static struct
 {
-    struct ThreadSigMutex  mMutex_;
-    struct ThreadSigMutex *mMutex;
+    struct Ert_ThreadSigMutex  mMutex_;
+    struct Ert_ThreadSigMutex *mMutex;
     struct ProcessLock     mLock_;
     struct ProcessLock    *mLock;
 } processLock_ =
 {
-    .mMutex_ = THREAD_SIG_MUTEX_INITIALIZER(processLock_.mMutex_),
+    .mMutex_ = ERT_THREAD_SIG_MUTEX_INITIALIZER(processLock_.mMutex_),
     .mMutex  = &processLock_.mMutex_,
 };
 
@@ -96,10 +96,10 @@ static struct
     pthread_mutex_t        mMutex_;
     pthread_mutex_t       *mMutex;
     struct Ert_Pid             mParentPid;
-    struct RWMutexWriter   mSigVecLock_;
-    struct RWMutexWriter  *mSigVecLock;
-    struct ThreadSigMutex *mSigLock;
-    struct ThreadSigMutex *mLock;
+    struct Ert_RWMutexWriter   mSigVecLock_;
+    struct Ert_RWMutexWriter  *mSigVecLock;
+    struct Ert_ThreadSigMutex *mSigLock;
+    struct Ert_ThreadSigMutex *mLock;
 } processFork_ =
 {
     .mMutex_ = PTHREAD_MUTEX_INITIALIZER,
@@ -111,7 +111,7 @@ static bool                  moduleInitAtFork_;
 static sigset_t              processSigMask_;
 static const char           *processArg0_;
 static const char           *programName_;
-static struct MonotonicTime  processTimeBase_;
+static struct Ert_MonotonicTime  processTimeBase_;
 
 static const char *signalNames_[NSIG] =
 {
@@ -160,12 +160,13 @@ static struct
 {
     struct ProcessSignalVector mVector[NSIG];
     pthread_rwlock_t           mVectorLock;
-    struct ThreadSigMutex      mSignalMutex;
+    struct Ert_ThreadSigMutex      mSignalMutex;
 
 } processSignals_ =
 {
     .mVectorLock  = PTHREAD_RWLOCK_INITIALIZER,
-    .mSignalMutex = THREAD_SIG_MUTEX_INITIALIZER(processSignals_.mSignalMutex),
+    .mSignalMutex = ERT_THREAD_SIG_MUTEX_INITIALIZER(
+        processSignals_.mSignalMutex),
 };
 
 static void
@@ -186,10 +187,10 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
 {
     struct ProcessSignalVector *sv = &processSignals_.mVector[aSigNum];
 
-    struct RWMutexReader  sigVecLock_;
-    struct RWMutexReader *sigVecLock;
+    struct Ert_RWMutexReader  sigVecLock_;
+    struct Ert_RWMutexReader *sigVecLock;
 
-    sigVecLock = createRWMutexReader(
+    sigVecLock = ert_createRWMutexReader(
         &sigVecLock_, &processSignals_.mVectorLock);
 
     enum Ert_ErrorFrameStackKind stackKind =
@@ -200,7 +201,7 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
           "dispatch signal %s",
           ert_formatProcessSignalName(&sigName, aSigNum));
 
-    pthread_mutex_t *actionLock = lockMutex(sv->mActionMutex);
+    pthread_mutex_t *actionLock = ert_lockMutex(sv->mActionMutex);
     {
         dispatchSigExit_(aSigNum);
 
@@ -219,10 +220,10 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
             --processSignalContext_;
         }
     }
-    actionLock = unlockMutex(actionLock);
+    actionLock = ert_unlockMutex(actionLock);
 
     ert_switchErrorFrameStack(stackKind);
-    sigVecLock = destroyRWMutexReader(sigVecLock);
+    sigVecLock = ert_destroyRWMutexReader(sigVecLock);
 }
 
 static void
@@ -239,10 +240,10 @@ runSigHandler_(int aSigNum)
 {
     struct ProcessSignalVector *sv = &processSignals_.mVector[aSigNum];
 
-    struct RWMutexReader  sigVecLock_;
-    struct RWMutexReader *sigVecLock;
+    struct Ert_RWMutexReader  sigVecLock_;
+    struct Ert_RWMutexReader *sigVecLock;
 
-    sigVecLock = createRWMutexReader(
+    sigVecLock = ert_createRWMutexReader(
         &sigVecLock_, &processSignals_.mVectorLock);
 
     enum Ert_ErrorFrameStackKind stackKind =
@@ -253,7 +254,7 @@ runSigHandler_(int aSigNum)
           "dispatch signal %s",
           ert_formatProcessSignalName(&sigName, aSigNum));
 
-    pthread_mutex_t *actionLock = lockMutex(sv->mActionMutex);
+    pthread_mutex_t *actionLock = ert_lockMutex(sv->mActionMutex);
     {
         dispatchSigExit_(aSigNum);
 
@@ -272,10 +273,10 @@ runSigHandler_(int aSigNum)
             --processSignalContext_;
         }
     }
-    actionLock = unlockMutex(actionLock);
+    actionLock = ert_unlockMutex(actionLock);
 
     ert_switchErrorFrameStack(stackKind);
-    sigVecLock = destroyRWMutexReader(sigVecLock);
+    sigVecLock = ert_destroyRWMutexReader(sigVecLock);
 }
 
 static void
@@ -296,11 +297,11 @@ changeSigAction_(unsigned          aSigNum,
 
     ensure(ERT_NUMBEROF(processSignals_.mVector) > aSigNum);
 
-    struct RWMutexReader  sigVecLock_;
-    struct RWMutexReader *sigVecLock = 0;
+    struct Ert_RWMutexReader  sigVecLock_;
+    struct Ert_RWMutexReader *sigVecLock = 0;
 
-    struct ThreadSigMask  threadSigMask_;
-    struct ThreadSigMask *threadSigMask = 0;
+    struct Ert_ThreadSigMask  threadSigMask_;
+    struct Ert_ThreadSigMask *threadSigMask = 0;
 
     pthread_mutex_t *actionLock = 0;
 
@@ -341,27 +342,28 @@ changeSigAction_(unsigned          aSigNum,
     }
 
     {
-        struct ThreadSigMutex *sigLock =
-            lockThreadSigMutex(&processSignals_.mSignalMutex);
+        struct Ert_ThreadSigMutex *sigLock =
+            ert_lockThreadSigMutex(&processSignals_.mSignalMutex);
 
         if ( ! processSignals_.mVector[aSigNum].mActionMutex)
             processSignals_.mVector[aSigNum].mActionMutex =
-                createMutex(&processSignals_.mVector[aSigNum].mActionMutex_);
+                ert_createMutex(
+                    &processSignals_.mVector[aSigNum].mActionMutex_);
 
-        sigLock = unlockThreadSigMutex(sigLock);
+        sigLock = ert_unlockThreadSigMutex(sigLock);
     }
 
     /* Block signal delivery into this thread to avoid the signal
      * dispatch attempting to acquire the dispatch mutex recursively
      * in the same thread context. */
 
-    sigVecLock = createRWMutexReader(
+    sigVecLock = ert_createRWMutexReader(
         &sigVecLock_, &processSignals_.mVectorLock);
 
-    threadSigMask = pushThreadSigMask(
-        &threadSigMask_, ThreadSigMaskBlock, (const int []) { aSigNum, 0 });
+    threadSigMask = ert_pushThreadSigMask(
+        &threadSigMask_, Ert_ThreadSigMaskBlock, (const int []) { aSigNum, 0 });
 
-    actionLock = lockMutex(processSignals_.mVector[aSigNum].mActionMutex);
+    actionLock = ert_lockMutex(processSignals_.mVector[aSigNum].mActionMutex);
 
     struct sigaction prevAction;
     ERROR_IF(
@@ -381,11 +383,11 @@ Finally:
 
     FINALLY
     ({
-        actionLock = unlockMutex(actionLock);
+        actionLock = ert_unlockMutex(actionLock);
 
-        threadSigMask = popThreadSigMask(threadSigMask);
+        threadSigMask = ert_popThreadSigMask(threadSigMask);
 
-        sigVecLock = destroyRWMutexReader(sigVecLock);
+        sigVecLock = ert_destroyRWMutexReader(sigVecLock);
     });
 
     return rc;
@@ -456,12 +458,12 @@ ert_resetProcessSigPipe(void)
 /* -------------------------------------------------------------------------- */
 static struct
 {
-    struct ThreadSigMutex     mSigMutex;
+    struct Ert_ThreadSigMutex     mSigMutex;
     unsigned                  mCount;
     struct Ert_WatchProcessMethod mMethod;
 } processSigCont_ =
 {
-    .mSigMutex = THREAD_SIG_MUTEX_INITIALIZER(processSigCont_.mSigMutex),
+    .mSigMutex = ERT_THREAD_SIG_MUTEX_INITIALIZER(processSigCont_.mSigMutex),
 };
 
 static void
@@ -473,7 +475,7 @@ sigCont_(int aSigNum)
 
     __sync_add_and_fetch(&processSigCont_.mCount, 2);
 
-    struct ThreadSigMutex *lock = lockThreadSigMutex(
+    struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(
         &processSigCont_.mSigMutex);
 
     if (ert_ownWatchProcessMethodNil(processSigCont_.mMethod))
@@ -485,7 +487,7 @@ sigCont_(int aSigNum)
             ert_callWatchProcessMethod(processSigCont_.mMethod));
     }
 
-    lock = unlockThreadSigMutex(lock);
+    lock = ert_unlockThreadSigMutex(lock);
 }
 
 static ERT_CHECKED int
@@ -530,10 +532,10 @@ Finally:
 static ERT_CHECKED int
 updateProcessSigContMethod_(struct Ert_WatchProcessMethod aMethod)
 {
-    struct ThreadSigMutex *lock =
-        lockThreadSigMutex(&processSigCont_.mSigMutex);
+    struct Ert_ThreadSigMutex *lock =
+        ert_lockThreadSigMutex(&processSigCont_.mSigMutex);
     processSigCont_.mMethod = aMethod;
-    lock = unlockThreadSigMutex(lock);
+    lock = ert_unlockThreadSigMutex(lock);
 
     return 0;
 }
@@ -618,18 +620,18 @@ ert_checkProcessSigContTracker(struct Ert_ProcessSigContTracker *self)
 /* -------------------------------------------------------------------------- */
 static struct
 {
-    struct ThreadSigMutex     mSigMutex;
+    struct Ert_ThreadSigMutex     mSigMutex;
     struct Ert_WatchProcessMethod mMethod;
 } processSigStop_ =
 {
-    .mSigMutex = THREAD_SIG_MUTEX_INITIALIZER(processSigStop_.mSigMutex),
+    .mSigMutex = ERT_THREAD_SIG_MUTEX_INITIALIZER(processSigStop_.mSigMutex),
 };
 
 static void
 sigStop_(int aSigNum)
 {
-    struct ThreadSigMutex *lock =
-        lockThreadSigMutex(&processSigStop_.mSigMutex);
+    struct Ert_ThreadSigMutex *lock =
+        ert_lockThreadSigMutex(&processSigStop_.mSigMutex);
 
     if (ert_ownWatchProcessMethodNil(processSigStop_.mMethod))
     {
@@ -648,7 +650,7 @@ sigStop_(int aSigNum)
             ert_callWatchProcessMethod(processSigStop_.mMethod));
     }
 
-    lock = unlockThreadSigMutex(lock);
+    lock = ert_unlockThreadSigMutex(lock);
 }
 
 static ERT_CHECKED int
@@ -694,10 +696,10 @@ Finally:
 static ERT_CHECKED int
 updateProcessSigStopMethod_(struct Ert_WatchProcessMethod aMethod)
 {
-    struct ThreadSigMutex *lock =
-        lockThreadSigMutex(&processSigStop_.mSigMutex);
+    struct Ert_ThreadSigMutex *lock =
+        ert_lockThreadSigMutex(&processSigStop_.mSigMutex);
     processSigStop_.mMethod = aMethod;
-    lock = unlockThreadSigMutex(lock);
+    lock = ert_unlockThreadSigMutex(lock);
 
     return 0;
 }
@@ -813,7 +815,7 @@ ert_unwatchProcessChildren(void)
 }
 
 /* -------------------------------------------------------------------------- */
-static struct Duration           processClockTickPeriod_;
+static struct Ert_Duration           processClockTickPeriod_;
 static struct Ert_WatchProcessMethod processClockMethod_;
 static struct sigaction          processClockTickSigAction_ =
 {
@@ -872,7 +874,7 @@ Finally:
 
 int
 ert_watchProcessClock(struct Ert_WatchProcessMethod aMethod,
-                      struct Duration           aClockPeriod)
+                      struct Ert_Duration           aClockPeriod)
 {
     int rc = -1;
 
@@ -905,7 +907,7 @@ ert_watchProcessClock(struct Ert_WatchProcessMethod aMethod,
         });
 
     clockTimer.it_interval = clockTimer.it_value;
-    clockTimer.it_value    = timeValFromNanoSeconds(
+    clockTimer.it_value    = ert_timeValFromNanoSeconds(
         processClockTickPeriod_.duration);
 
     ERROR_IF(
@@ -1316,10 +1318,10 @@ ert_acquireProcessAppLock(void)
 {
     int rc = -1;
 
-    struct ThreadSigMutex *lock =
-        lockThreadSigMutex(processLock_.mMutex);
+    struct Ert_ThreadSigMutex *lock =
+        ert_lockThreadSigMutex(processLock_.mMutex);
 
-    if (1 == ownThreadSigMutexLocked(processLock_.mMutex))
+    if (1 == ert_ownThreadSigMutexLocked(processLock_.mMutex))
     {
         if (processLock_.mLock)
             ERROR_IF(
@@ -1333,7 +1335,7 @@ Finally:
     FINALLY
     ({
         if (rc)
-            lock = unlockThreadSigMutex(lock);
+            lock = ert_unlockThreadSigMutex(lock);
     });
 
     return rc;
@@ -1345,9 +1347,9 @@ ert_releaseProcessAppLock(void)
 {
     int rc = -1;
 
-    struct ThreadSigMutex *lock = processLock_.mMutex;
+    struct Ert_ThreadSigMutex *lock = processLock_.mMutex;
 
-    if (1 == ownThreadSigMutexLocked(lock))
+    if (1 == ert_ownThreadSigMutexLocked(lock))
     {
         if (processLock_.mLock)
             unlockProcessLock_(processLock_.mLock);
@@ -1359,7 +1361,7 @@ Finally:
 
     FINALLY
     ({
-        lock = unlockThreadSigMutex(lock);
+        lock = ert_unlockThreadSigMutex(lock);
     });
 
     return rc;
@@ -1402,7 +1404,7 @@ ert_destroyProcessAppLock(struct Ert_ProcessAppLock *self)
 unsigned
 ert_ownProcessAppLockCount(void)
 {
-    return ownThreadSigMutexLocked(processLock_.mMutex);
+    return ert_ownThreadSigMutexLocked(processLock_.mMutex);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1418,7 +1420,7 @@ ert_ownProcessAppLockFile(const struct Ert_ProcessAppLock *self)
 static ERT_CHECKED struct Ert_ProcessForkChildLock_ *
 ert_acquireProcessForkChildLock_(struct Ert_ProcessForkChildLock_ *self)
 {
-    struct Ert_Tid tid = ownThreadId();
+    struct Ert_Tid tid = ert_ownThreadId();
     struct Ert_Pid pid = ert_ownProcessId();
 
     ensure( ! self->mProcess.mPid || self->mProcess.mPid == pid.mPid);
@@ -1427,7 +1429,7 @@ ert_acquireProcessForkChildLock_(struct Ert_ProcessForkChildLock_ *self)
         ++self->mCount;
     else
     {
-        pthread_mutex_t *lock = lockMutex(&self->mMutex_);
+        pthread_mutex_t *lock = ert_lockMutex(&self->mMutex_);
 
         self->mMutex   = lock;
         self->mThread  = tid;
@@ -1448,7 +1450,7 @@ ert_relinquishProcessForkChildLock_(struct Ert_ProcessForkChildLock_ *self,
 {
     if (self)
     {
-        struct Ert_Tid tid = ownThreadId();
+        struct Ert_Tid tid = ert_ownThreadId();
         struct Ert_Pid pid = ert_ownProcessId();
 
         ensure(self->mCount);
@@ -1479,7 +1481,7 @@ ert_relinquishProcessForkChildLock_(struct Ert_ProcessForkChildLock_ *self,
             self->mThread = Ert_Tid(0);
             self->mMutex  = 0;
 
-            lock = unlockMutex(lock);
+            lock = ert_unlockMutex(lock);
         }
     }
 
@@ -2024,8 +2026,9 @@ forkProcessChild_PostParent_(
             (clocktick = sysconf(_SC_CLK_TCK),
              -1 == clocktick));
 
-        monotonicSleep(
-            Duration(NanoSeconds(TimeScale_ns / clocktick * 5 / 4)));
+        ert_monotonicSleep(
+            Ert_Duration(
+                Ert_NanoSeconds(Ert_TimeScale_ns / clocktick * 5 / 4)));
     }
 #endif
 
@@ -2421,7 +2424,7 @@ struct ForkProcessDaemon
     struct Ert_PostForkChildProcessMethod mChildMethod;
     struct Ert_ForkProcessMethod          mForkMethod;
     struct Ert_SocketPair                *mSyncSocket;
-    struct ThreadSigMask             *mSigMask;
+    struct Ert_ThreadSigMask             *mSigMask;
 };
 
 struct ForkProcessDaemonSigHandler
@@ -2466,9 +2469,9 @@ forkProcessDaemonChild_(struct ForkProcessDaemon *self)
      * the parent to stop and then make the daemon process an orphan. */
 
     ERROR_IF(
-        waitThreadSigMask((const int []) { SIGHUP, 0 }));
+        ert_waitThreadSigMask((const int []) { SIGHUP, 0 }));
 
-    self->mSigMask = popThreadSigMask(self->mSigMask);
+    self->mSigMask = ert_popThreadSigMask(self->mSigMask);
 
     debug(0, "daemon orphaned");
 
@@ -2552,14 +2555,14 @@ forkProcessDaemonGuardian_(struct ForkProcessDaemon *self)
         ERROR_IF(
             kill(daemonPid.mPid, SIGSTOP));
 
-        monotonicSleep(Duration(NSECS(MilliSeconds(100))));
+        ert_monotonicSleep(Ert_Duration(ERT_NSECS(Ert_MilliSeconds(100))));
 
         struct Ert_ChildProcessState daemonStatus =
             ert_monitorProcessChild(daemonPid);
         if (Ert_ChildProcessStateStopped == daemonStatus.mChildState)
             break;
 
-        monotonicSleep(Duration(NSECS(Seconds(1))));
+        ert_monotonicSleep(Ert_Duration(ERT_NSECS(Ert_Seconds(1))));
     }
 
     rc = 0;
@@ -2623,14 +2626,14 @@ ert_forkProcessDaemon(
 {
     pid_t rc = -1;
 
-    struct ThreadSigMask  sigMask_;
-    struct ThreadSigMask *sigMask = 0;
+    struct Ert_ThreadSigMask  sigMask_;
+    struct Ert_ThreadSigMask *sigMask = 0;
 
     struct Ert_SocketPair  syncSocket_;
     struct Ert_SocketPair *syncSocket = 0;
 
-    sigMask = pushThreadSigMask(
-        &sigMask_, ThreadSigMaskBlock, (const int []) { SIGHUP, 0 });
+    sigMask = ert_pushThreadSigMask(
+        &sigMask_, Ert_ThreadSigMaskBlock, (const int []) { SIGHUP, 0 });
 
     ERROR_IF(
         ert_createSocketPair(&syncSocket_, O_CLOEXEC));
@@ -2692,7 +2695,7 @@ Finally:
     ({
         syncSocket = ert_closeSocketPair(syncSocket);
 
-        sigMask = popThreadSigMask(sigMask);
+        sigMask = ert_popThreadSigMask(sigMask);
     });
 
     return Ert_Pid(rc);
@@ -2846,8 +2849,8 @@ killProcess_(int aSigNum, unsigned *aSigTrigger)
                 break;
 
             if (pendingSignal)
-                monotonicSleep(
-                    Duration(NSECS(MilliSeconds(100))));
+                ert_monotonicSleep(
+                    Ert_Duration(ERT_NSECS(Ert_MilliSeconds(100))));
         }
     }
     while (0);
@@ -2860,8 +2863,8 @@ killProcess_(int aSigNum, unsigned *aSigTrigger)
 
     while (1)
     {
-        monotonicSleep(
-            Duration(NSECS(Seconds(1))));
+        ert_monotonicSleep(
+            Ert_Duration(ERT_NSECS(Ert_Seconds(1))));
 
         if ( ! ert_testAction(Ert_TestLevelRace))
             raise(SIGKILL);
@@ -2962,19 +2965,20 @@ ert_extractProcessExitStatus(int aStatus, struct Ert_Pid aPid)
 }
 
 /* -------------------------------------------------------------------------- */
-struct Duration
+struct Ert_Duration
 ert_ownProcessElapsedTime(void)
 {
     return
-        Duration(
-            NanoSeconds(
+        Ert_Duration(
+            Ert_NanoSeconds(
                 processTimeBase_.monotonic.ns
-                ? monotonicTime().monotonic.ns - processTimeBase_.monotonic.ns
+                ? (ert_monotonicTime().monotonic.ns
+                       - processTimeBase_.monotonic.ns)
                 : 0));
 }
 
 /* -------------------------------------------------------------------------- */
-struct MonotonicTime
+struct Ert_MonotonicTime
 ert_ownProcessBaseTime(void)
 {
     return processTimeBase_;
@@ -3073,15 +3077,15 @@ prepareFork_(void)
     /* Acquire processFork_.mMutex to allow only one thread to
      * use the shared process fork structure instance at a time. */
 
-    processFork_.mMutex = lockMutex(&processFork_.mMutex_);
+    processFork_.mMutex = ert_lockMutex(&processFork_.mMutex_);
 
     /* Note that processLock_.mMutex is recursive, meaning that
      * it might already be held by this thread on entry to this function. */
 
-    processFork_.mLock = lockThreadSigMutex(processLock_.mMutex);
+    processFork_.mLock = ert_lockThreadSigMutex(processLock_.mMutex);
 
     ensure(
-        0 < ownThreadSigMutexLocked(processLock_.mMutex));
+        0 < ert_ownThreadSigMutexLocked(processLock_.mMutex));
 
     /* Acquire the processSigVecLock_ for writing to ensure that there
      * are no other signal vector activity in progress. The purpose here
@@ -3089,13 +3093,13 @@ prepareFork_(void)
      * in progress, since those locked mutexes will then be transferred
      * into the child process. */
 
-    processFork_.mSigVecLock = createRWMutexWriter(
+    processFork_.mSigVecLock = ert_createRWMutexWriter(
         &processFork_.mSigVecLock_, &processSignals_.mVectorLock);
 
     /* Acquire the processSigMutex_ to ensure that there is no other
      * signal handler activity while the fork is in progress. */
 
-    processFork_.mSigLock = lockThreadSigMutex(&processSignals_.mSignalMutex);
+    processFork_.mSigLock = ert_lockThreadSigMutex(&processSignals_.mSignalMutex);
 
     processFork_.mParentPid = ert_ownProcessId();
 
@@ -3113,18 +3117,18 @@ completeFork_(void)
          * immediately preceding the fork. */
 
         processFork_.mSigLock =
-            unlockThreadSigMutex(processFork_.mSigLock);
+            ert_unlockThreadSigMutex(processFork_.mSigLock);
 
         processFork_.mSigVecLock =
-            destroyRWMutexWriter(processFork_.mSigVecLock);
+            ert_destroyRWMutexWriter(processFork_.mSigVecLock);
 
-        processFork_.mLock = unlockThreadSigMutex(processLock_.mMutex);
+        processFork_.mLock = ert_unlockThreadSigMutex(processLock_.mMutex);
 
         pthread_mutex_t *lock = processFork_.mMutex;
 
         processFork_.mMutex = 0;
 
-        lock = unlockMutex(lock);
+        lock = ert_unlockMutex(lock);
     });
 }
 
@@ -3232,7 +3236,7 @@ Ert_Process_init(struct Ert_ProcessModule *self, const char *aArg0)
 
     if ( ! moduleInitOnce_)
     {
-        processTimeBase_ = monotonicTime();
+        processTimeBase_ = ert_monotonicTime();
         do
             --processTimeBase_.monotonic.ns;
         while ( ! processTimeBase_.monotonic.ns);

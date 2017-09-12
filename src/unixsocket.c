@@ -92,7 +92,7 @@ createUnixSocket(
     uint32_t rnd =
         aNameLen
         ? aNameLen
-        : ert_ownProcessId().mPid ^ MSECS(monotonicTime().monotonic).ms;
+        : ert_ownProcessId().mPid ^ ERT_MSECS(ert_monotonicTime().monotonic).ms;
 
     while (1)
     {
@@ -560,7 +560,7 @@ shutdownUnixSocketWriter(struct UnixSocket *self)
 /* -------------------------------------------------------------------------- */
 int
 waitUnixSocketWriteReady(const struct UnixSocket *self,
-                         const struct Duration   *aTimeout)
+                         const struct Ert_Duration   *aTimeout)
 {
     return ert_waitSocketWriteReady(self->mSocket, aTimeout);
 }
@@ -568,7 +568,7 @@ waitUnixSocketWriteReady(const struct UnixSocket *self,
 /* -------------------------------------------------------------------------- */
 int
 waitUnixSocketReadReady(const struct UnixSocket *self,
-                        const struct Duration   *aTimeout)
+                        const struct Ert_Duration   *aTimeout)
 {
     return ert_waitSocketReadReady(self->mSocket, aTimeout);
 }
@@ -590,7 +590,7 @@ recvUnixSocket(struct UnixSocket *self, char *aBuf, size_t aLen)
 /* -------------------------------------------------------------------------- */
 ssize_t
 writeUnixSocket(struct UnixSocket *self,
-                const char *aBuf, size_t aLen, const struct Duration *aTimeout)
+                const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_writeSocket(self->mSocket, aBuf, aLen, aTimeout);
 }
@@ -598,7 +598,7 @@ writeUnixSocket(struct UnixSocket *self,
 /* -------------------------------------------------------------------------- */
 ssize_t
 readUnixSocket(struct UnixSocket *self,
-               char *aBuf, size_t aLen, const struct Duration *aTimeout)
+               char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_readSocket(self->mSocket, aBuf, aLen, aTimeout);
 }

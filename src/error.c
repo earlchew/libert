@@ -503,7 +503,7 @@ dprint_(
     const char            *aErrText,
     struct Ert_Pid         aPid,
     struct Ert_Tid         aTid,
-    const struct Duration *aElapsed,
+    const struct Ert_Duration *aElapsed,
     uint64_t               aElapsed_h,
     uint64_t               aElapsed_m,
     uint64_t               aElapsed_s,
@@ -578,7 +578,7 @@ dprintf_(
     const char            *aErrText,
     struct Ert_Pid         aPid,
     struct Ert_Tid         aTid,
-    const struct Duration *aElapsed,
+    const struct Ert_Duration *aElapsed,
     uint64_t               aElapsed_h,
     uint64_t               aElapsed_m,
     uint64_t               aElapsed_s,
@@ -634,7 +634,7 @@ print_(
     FINALLY
     ({
         struct Ert_Pid pid = ert_ownProcessId();
-        struct Ert_Tid tid = ownThreadId();
+        struct Ert_Tid tid = ert_ownThreadId();
 
         /* The availability of buffered IO might be lost while a message
          * is being processed since this code might run in a thread
@@ -657,9 +657,9 @@ print_(
             buffered = !! printBuf_.mFile;
         }
 
-        struct Duration elapsed = ert_ownProcessElapsedTime();
+        struct Ert_Duration elapsed = ert_ownProcessElapsedTime();
 
-        uint64_t elapsed_ms = MSECS(elapsed.duration).ms;
+        uint64_t elapsed_ms = ERT_MSECS(elapsed.duration).ms;
         uint64_t elapsed_s;
         uint64_t elapsed_m;
         uint64_t elapsed_h;

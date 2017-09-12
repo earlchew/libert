@@ -242,7 +242,7 @@ struct PipePolling
 
     static int countPoll(struct PipePolling          *self,
                          bool                         aEnabled,
-                         const struct EventClockTime *aPollTime_)
+                         const struct Ert_EventClockTime *aPollTime_)
     {
         ++Count;
         return 0;
@@ -273,8 +273,8 @@ TEST(EventLatchTest, PipePolling)
                                      &pipePolling,
                                      PipePolling::countPoll)));
 
-    struct EventClockTime  pollTime_ = eventclockTime();
-    struct EventClockTime *pollTime = &pollTime_;
+    struct Ert_EventClockTime  pollTime_ = ert_eventclockTime();
+    struct Ert_EventClockTime *pollTime = &pollTime_;
 
     EXPECT_EQ(0, ert_pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(0, PipePolling::Count);

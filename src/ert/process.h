@@ -219,7 +219,7 @@ ERT_BEGIN_C_SCOPE;
 
 struct timespec;
 
-struct BootClockTime;
+struct Ert_BootClockTime;
 struct Ert_Pipe;
 struct File;
 struct ProcessAppLock;
@@ -367,7 +367,7 @@ ert_unwatchProcessSigStop(void);
 
 ERT_CHECKED int
 ert_watchProcessClock(
-    struct Ert_WatchProcessMethod aMethod, struct Duration aPeriod);
+    struct Ert_WatchProcessMethod aMethod, struct Ert_Duration aPeriod);
 
 ERT_CHECKED int
 ert_unwatchProcessClock(void);
@@ -454,10 +454,10 @@ const struct Ert_File *
 ert_ownProcessAppLockFile(const struct Ert_ProcessAppLock *self);
 
 /* -------------------------------------------------------------------------- */
-struct Duration
+struct Ert_Duration
 ert_ownProcessElapsedTime(void);
 
-struct MonotonicTime
+struct Ert_MonotonicTime
 ert_ownProcessBaseTime(void);
 
 const char*

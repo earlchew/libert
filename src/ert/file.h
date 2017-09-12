@@ -73,7 +73,7 @@ struct stat;
 struct sockaddr;
 struct ucred;
 
-struct Duration;
+struct Ert_Duration;
 
 struct Ert_File
 {
@@ -131,11 +131,11 @@ ert_ownFileValid(const struct Ert_File *self);
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
 ert_writeFile(struct Ert_File *self,
-          const char *aBuf, size_t aLen, const struct Duration *aTimeout);
+          const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED ssize_t
 ert_readFile(struct Ert_File *self,
-         char *aBuf, size_t aLen, const struct Duration *aTimeout);
+         char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED ssize_t
@@ -151,11 +151,11 @@ ert_readFileDeadline(struct Ert_File *self,
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
 ert_waitFileWriteReady(const struct Ert_File     *self,
-                   const struct Duration *aTimeout);
+                   const struct Ert_Duration *aTimeout);
 
 ERT_CHECKED int
 ert_waitFileReadReady(const struct Ert_File     *self,
-                  const struct Duration *aTimeout);
+                  const struct Ert_Duration *aTimeout);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
