@@ -43,6 +43,9 @@
 #define ERT_METHOD_ARG_LIST_ThreadMethod  ()
 #define ERT_METHOD_CALL_LIST_ThreadMethod ()
 
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
 #define ERT_METHOD_NAME      ThreadMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_ThreadMethod
 #define ERT_METHOD_CONST     ERT_METHOD_CONST_ThreadMethod
@@ -50,10 +53,10 @@
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_ThreadMethod
 #include "ert/method.h"
 
-#define ThreadMethod(Object_, Method_)          \
+#define Ert_ThreadMethod(Object_, Method_)      \
     ERT_METHOD_TRAMPOLINE(                      \
         Object_, Method_,                       \
-        ThreadMethod_,                          \
+        Ert_ThreadMethod_,                      \
         ERT_METHOD_RETURN_ThreadMethod,         \
         ERT_METHOD_CONST_ThreadMethod,          \
         ERT_METHOD_ARG_LIST_ThreadMethod,       \
@@ -66,6 +69,9 @@
 #define ERT_METHOD_ARG_LIST_MutexRepairMethod  ()
 #define ERT_METHOD_CALL_LIST_MutexRepairMethod ()
 
+#define ERT_METHOD_TYPE_PREFIX     Ert_
+#define ERT_METHOD_FUNCTION_PREFIX ert_
+
 #define ERT_METHOD_NAME      MutexRepairMethod
 #define ERT_METHOD_RETURN    ERT_METHOD_RETURN_MutexRepairMethod
 #define ERT_METHOD_CONST     ERT_METHOD_CONST_MutexRepairMethod
@@ -73,10 +79,10 @@
 #define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_MutexRepairMethod
 #include "ert/method.h"
 
-#define MutexRepairMethod(Object_, Method_)          \
+#define Ert_MutexRepairMethod(Object_, Method_)      \
     ERT_METHOD_TRAMPOLINE(                           \
         Object_, Method_,                            \
-        MutexRepairMethod_,                          \
+        Ert_MutexRepairMethod_,                      \
         ERT_METHOD_RETURN_MutexRepairMethod,         \
         ERT_METHOD_CONST_MutexRepairMethod,          \
         ERT_METHOD_ARG_LIST_MutexRepairMethod,       \
@@ -90,7 +96,7 @@
  * guarantee that a user space reference count will be decremented when
  * a process is killed. */
 
-#define THREAD_NOT_IMPLEMENTED ERT_NOTIMPLEMENTED
+#define ERT_THREAD_NOT_IMPLEMENTED ERT_NOTIMPLEMENTED
 
 /* -------------------------------------------------------------------------- */
 /* Fork Sentry
@@ -100,18 +106,18 @@
  * as the fork completes.
  */
 
-#define THREAD_FORK_SENTRY(Lock_, Unlock_)                      \
-    THREAD_FORK_SENTRY_1_(ERT_COUNTER, Lock_, Unlock_)
+#define ERT_THREAD_FORK_SENTRY(Lock_, Unlock_)                  \
+    ERT_THREAD_FORK_SENTRY_1_(ERT_COUNTER, Lock_, Unlock_)
 
-#define THREAD_FORK_SENTRY_1_(Suffix_, Lock_, Unlock_)          \
-    THREAD_FORK_SENTRY_2_(Suffix_, Lock_, Unlock_)
+#define ERT_THREAD_FORK_SENTRY_1_(Suffix_, Lock_, Unlock_)      \
+    ERT_THREAD_FORK_SENTRY_2_(Suffix_, Lock_, Unlock_)
 
-#define THREAD_FORK_SENTRY_2_(Suffix_, Lock_, Unlock_)          \
-    ERT_EARLY_INITIALISER(                                          \
+#define ERT_THREAD_FORK_SENTRY_2_(Suffix_, Lock_, Unlock_)      \
+    ERT_EARLY_INITIALISER(                                      \
         threadForkLockSentry_ ## Suffix_,                       \
         ({                                                      \
             void (*lock_)(void) =                               \
-                ERT_LAMBDA(                                         \
+                ERT_LAMBDA(                                     \
                     void, (void),                               \
                     {                                           \
                         while ((Lock_))                         \
@@ -119,7 +125,7 @@
                     });                                         \
                                                                 \
             void (*unlock_)(void) =                             \
-                ERT_LAMBDA(                                         \
+                ERT_LAMBDA(                                     \
                     void, (void),                               \
                     {                                           \
                         while ((Unlock_))                       \
@@ -137,221 +143,224 @@ ERT_BEGIN_C_SCOPE;
 
 struct Ert_Tid;
 
-struct ThreadSigMask
+struct Ert_ThreadSigMask
 {
     sigset_t mSigSet;
 };
 
-enum ThreadSigMaskAction
+enum Ert_ThreadSigMaskAction
 {
-    ThreadSigMaskUnblock = -1,
-    ThreadSigMaskSet     =  0,
-    ThreadSigMaskBlock   = +1,
+    Ert_ThreadSigMaskUnblock = -1,
+    Ert_ThreadSigMaskSet     =  0,
+    Ert_ThreadSigMaskBlock   = +1,
 };
 
-struct ThreadSigMutex
+struct Ert_ThreadSigMutex
 {
-    pthread_mutex_t      mMutex_;
-    pthread_mutex_t     *mMutex;
-    pthread_cond_t       mCond_;
-    pthread_cond_t      *mCond;
-    struct ThreadSigMask mMask;
-    unsigned             mLocked;
-    pthread_t            mOwner;
+    pthread_mutex_t           mMutex_;
+    pthread_mutex_t          *mMutex;
+    pthread_cond_t            mCond_;
+    pthread_cond_t           *mCond;
+    struct Ert_ThreadSigMask  mMask;
+    unsigned                  mLocked;
+    pthread_t                 mOwner;
 };
 
-#define THREAD_SIG_MUTEX_INITIALIZER(Mutex_) \
-{                                            \
-    .mMutex_ = PTHREAD_MUTEX_INITIALIZER,    \
-    .mMutex  = &(Mutex_).mMutex_,            \
-    .mCond_  = PTHREAD_COND_INITIALIZER,     \
-    .mCond   = &(Mutex_).mCond_,             \
+#define ERT_THREAD_SIG_MUTEX_INITIALIZER(Mutex_)        \
+{                                                       \
+    .mMutex_ = PTHREAD_MUTEX_INITIALIZER,               \
+    .mMutex  = &(Mutex_).mMutex_,                       \
+    .mCond_  = PTHREAD_COND_INITIALIZER,                \
+    .mCond   = &(Mutex_).mCond_,                        \
 }
 
-struct RWMutexReader
+struct Ert_RWMutexReader
 {
     pthread_rwlock_t *mMutex;
 };
 
-struct RWMutexWriter
+struct Ert_RWMutexWriter
 {
     pthread_rwlock_t *mMutex;
 };
 
-struct SharedMutex
+struct Ert_SharedMutex
 {
     pthread_mutex_t mMutex;
 };
 
-struct SharedCond
+struct Ert_SharedCond
 {
     pthread_cond_t mCond;
 };
 
-struct Thread
+struct Ert_Thread
 {
     pthread_t mThread;
     char     *mName;
     bool      mJoined;
 };
 
-struct ThreadAttr
+struct Ert_ThreadAttr
 {
     pthread_attr_t mAttr;
 };
 
 /* -------------------------------------------------------------------------- */
 struct Ert_Tid
-ownThreadId(void);
+ert_ownThreadId(void);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct Thread *
-createThread(
-    struct Thread           *self,
-    const char              *aName,
-    const struct ThreadAttr *aAttr,
-    struct ThreadMethod      aMethod);
+ERT_CHECKED struct Ert_Thread *
+ert_createThread(
+    struct Ert_Thread           *self,
+    const char                  *aName,
+    const struct Ert_ThreadAttr *aAttr,
+    struct Ert_ThreadMethod      aMethod);
 
 ERT_CHECKED int
-joinThread(struct Thread *self);
+ert_joinThread(struct Ert_Thread *self);
 
 void
-cancelThread(struct Thread *self);
+ert_cancelThread(struct Ert_Thread *self);
 
-ERT_CHECKED struct Thread *
-closeThread(struct Thread *self);
+ERT_CHECKED struct Ert_Thread *
+ert_closeThread(struct Ert_Thread *self);
 
 ERT_CHECKED int
-killThread(struct Thread *self, int aSignal);
+ert_killThread(struct Ert_Thread *self, int aSignal);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct ThreadAttr *
-createThreadAttr(struct ThreadAttr *self);
+ERT_CHECKED struct Ert_ThreadAttr *
+ert_createThreadAttr(struct Ert_ThreadAttr *self);
 
-ERT_CHECKED struct ThreadAttr *
-destroyThreadAttr(struct ThreadAttr *self);
+ERT_CHECKED struct Ert_ThreadAttr *
+ert_destroyThreadAttr(struct Ert_ThreadAttr *self);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct ThreadSigMutex *
-createThreadSigMutex(struct ThreadSigMutex *self);
+ERT_CHECKED struct Ert_ThreadSigMutex *
+ert_createThreadSigMutex(struct Ert_ThreadSigMutex *self);
 
-ERT_CHECKED struct ThreadSigMutex *
-destroyThreadSigMutex(struct ThreadSigMutex *self);
+ERT_CHECKED struct Ert_ThreadSigMutex *
+ert_destroyThreadSigMutex(struct Ert_ThreadSigMutex *self);
 
-ERT_CHECKED struct ThreadSigMutex *
-lockThreadSigMutex(struct ThreadSigMutex *self);
+ERT_CHECKED struct Ert_ThreadSigMutex *
+ert_lockThreadSigMutex(struct Ert_ThreadSigMutex *self);
 
 unsigned
-ownThreadSigMutexLocked(struct ThreadSigMutex *self);
+ert_ownThreadSigMutexLocked(struct Ert_ThreadSigMutex *self);
 
-ERT_CHECKED struct ThreadSigMutex *
-unlockThreadSigMutex(struct ThreadSigMutex *self);
-
-/* -------------------------------------------------------------------------- */
-ERT_CHECKED pthread_mutex_t *
-createMutex(pthread_mutex_t *self);
-
-ERT_CHECKED pthread_mutex_t *
-destroyMutex(pthread_mutex_t *self);
-
-ERT_CHECKED pthread_mutex_t *
-lockMutex(pthread_mutex_t *self);
-
-ERT_CHECKED pthread_mutex_t *
-unlockMutex(pthread_mutex_t *self);
-
-ERT_CHECKED pthread_mutex_t *
-unlockMutexSignal(pthread_mutex_t *self, pthread_cond_t *aCond);
-
-ERT_CHECKED pthread_mutex_t *
-unlockMutexBroadcast(pthread_mutex_t *self, pthread_cond_t *aCond);
+ERT_CHECKED struct Ert_ThreadSigMutex *
+ert_unlockThreadSigMutex(struct Ert_ThreadSigMutex *self);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct SharedMutex *
-createSharedMutex(struct SharedMutex *self);
+ERT_CHECKED pthread_mutex_t *
+ert_createMutex(pthread_mutex_t *self);
 
-ERT_CHECKED struct SharedMutex *
-destroySharedMutex(struct SharedMutex *self);
+ERT_CHECKED pthread_mutex_t *
+ert_destroyMutex(pthread_mutex_t *self);
 
-ERT_CHECKED struct SharedMutex *
-refSharedMutex(struct SharedMutex *self) THREAD_NOT_IMPLEMENTED;
+ERT_CHECKED pthread_mutex_t *
+ert_lockMutex(pthread_mutex_t *self);
 
-ERT_CHECKED struct SharedMutex *
-unrefSharedMutex(struct SharedMutex *self) THREAD_NOT_IMPLEMENTED;
+ERT_CHECKED pthread_mutex_t *
+ert_unlockMutex(pthread_mutex_t *self);
 
-ERT_CHECKED struct SharedMutex *
-lockSharedMutex(struct SharedMutex *self, struct MutexRepairMethod aRepair);
+ERT_CHECKED pthread_mutex_t *
+ert_unlockMutexSignal(pthread_mutex_t *self, pthread_cond_t *aCond);
 
-ERT_CHECKED struct SharedMutex *
-unlockSharedMutex(struct SharedMutex *self);
+ERT_CHECKED pthread_mutex_t *
+ert_unlockMutexBroadcast(pthread_mutex_t *self, pthread_cond_t *aCond);
 
-ERT_CHECKED struct SharedMutex *
-unlockSharedMutexSignal(struct SharedMutex *self, struct SharedCond *aCond);
+/* -------------------------------------------------------------------------- */
+ERT_CHECKED struct Ert_SharedMutex *
+ert_createSharedMutex(struct Ert_SharedMutex *self);
 
-ERT_CHECKED struct SharedMutex *
-unlockSharedMutexBroadcast(struct SharedMutex *self, struct SharedCond *aCond);
+ERT_CHECKED struct Ert_SharedMutex *
+ert_destroySharedMutex(struct Ert_SharedMutex *self);
+
+ERT_CHECKED struct Ert_SharedMutex *
+ert_refSharedMutex(struct Ert_SharedMutex *self) ERT_THREAD_NOT_IMPLEMENTED;
+
+ERT_CHECKED struct Ert_SharedMutex *
+ert_unrefSharedMutex(struct Ert_SharedMutex *self) ERT_THREAD_NOT_IMPLEMENTED;
+
+ERT_CHECKED struct Ert_SharedMutex *
+ert_lockSharedMutex(
+    struct Ert_SharedMutex *self, struct Ert_MutexRepairMethod aRepair);
+
+ERT_CHECKED struct Ert_SharedMutex *
+ert_unlockSharedMutex(struct Ert_SharedMutex *self);
+
+ERT_CHECKED struct Ert_SharedMutex *
+ert_unlockSharedMutexSignal(
+    struct Ert_SharedMutex *self, struct Ert_SharedCond *aCond);
+
+ERT_CHECKED struct Ert_SharedMutex *
+ert_unlockSharedMutexBroadcast(
+    struct Ert_SharedMutex *self, struct Ert_SharedCond *aCond);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED pthread_rwlock_t *
-createRWMutex(pthread_rwlock_t *self);
+ert_createRWMutex(pthread_rwlock_t *self);
 
 ERT_CHECKED pthread_rwlock_t *
-destroyRWMutex(pthread_rwlock_t *self);
+ert_destroyRWMutex(pthread_rwlock_t *self);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct RWMutexReader *
-createRWMutexReader(struct RWMutexReader *self,
+ERT_CHECKED struct Ert_RWMutexReader *
+ert_createRWMutexReader(struct Ert_RWMutexReader *self,
                     pthread_rwlock_t     *aMutex);
 
-ERT_CHECKED struct RWMutexReader *
-destroyRWMutexReader(struct RWMutexReader *self);
+ERT_CHECKED struct Ert_RWMutexReader *
+ert_destroyRWMutexReader(struct Ert_RWMutexReader *self);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct RWMutexWriter *
-createRWMutexWriter(struct RWMutexWriter *self,
+ERT_CHECKED struct Ert_RWMutexWriter *
+ert_createRWMutexWriter(struct Ert_RWMutexWriter *self,
                     pthread_rwlock_t     *aMutex);
 
-ERT_CHECKED struct RWMutexWriter *
-destroyRWMutexWriter(struct RWMutexWriter *self);
+ERT_CHECKED struct Ert_RWMutexWriter *
+ert_destroyRWMutexWriter(struct Ert_RWMutexWriter *self);
 
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED pthread_cond_t *
-createCond(pthread_cond_t *self);
+ert_createCond(pthread_cond_t *self);
 
 ERT_CHECKED pthread_cond_t *
-destroyCond(pthread_cond_t *self);
+ert_destroyCond(pthread_cond_t *self);
 
-ERT_CHECKED struct SharedCond *
-refSharedCond(struct SharedCond *self) THREAD_NOT_IMPLEMENTED;
+ERT_CHECKED struct Ert_SharedCond *
+ert_refSharedCond(struct Ert_SharedCond *self) ERT_THREAD_NOT_IMPLEMENTED;
 
-ERT_CHECKED struct SharedCond *
-unrefSharedCond(struct SharedCond *self) THREAD_NOT_IMPLEMENTED;
+ERT_CHECKED struct Ert_SharedCond *
+ert_unrefSharedCond(struct Ert_SharedCond *self) ERT_THREAD_NOT_IMPLEMENTED;
 
 void
-waitCond(pthread_cond_t *self, pthread_mutex_t *aMutex);
+ert_waitCond(pthread_cond_t *self, pthread_mutex_t *aMutex);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct SharedCond *
-createSharedCond(struct SharedCond *self);
+ERT_CHECKED struct Ert_SharedCond *
+ert_createSharedCond(struct Ert_SharedCond *self);
 
-ERT_CHECKED struct SharedCond *
-destroySharedCond(struct SharedCond *self);
+ERT_CHECKED struct Ert_SharedCond *
+ert_destroySharedCond(struct Ert_SharedCond *self);
 
 ERT_CHECKED int
-waitSharedCond(struct SharedCond *self, struct SharedMutex *aMutex);
+ert_waitSharedCond(struct Ert_SharedCond *self, struct Ert_SharedMutex *aMutex);
 
 /* -------------------------------------------------------------------------- */
-ERT_CHECKED struct ThreadSigMask *
-pushThreadSigMask(
-    struct ThreadSigMask    *self,
-    enum ThreadSigMaskAction aAction,
+ERT_CHECKED struct Ert_ThreadSigMask *
+ert_pushThreadSigMask(
+    struct Ert_ThreadSigMask    *self,
+    enum Ert_ThreadSigMaskAction aAction,
     const int               *aSigList);
 
-ERT_CHECKED struct ThreadSigMask *
-popThreadSigMask(struct ThreadSigMask *self);
+ERT_CHECKED struct Ert_ThreadSigMask *
+ert_popThreadSigMask(struct Ert_ThreadSigMask *self);
 
 ERT_CHECKED int
-waitThreadSigMask(const int *aSigList);
+ert_waitThreadSigMask(const int *aSigList);
 
 /* -------------------------------------------------------------------------- */
 
