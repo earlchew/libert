@@ -166,19 +166,19 @@ interruptSystemCall(enum SystemCallKind aKind, const char *aErrName);
             }                                                       \
         }                                                           \
                                                                     \
-        (ERT_DECLTYPE(Function_) *) syscall_;                           \
+        (ERT_DECLTYPE(Function_) *) syscall_;                       \
     })
 
 /* -------------------------------------------------------------------------- */
-#define SYSCALL_RAW_(Kind_, Function_, Args_)                   \
-    do                                                          \
-    {                                                           \
-        uintptr_t syscall_ = invokeSystemCall((Kind_));         \
-                                                                \
+#define SYSCALL_RAW_(Kind_, Function_, Args_)                           \
+    do                                                                  \
+    {                                                                   \
+        uintptr_t syscall_ = invokeSystemCall((Kind_));                 \
+                                                                        \
         ERT_AUTO(rc, ((ERT_DECLTYPE(Function_) *) syscall_) Args_);     \
-                                                                \
-        return rc;                                              \
-                                                                \
+                                                                        \
+        return rc;                                                      \
+                                                                        \
     } while (0)
 
 

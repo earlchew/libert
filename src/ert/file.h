@@ -109,7 +109,7 @@ ert_duplicateFile(
     const struct Ert_File *aOther);
 
 ERT_CHECKED int
-nonBlockingFile(
+ert_nonBlockingFile(
     struct Ert_File *self,
     unsigned         aNonBlocking);
 

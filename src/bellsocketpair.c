@@ -32,7 +32,9 @@
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createBellSocketPair(struct Ert_BellSocketPair *self, unsigned aFlags)
+ert_createBellSocketPair(
+    struct Ert_BellSocketPair *self,
+    unsigned                   aFlags)
 {
     int rc = -1;
 
@@ -57,21 +59,24 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_closeBellSocketPairParent(struct Ert_BellSocketPair *self)
+ert_closeBellSocketPairParent(
+    struct Ert_BellSocketPair *self)
 {
     ert_closeSocketPairParent(self->mSocketPair);
 }
 
 /* -------------------------------------------------------------------------- */
 void
-ert_closeBellSocketPairChild(struct Ert_BellSocketPair *self)
+ert_closeBellSocketPairChild(
+    struct Ert_BellSocketPair *self)
 {
     ert_closeSocketPairChild(self->mSocketPair);
 }
 
 /* -------------------------------------------------------------------------- */
 struct Ert_BellSocketPair *
-ert_closeBellSocketPair(struct Ert_BellSocketPair *self)
+ert_closeBellSocketPair(
+    struct Ert_BellSocketPair *self)
 {
     if (self)
         self->mSocketPair = ert_closeSocketPair(self->mSocketPair);
@@ -81,7 +86,8 @@ ert_closeBellSocketPair(struct Ert_BellSocketPair *self)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_ringBellSocketPair_(struct Ert_UnixSocket *aSocket)
+ringBellSocketPair_(
+    struct Ert_UnixSocket *aSocket)
 {
     int rc = -1;
 
@@ -110,21 +116,24 @@ Finally:
 }
 
 int
-ert_ringBellSocketPairParent(struct Ert_BellSocketPair *self)
+ert_ringBellSocketPairParent(
+    struct Ert_BellSocketPair *self)
 {
-    return ert_ringBellSocketPair_(self->mSocketPair->mParentSocket);
+    return ringBellSocketPair_(self->mSocketPair->mParentSocket);
 }
 
 int
-ert_ringBellSocketPairChild(struct Ert_BellSocketPair *self)
+ert_ringBellSocketPairChild(
+    struct Ert_BellSocketPair *self)
 {
-    return ert_ringBellSocketPair_(self->mSocketPair->mChildSocket);
+    return ringBellSocketPair_(self->mSocketPair->mChildSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_waitBellSocketPair_(struct Ert_UnixSocket     *aSocket,
-                    const struct Ert_Duration *aTimeout)
+waitBellSocketPair_(
+    struct Ert_UnixSocket     *aSocket,
+    const struct Ert_Duration *aTimeout)
 {
     int rc = -1;
 
@@ -153,17 +162,19 @@ Finally:
 }
 
 int
-ert_waitBellSocketPairParent(struct Ert_BellSocketPair *self,
-                         const struct Ert_Duration *aTimeout)
+ert_waitBellSocketPairParent(
+    struct Ert_BellSocketPair *self,
+    const struct Ert_Duration *aTimeout)
 {
-    return ert_waitBellSocketPair_(self->mSocketPair->mParentSocket, aTimeout);
+    return waitBellSocketPair_(self->mSocketPair->mParentSocket, aTimeout);
 }
 
 int
-ert_waitBellSocketPairChild(struct Ert_BellSocketPair *self,
-                        const struct Ert_Duration *aTimeout)
+ert_waitBellSocketPairChild(
+    struct Ert_BellSocketPair *self,
+    const struct Ert_Duration *aTimeout)
 {
-    return ert_waitBellSocketPair_(self->mSocketPair->mChildSocket, aTimeout);
+    return waitBellSocketPair_(self->mSocketPair->mChildSocket, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */

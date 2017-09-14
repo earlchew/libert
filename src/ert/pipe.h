@@ -74,7 +74,7 @@ ert_closePipeOnExec(
     unsigned         aCloseOnExec);
 
 ERT_CHECKED int
-nonBlockingPipe(
+ert_nonBlockingPipe(
     struct Ert_Pipe *self,
     unsigned         aNonBlocking);
 

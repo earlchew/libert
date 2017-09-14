@@ -265,7 +265,8 @@ ert_addErrorFrame(const struct Ert_ErrorFrame *aFrame, int aErrno)
 
     if (iter->mFrame == iter->mChunk->mEnd)
     {
-        struct Ert_ErrorFrameChunk *chunk = createErrorFrameChunk_(iter->mChunk);
+        struct Ert_ErrorFrameChunk *chunk =
+            createErrorFrameChunk_(iter->mChunk);
 
         TAILQ_INSERT_TAIL(&errorStack_.mStack->mHead, chunk, mStackList);
 

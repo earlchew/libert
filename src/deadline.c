@@ -31,7 +31,9 @@
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createDeadline(struct Ert_Deadline *self, const struct Ert_Duration *aDuration)
+ert_createDeadline(
+    struct Ert_Deadline       *self,
+    const struct Ert_Duration *aDuration)
 {
     int rc = -1;
 
@@ -58,16 +60,18 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_Deadline *
-ert_closeDeadline(struct Ert_Deadline *self)
+ert_closeDeadline(
+    struct Ert_Deadline *self)
 {
     return 0;
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_checkDeadlineExpired(struct Ert_Deadline *self,
-                         struct Ert_DeadlinePollMethod aPollMethod,
-                         struct Ert_DeadlineWaitMethod aWaitMethod)
+ert_checkDeadlineExpired(
+    struct Ert_Deadline           *self,
+    struct Ert_DeadlinePollMethod  aPollMethod,
+    struct Ert_DeadlineWaitMethod  aWaitMethod)
 {
     int rc = -1;
 
@@ -157,7 +161,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_ownDeadlineExpired(const struct Ert_Deadline *self)
+ert_ownDeadlineExpired(
+    const struct Ert_Deadline *self)
 {
     return self->mExpired;
 }

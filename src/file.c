@@ -66,7 +66,9 @@ ERT_THREAD_FORK_SENTRY(
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createFile(struct Ert_File *self, int aFd)
+ert_createFile(
+    struct Ert_File *self,
+    int              aFd)
 {
     int rc = -1;
 
@@ -210,7 +212,8 @@ struct TemporaryFileProcess_
 };
 
 static ERT_CHECKED struct TemporaryFileProcess_ *
-closeTemporaryFileProcess_(struct TemporaryFileProcess_ *self)
+closeTemporaryFileProcess_(
+    struct TemporaryFileProcess_ *self)
 {
     if (self)
     {
@@ -222,8 +225,9 @@ closeTemporaryFileProcess_(struct TemporaryFileProcess_ *self)
 }
 
 static ERT_CHECKED int
-createTemporaryFileProcess_(struct TemporaryFileProcess_ *self,
-                            const char                   *aDirName)
+createTemporaryFileProcess_(
+    struct TemporaryFileProcess_ *self,
+    const char                   *aDirName)
 {
     self->mFd         = -1;
     self->mErr        = 0;
@@ -235,7 +239,8 @@ createTemporaryFileProcess_(struct TemporaryFileProcess_ *self,
 }
 
 static ERT_CHECKED int
-recvTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
+recvTemporaryFileProcessFd_(
+    struct TemporaryFileProcess_ *self)
 {
     int rc = -1;
 
@@ -256,7 +261,8 @@ recvTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
 
     int tmpFd;
     ERROR_IF(
-        (tmpFd = ert_recvUnixSocketFd(self->mSocketPair->mParentSocket, O_CLOEXEC),
+        (tmpFd = ert_recvUnixSocketFd(
+              self->mSocketPair->mParentSocket, O_CLOEXEC),
          -1 == tmpFd));
 
     self->mFd = tmpFd;
@@ -271,7 +277,8 @@ Finally:
 }
 
 static ERT_CHECKED int
-waitTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self)
+waitTemporaryFileProcessSocket_(
+    struct TemporaryFileProcess_ *self)
 {
     int rc = -1;
 
@@ -288,8 +295,9 @@ Finally:
 }
 
 static ERT_CHECKED int
-prepareTemporaryFileProcessSocket_(struct TemporaryFileProcess_ *self,
-                                   const struct Ert_PreForkProcess  *aFork)
+prepareTemporaryFileProcessSocket_(
+    struct TemporaryFileProcess_    *self,
+    const struct Ert_PreForkProcess *aFork)
 {
     int rc = -1;
 
@@ -328,7 +336,8 @@ Finally:
 }
 
 static ERT_CHECKED int
-sendTemporaryFileProcessFd_(struct TemporaryFileProcess_ *self)
+sendTemporaryFileProcessFd_(
+    struct TemporaryFileProcess_ *self)
 {
     int rc = -1;
 
@@ -461,7 +470,8 @@ Finally:
 }
 
 int
-ert_temporaryFile(struct Ert_File *self)
+ert_temporaryFile(
+    struct Ert_File *self)
 {
     int rc = -1;
 
@@ -518,7 +528,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ert_detachFile(struct Ert_File *self)
+ert_detachFile(
+    struct Ert_File *self)
 {
     int rc = -1;
 
@@ -547,7 +558,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_File *
-ert_closeFile(struct Ert_File *self)
+ert_closeFile(
+    struct Ert_File *self)
 {
     if (self && -1 != self->mFd)
     {
@@ -565,14 +577,16 @@ ert_closeFile(struct Ert_File *self)
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_ownFileValid(const struct Ert_File *self)
+ert_ownFileValid(
+    const struct Ert_File *self)
 {
     return self && -1 != self->mFd;
 }
 
 /* -------------------------------------------------------------------------- */
 void
-ert_walkFileList(struct Ert_FileVisitor aVisitor)
+ert_walkFileList(
+    struct Ert_FileVisitor aVisitor)
 {
     pthread_mutex_t *lock = ert_lockMutex(&fileList_.mMutex);
     {
@@ -589,7 +603,9 @@ ert_walkFileList(struct Ert_FileVisitor aVisitor)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_duplicateFile(struct Ert_File *self, const struct Ert_File *aFile)
+ert_duplicateFile(
+    struct Ert_File       *self,
+    const struct Ert_File *aFile)
 {
     int rc = -1;
 
@@ -607,42 +623,51 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-nonBlockingFile(struct Ert_File *self, unsigned aNonBlocking)
+ert_nonBlockingFile(
+    struct Ert_File *self,
+    unsigned         aNonBlocking)
 {
     return ert_nonBlockingFd(self->mFd, aNonBlocking);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_ownFileNonBlocking(const struct Ert_File *self)
+ert_ownFileNonBlocking(
+    const struct Ert_File *self)
 {
     return ert_ownFdNonBlocking(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_closeFileOnExec(struct Ert_File *self, unsigned aCloseOnExec)
+ert_closeFileOnExec(
+    struct Ert_File *self,
+    unsigned         aCloseOnExec)
 {
     return ert_closeFdOnExec(self->mFd, aCloseOnExec);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_ownFileCloseOnExec(const struct Ert_File *self)
+ert_ownFileCloseOnExec(
+    const struct Ert_File *self)
 {
     return ert_ownFdCloseOnExec(self->mFd);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_lockFile(struct Ert_File *self, struct Ert_LockType aLockType)
+ert_lockFile(
+    struct Ert_File    *self,
+    struct Ert_LockType aLockType)
 {
     return ert_lockFd(self->mFd, aLockType);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_unlockFile(struct Ert_File *self)
+ert_unlockFile(
+    struct Ert_File *self)
 {
     return ert_unlockFd(self->mFd);
 }
@@ -658,61 +683,72 @@ ert_lockFileRegion(
 
 /* -------------------------------------------------------------------------- */
 int
-ert_unlockFileRegion(struct Ert_File *self, off_t aPos, off_t aLen)
+ert_unlockFileRegion(
+    struct Ert_File *self,
+    off_t aPos, off_t aLen)
 {
     return ert_unlockFdRegion(self->mFd, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
 struct Ert_LockType
-ert_ownFileRegionLocked(const struct Ert_File *self, off_t aPos, off_t aLen)
+ert_ownFileRegionLocked(
+    const struct Ert_File *self,
+    off_t aPos, off_t aLen)
 {
     return ert_ownFdRegionLocked(self->mFd, aPos, aLen);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_writeFile(struct Ert_File *self,
-          const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
+ert_writeFile(
+    struct Ert_File *self,
+    const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_writeFd(self->mFd, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_readFile(struct Ert_File *self,
-         char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
+ert_readFile(
+    struct Ert_File *self,
+    char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_readFd(self->mFd, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_writeFileDeadline(struct Ert_File *self,
-                  const char *aBuf, size_t aLen,
-                  struct Ert_Deadline *aDeadline)
+ert_writeFileDeadline(
+    struct Ert_File *self,
+    const char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return ert_writeFdDeadline(self->mFd, aBuf, aLen, aDeadline);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_readFileDeadline(struct Ert_File *self,
-                 char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
+ert_readFileDeadline(
+    struct Ert_File *self,
+    char *aBuf, size_t aLen, struct Ert_Deadline *aDeadline)
 {
     return ert_readFdDeadline(self->mFd, aBuf, aLen, aDeadline);
 }
 
 /* -------------------------------------------------------------------------- */
 off_t
-ert_lseekFile(struct Ert_File *self, off_t aOffset, struct Ert_WhenceType aWhenceType)
+ert_lseekFile(
+    struct Ert_File *self,
+    off_t aOffset, struct Ert_WhenceType aWhenceType)
 {
     return ert_lseekFd(self->mFd, aOffset, aWhenceType);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_fstatFile(struct Ert_File *self, struct stat *aStat)
+ert_fstatFile(
+    struct Ert_File *self,
+    struct stat     *aStat)
 {
     return fstat(self->mFd, aStat);
 }
@@ -726,23 +762,27 @@ ert_fcntlFileGetFlags(struct Ert_File *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_ftruncateFile(struct Ert_File *self, off_t aLength)
+ert_ftruncateFile(
+    struct Ert_File *self,
+    off_t            aLength)
 {
     return ftruncate(self->mFd, aLength);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_waitFileWriteReady(const struct Ert_File     *self,
-                   const struct Ert_Duration *aTimeout)
+ert_waitFileWriteReady(
+    const struct Ert_File     *self,
+    const struct Ert_Duration *aTimeout)
 {
     return ert_waitFdWriteReady(self->mFd, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_waitFileReadReady(const struct Ert_File     *self,
-                  const struct Ert_Duration *aTimeout)
+ert_waitFileReadReady(
+    const struct Ert_File     *self,
+    const struct Ert_Duration *aTimeout)
 {
     return ert_waitFdReadReady(self->mFd, aTimeout);
 }

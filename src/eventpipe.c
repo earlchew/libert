@@ -34,7 +34,9 @@
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createEventPipe(struct Ert_EventPipe *self, unsigned aFlags)
+ert_createEventPipe(
+    struct Ert_EventPipe *self,
+    unsigned              aFlags)
 {
     int rc = -1;
 
@@ -64,7 +66,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_EventPipe *
-ert_closeEventPipe(struct Ert_EventPipe *self)
+ert_closeEventPipe(
+    struct Ert_EventPipe *self)
 {
     if (self)
     {
@@ -81,7 +84,8 @@ ert_closeEventPipe(struct Ert_EventPipe *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_setEventPipe(struct Ert_EventPipe *self)
+ert_setEventPipe(
+    struct Ert_EventPipe *self)
 {
     int rc = -1;
 
@@ -122,7 +126,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 static int
-ert_resetEventPipe_(struct Ert_EventPipe *self)
+resetEventPipe_(
+    struct Ert_EventPipe *self)
 {
     int rc = -1;
 
@@ -159,7 +164,8 @@ Finally:
 }
 
 int
-ert_resetEventPipe(struct Ert_EventPipe *self)
+ert_resetEventPipe(
+    struct Ert_EventPipe *self)
 {
     int rc = -1;
 
@@ -167,7 +173,7 @@ ert_resetEventPipe(struct Ert_EventPipe *self)
 
     int signalled;
     ERROR_IF(
-        (signalled = ert_resetEventPipe_(self),
+        (signalled = resetEventPipe_(self),
          -1 == signalled));
 
     rc = signalled;
@@ -184,8 +190,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_attachEventPipeLatch_(struct Ert_EventPipe           *self,
-                      struct Ert_EventLatchListEntry *aEntry)
+ert_attachEventPipeLatch_(
+    struct Ert_EventPipe           *self,
+    struct Ert_EventLatchListEntry *aEntry)
 {
     struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
@@ -196,8 +203,9 @@ ert_attachEventPipeLatch_(struct Ert_EventPipe           *self,
 
 /* -------------------------------------------------------------------------- */
 void
-ert_detachEventPipeLatch_(struct Ert_EventPipe           *self,
-                      struct Ert_EventLatchListEntry *aEntry)
+ert_detachEventPipeLatch_(
+    struct Ert_EventPipe           *self,
+    struct Ert_EventLatchListEntry *aEntry)
 {
     struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
@@ -207,8 +215,9 @@ ert_detachEventPipeLatch_(struct Ert_EventPipe           *self,
 }
 
 int
-ert_pollEventPipe(struct Ert_EventPipe            *self,
-              const struct Ert_EventClockTime *aPollTime)
+ert_pollEventPipe(
+    struct Ert_EventPipe            *self,
+    const struct Ert_EventClockTime *aPollTime)
 {
     int rc = -1;
 
@@ -246,7 +255,7 @@ ert_pollEventPipe(struct Ert_EventPipe            *self,
             int signalled = -1;
 
             ERROR_IF(
-                (signalled = ert_resetEventPipe_(self),
+                (signalled = resetEventPipe_(self),
                  -1 == signalled));
 
             ensure(0 < signalled);

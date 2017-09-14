@@ -46,10 +46,11 @@ const struct Ert_Type * const ert_printfMethodType_ = ERT_TYPE("PrintfMethod");
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_vprintf_(void       *self,
-          int       (*aPrintf)(void *self, const char *aFmt, va_list aArg),
-          const char *aFmt,
-          va_list     aArg)
+vprintf_(
+    void       *self,
+    int       (*aPrintf)(void *self, const char *aFmt, va_list aArg),
+    const char *aFmt,
+    va_list     aArg)
 {
     int rc = -1;
 
@@ -110,7 +111,7 @@ ert_vprintf_(void       *self,
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_vfprintf_(void *self, const char *aFmt, va_list aArg)
+vfprintf_(void *self, const char *aFmt, va_list aArg)
 {
     return vfprintf(self, aFmt, aArg);
 }
@@ -118,7 +119,7 @@ ert_vfprintf_(void *self, const char *aFmt, va_list aArg)
 int
 ert_vfprintf(FILE *aFile, const char *aFmt, va_list aArg)
 {
-    return ert_vprintf_(aFile, ert_vfprintf_, aFmt, aArg);
+    return vprintf_(aFile, vfprintf_, aFmt, aArg);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -129,7 +130,7 @@ struct PrintfString
 };
 
 static ERT_CHECKED int
-ert_vsnprintf_(void *self_, const char *aFmt, va_list aArg)
+vsnprintf_(void *self_, const char *aFmt, va_list aArg)
 {
     struct PrintfString *self = self_;
 
@@ -145,12 +146,12 @@ ert_vsnprintf(char *aBuf, size_t aSize, const char *aFmt, va_list aArg)
         .mBufLen = aSize,
     };
 
-    return ert_vprintf_(&self_, ert_vsnprintf_, aFmt, aArg);
+    return vprintf_(&self_, vsnprintf_, aFmt, aArg);
 }
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_vdprintf_(void *self_, const char *aFmt, va_list aArg)
+vdprintf_(void *self_, const char *aFmt, va_list aArg)
 {
     const int *self = self_;
 
@@ -160,7 +161,7 @@ ert_vdprintf_(void *self_, const char *aFmt, va_list aArg)
 int
 ert_vdprintf(int aFd, const char *aFmt, va_list aArg)
 {
-    return ert_vprintf_(&aFd, ert_vdprintf_, aFmt, aArg);
+    return vprintf_(&aFd, vdprintf_, aFmt, aArg);
 }
 
 /* -------------------------------------------------------------------------- */

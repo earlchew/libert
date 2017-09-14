@@ -43,7 +43,9 @@
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createEventLatch(struct Ert_EventLatch *self, const char *aName)
+ert_createEventLatch(
+    struct Ert_EventLatch *self,
+    const char            *aName)
 {
     int rc = -1;
 
@@ -75,7 +77,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_EventLatch *
-ert_closeEventLatch(struct Ert_EventLatch *self)
+ert_closeEventLatch(
+    struct Ert_EventLatch *self)
 {
     if (self)
     {
@@ -93,14 +96,16 @@ ert_closeEventLatch(struct Ert_EventLatch *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_printEventLatch(const struct Ert_EventLatch *self, FILE *aFile)
+ert_printEventLatch(
+    const struct Ert_EventLatch *self,
+    FILE                        *aFile)
 {
     return fprintf(aFile, "<%p %s>", self, self->mName);
 }
 
 /* -------------------------------------------------------------------------- */
 static int
-ert_signalEventLatch_(struct Ert_EventLatch *self)
+signalEventLatch_(struct Ert_EventLatch *self)
 {
     int rc = -1;
 
@@ -130,9 +135,10 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 static enum Ert_EventLatchSetting
-ert_bindEventLatchPipe_(struct Ert_EventLatch       *self,
-                    struct Ert_EventPipe        *aPipe,
-                    struct Ert_EventLatchMethod  aMethod)
+bindEventLatchPipe_(
+    struct Ert_EventLatch       *self,
+    struct Ert_EventPipe        *aPipe,
+    struct Ert_EventLatchMethod  aMethod)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
@@ -166,7 +172,7 @@ ert_bindEventLatchPipe_(struct Ert_EventLatch       *self,
 
             if (Ert_EventLatchSettingOff != setting)
                 ERROR_IF(
-                    ert_signalEventLatch_(self));
+                    signalEventLatch_(self));
         }
     }
 
@@ -183,25 +189,28 @@ Finally:
 }
 
 enum Ert_EventLatchSetting
-ert_bindEventLatchPipe(struct Ert_EventLatch       *self,
-                   struct Ert_EventPipe        *aPipe,
-                   struct Ert_EventLatchMethod  aMethod)
+ert_bindEventLatchPipe(
+    struct Ert_EventLatch       *self,
+    struct Ert_EventPipe        *aPipe,
+    struct Ert_EventLatchMethod  aMethod)
 {
     ensure(aPipe);
     ensure( ! self->mPipe);
 
-    return ert_bindEventLatchPipe_(self, aPipe, aMethod);
+    return bindEventLatchPipe_(self, aPipe, aMethod);
 }
 
 enum Ert_EventLatchSetting
-ert_unbindEventLatchPipe(struct Ert_EventLatch *self)
+ert_unbindEventLatchPipe(
+    struct Ert_EventLatch *self)
 {
-    return ert_bindEventLatchPipe_(self, 0, Ert_EventLatchMethodNil());
+    return bindEventLatchPipe_(self, 0, Ert_EventLatchMethodNil());
 }
 
 /* -------------------------------------------------------------------------- */
 enum Ert_EventLatchSetting
-ert_disableEventLatch(struct Ert_EventLatch *self)
+ert_disableEventLatch(
+    struct Ert_EventLatch *self)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
@@ -220,7 +229,7 @@ ert_disableEventLatch(struct Ert_EventLatch *self)
             : Ert_EventLatchSettingOff;
 
         ERROR_IF(
-            ert_signalEventLatch_(self));
+            signalEventLatch_(self));
 
         self->mEvent = event ^ EVENTLATCH_DISABLE_MASK_;
     }
@@ -239,7 +248,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 enum Ert_EventLatchSetting
-ert_setEventLatch(struct Ert_EventLatch *self)
+ert_setEventLatch(
+    struct Ert_EventLatch *self)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
@@ -258,7 +268,7 @@ ert_setEventLatch(struct Ert_EventLatch *self)
         setting = Ert_EventLatchSettingOff;
 
         ERROR_IF(
-            ert_signalEventLatch_(self));
+            signalEventLatch_(self));
 
         self->mEvent = event ^ EVENTLATCH_DATA_MASK_;
     }
@@ -277,7 +287,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 enum Ert_EventLatchSetting
-ert_resetEventLatch(struct Ert_EventLatch *self)
+ert_resetEventLatch(
+    struct Ert_EventLatch *self)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
@@ -312,7 +323,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 enum Ert_EventLatchSetting
-ert_ownEventLatchSetting(const struct Ert_EventLatch *self_)
+ert_ownEventLatchSetting(
+    const struct Ert_EventLatch *self_)
 {
     enum Ert_EventLatchSetting rc = Ert_EventLatchSettingError;
 
@@ -345,8 +357,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ert_pollEventLatchListEntry(struct Ert_EventLatchListEntry  *self,
-                        const struct Ert_EventClockTime *aPollTime)
+ert_pollEventLatchListEntry(
+    struct Ert_EventLatchListEntry  *self,
+    const struct Ert_EventClockTime *aPollTime)
 {
     int rc = -1;
 

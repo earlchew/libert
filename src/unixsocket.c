@@ -37,7 +37,9 @@
 
 /* -------------------------------------------------------------------------- */
 static void
-createRandomName(struct sockaddr_un *aSockAddr, uint32_t *aRandom)
+createRandomName(
+    struct sockaddr_un *aSockAddr,
+    uint32_t           *aRandom)
 {
     static const char hexDigits[16] = "0123456789abcdef";
 
@@ -72,9 +74,9 @@ createRandomName(struct sockaddr_un *aSockAddr, uint32_t *aRandom)
 int
 ert_createUnixSocket(
     struct Ert_UnixSocket *self,
-    const char        *aName,
-    size_t             aNameLen,
-    unsigned           aQueueLen)
+    const char            *aName,
+    size_t                 aNameLen,
+    unsigned               aQueueLen)
 {
     int rc = -1;
 
@@ -158,7 +160,8 @@ Finally:
 /* -------------------------------------------------------------------------- */
 int
 ert_acceptUnixSocket(
-    struct Ert_UnixSocket *self, const struct Ert_UnixSocket *aServer)
+    struct Ert_UnixSocket       *self,
+    const struct Ert_UnixSocket *aServer)
 {
     int rc = -1;
 
@@ -193,7 +196,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ert_connectUnixSocket(struct Ert_UnixSocket *self, const char *aName, size_t aNameLen)
+ert_connectUnixSocket(
+    struct Ert_UnixSocket *self,
+    const char *aName, size_t aNameLen)
 {
     int rc = -1;
     int err = 0;
@@ -257,7 +262,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_UnixSocket *
-ert_closeUnixSocket(struct Ert_UnixSocket *self)
+ert_closeUnixSocket(
+    struct Ert_UnixSocket *self)
 {
     if (self)
     {
@@ -269,9 +275,10 @@ ert_closeUnixSocket(struct Ert_UnixSocket *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createUnixSocketPair(struct Ert_UnixSocket *aParent,
-                     struct Ert_UnixSocket *aChild,
-                     unsigned           aFlags)
+ert_createUnixSocketPair(
+    struct Ert_UnixSocket *aParent,
+    struct Ert_UnixSocket *aChild,
+    unsigned               aFlags)
 {
     int rc = -1;
 
@@ -337,7 +344,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ert_sendUnixSocketFd(struct Ert_UnixSocket *self, int aFd)
+ert_sendUnixSocketFd(
+    struct Ert_UnixSocket *self,
+    int                    aFd)
 {
     int rc = -1;
 
@@ -387,7 +396,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_recvUnixSocketFd_(struct Ert_UnixSocket *self, struct msghdr *aMsg)
+ert_recvUnixSocketFd_(
+    struct Ert_UnixSocket *self,
+    struct msghdr         *aMsg)
 {
     int rc = -1;
 
@@ -472,7 +483,9 @@ Finally:
 }
 
 int
-ert_recvUnixSocketFd(struct Ert_UnixSocket *self, unsigned aFlags)
+ert_recvUnixSocketFd(
+    struct Ert_UnixSocket *self,
+    unsigned               aFlags)
 {
     int rc = -1;
     int fd = -1;
@@ -538,44 +551,51 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_ownUnixSocketValid(const struct Ert_UnixSocket *self)
+ert_ownUnixSocketValid(
+    const struct Ert_UnixSocket *self)
 {
     return ert_ownSocketValid(self->mSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_shutdownUnixSocketReader(struct Ert_UnixSocket *self)
+ert_shutdownUnixSocketReader(
+    struct Ert_UnixSocket *self)
 {
     return ert_shutdownSocketReader(self->mSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_shutdownUnixSocketWriter(struct Ert_UnixSocket *self)
+ert_shutdownUnixSocketWriter(
+    struct Ert_UnixSocket *self)
 {
     return ert_shutdownSocketWriter(self->mSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_waitUnixSocketWriteReady(const struct Ert_UnixSocket *self,
-                         const struct Ert_Duration   *aTimeout)
+ert_waitUnixSocketWriteReady(
+    const struct Ert_UnixSocket *self,
+    const struct Ert_Duration   *aTimeout)
 {
     return ert_waitSocketWriteReady(self->mSocket, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_waitUnixSocketReadReady(const struct Ert_UnixSocket *self,
-                        const struct Ert_Duration   *aTimeout)
+ert_waitUnixSocketReadReady(
+    const struct Ert_UnixSocket *self,
+    const struct Ert_Duration   *aTimeout)
 {
     return ert_waitSocketReadReady(self->mSocket, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_sendUnixSocket(struct Ert_UnixSocket *self, const char *aBuf, size_t aLen)
+ert_sendUnixSocket(
+    struct Ert_UnixSocket *self,
+    const char *aBuf, size_t aLen)
 {
     return ert_sendSocket(self->mSocket, aBuf, aLen);
 }
@@ -589,16 +609,18 @@ ert_recvUnixSocket(struct Ert_UnixSocket *self, char *aBuf, size_t aLen)
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_writeUnixSocket(struct Ert_UnixSocket *self,
-                const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
+ert_writeUnixSocket(
+    struct Ert_UnixSocket *self,
+    const char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_writeSocket(self->mSocket, aBuf, aLen, aTimeout);
 }
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_readUnixSocket(struct Ert_UnixSocket *self,
-               char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
+ert_readUnixSocket(
+    struct Ert_UnixSocket *self,
+    char *aBuf, size_t aLen, const struct Ert_Duration *aTimeout)
 {
     return ert_readSocket(self->mSocket, aBuf, aLen, aTimeout);
 }
@@ -610,13 +632,15 @@ ert_ownUnixSocketName(const struct Ert_UnixSocket *self,
 {
     socklen_t addrLen = sizeof(*aAddr);
 
-    return ert_ownSocketName(self->mSocket, (struct sockaddr *) aAddr, &addrLen);
+    return ert_ownSocketName(
+        self->mSocket, (struct sockaddr *) aAddr, &addrLen);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_ownUnixSocketPeerName(const struct Ert_UnixSocket *self,
-                      struct sockaddr_un *aAddr)
+ert_ownUnixSocketPeerName(
+    const struct Ert_UnixSocket *self,
+    struct sockaddr_un          *aAddr)
 {
     socklen_t addrLen = sizeof(*aAddr);
 
@@ -626,14 +650,18 @@ ert_ownUnixSocketPeerName(const struct Ert_UnixSocket *self,
 
 /* -------------------------------------------------------------------------- */
 int
-ert_ownUnixSocketError(const struct Ert_UnixSocket *self, int *aError)
+ert_ownUnixSocketError(
+    const struct Ert_UnixSocket *self,
+    int                         *aError)
 {
     return ert_ownSocketError(self->mSocket, aError);
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_ownUnixSocketPeerCred(const struct Ert_UnixSocket *self, struct ucred *aCred)
+ert_ownUnixSocketPeerCred(
+    const struct Ert_UnixSocket *self,
+    struct ucred                *aCred)
 {
     return ert_ownSocketPeerCred(self->mSocket, aCred);
 }

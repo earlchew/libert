@@ -36,7 +36,7 @@
 
 /* -------------------------------------------------------------------------- */
 static int
-ert_rankFdSetElement_(
+rankFdSetElement_(
     struct Ert_FdSetElement_ *aLhs, struct Ert_FdSetElement_ *aRhs)
 {
     int rank =
@@ -52,11 +52,13 @@ ert_rankFdSetElement_(
 }
 
 RB_GENERATE_STATIC(
-    Ert_FdSetTree_, Ert_FdSetElement_, mTree, ert_rankFdSetElement_)
+    Ert_FdSetTree_, Ert_FdSetElement_, mTree, rankFdSetElement_)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_printFdSet(const struct Ert_FdSet *self, FILE *aFile)
+ert_printFdSet(
+    const struct Ert_FdSet *self,
+    FILE                   *aFile)
 {
     int rc = -1;
 
@@ -89,7 +91,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_FdSet *
-ert_closeFdSet(struct Ert_FdSet *self)
+ert_closeFdSet(
+    struct Ert_FdSet *self)
 {
     if (self)
     {
@@ -101,7 +104,8 @@ ert_closeFdSet(struct Ert_FdSet *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createFdSet(struct Ert_FdSet *self)
+ert_createFdSet(
+    struct Ert_FdSet *self)
 {
     int rc = -1;
 
@@ -119,7 +123,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_clearFdSet(struct Ert_FdSet *self)
+ert_clearFdSet(
+    struct Ert_FdSet *self)
 {
     struct Ert_FdSetElement_ *elem = RB_ROOT(&self->mRoot);
 
@@ -184,7 +189,8 @@ ert_clearFdSet(struct Ert_FdSet *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_invertFdSet(struct Ert_FdSet *self)
+ert_invertFdSet(
+    struct Ert_FdSet *self)
 {
     int rc = -1;
 
@@ -273,7 +279,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ert_fillFdSet(struct Ert_FdSet *self)
+ert_fillFdSet(
+    struct Ert_FdSet *self)
 {
     ert_clearFdSet(self);
     return ert_invertFdSet(self);
@@ -281,35 +288,45 @@ ert_fillFdSet(struct Ert_FdSet *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_insertFdSet(struct Ert_FdSet *self, int aFd)
+ert_insertFdSet(
+    struct Ert_FdSet *self,
+    int               aFd)
 {
     return ert_insertFdSetRange(self, Ert_FdRange(aFd, aFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_removeFdSet(struct Ert_FdSet *self, int aFd)
+ert_removeFdSet(
+    struct Ert_FdSet *self,
+    int               aFd)
 {
     return ert_removeFdSetRange(self, Ert_FdRange(aFd, aFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_insertFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile)
+ert_insertFdSetFile(
+    struct Ert_FdSet      *self,
+    const struct Ert_File *aFile)
 {
     return ert_insertFdSetRange(self, Ert_FdRange(aFile->mFd, aFile->mFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_removeFdSetFile(struct Ert_FdSet *self, const struct Ert_File *aFile)
+ert_removeFdSetFile(
+    struct Ert_FdSet      *self,
+    const struct Ert_File *aFile)
 {
     return ert_removeFdSetRange(self, Ert_FdRange(aFile->mFd, aFile->mFd));
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_insertFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange)
+ert_insertFdSetRange(
+    struct Ert_FdSet  *self,
+    struct Ert_FdRange aRange)
 {
     int rc = -1;
 
@@ -385,7 +402,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-ert_removeFdSetRange(struct Ert_FdSet *self, struct Ert_FdRange aRange)
+ert_removeFdSetRange(
+    struct Ert_FdSet  *self,
+    struct Ert_FdRange aRange)
 {
     int rc = -1;
 
@@ -476,7 +495,9 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 ssize_t
-ert_visitFdSet(const struct Ert_FdSet *self, struct Ert_FdSetVisitor aVisitor)
+ert_visitFdSet(
+    const struct Ert_FdSet *self,
+    struct Ert_FdSetVisitor aVisitor)
 {
     ssize_t rc = -1;
 
@@ -520,7 +541,7 @@ Ert_FdRange_(int aLhs, int aRhs)
 
 /* -------------------------------------------------------------------------- */
 static inline bool
-ert_containsFdRange_(struct Ert_FdRange self, int aFd)
+containsFdRange_(struct Ert_FdRange self, int aFd)
 {
     return self.mLhs <= aFd && aFd <= self.mRhs;
 }
@@ -531,8 +552,8 @@ ert_containsFdRange(struct Ert_FdRange self, struct Ert_FdRange aOther)
 {
     int contained = 0;
 
-    if (ert_containsFdRange_(self, aOther.mLhs) &&
-        ert_containsFdRange_(self, aOther.mRhs) )
+    if (containsFdRange_(self, aOther.mLhs) &&
+        containsFdRange_(self, aOther.mRhs) )
     {
         int lhs = (self.mLhs == aOther.mLhs) << 0;
         int rhs = (self.mRhs == aOther.mRhs) << 1;
@@ -548,28 +569,36 @@ ert_containsFdRange(struct Ert_FdRange self, struct Ert_FdRange aOther)
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_leftFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther)
+ert_leftFdRangeOf(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther)
 {
     return aOther.mRhs < self.mLhs;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_rightFdRangeOf(struct Ert_FdRange self, struct Ert_FdRange aOther)
+ert_rightFdRangeOf(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther)
 {
     return self.mRhs < aOther.mLhs;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_leftFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther)
+ert_leftFdRangeNeighbour(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther)
 {
     return self.mLhs - 1 == aOther.mRhs;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_rightFdRangeNeighbour(struct Ert_FdRange self, struct Ert_FdRange aOther)
+ert_rightFdRangeNeighbour(
+    struct Ert_FdRange self,
+    struct Ert_FdRange aOther)
 {
     return self.mRhs + 1 == aOther.mLhs;
 }

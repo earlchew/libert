@@ -54,8 +54,9 @@ pollEventTextBit_(char *aBuf, unsigned *aMask, unsigned aBit, const char *aText)
     pollEventTextBit_((aBuf), (aMask), (aBit), # aBit)
 
 const char *
-createPollEventText(
-    struct Ert_PollEventText *aPollEventText, unsigned aPollEventMask)
+ert_createPollEventText(
+    struct Ert_PollEventText *aPollEventText,
+    unsigned                  aPollEventMask)
 {
     unsigned mask = aPollEventMask;
 
@@ -86,15 +87,16 @@ createPollEventText(
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createPollFd(struct Ert_PollFd                 *self,
-             struct pollfd                 *aPoll,
-             struct Ert_PollFdAction           *aFdActions,
-             const char * const            *aFdNames,
-             size_t                         aNumFdActions,
-             struct Ert_PollFdTimerAction      *aTimerActions,
-             const char * const            *aTimerNames,
-             size_t                         aNumTimerActions,
-             struct Ert_PollFdCompletionMethod  aCompletionQuery)
+ert_createPollFd(
+    struct Ert_PollFd                 *self,
+    struct pollfd                     *aPoll,
+    struct Ert_PollFdAction           *aFdActions,
+    const char * const                *aFdNames,
+    size_t                             aNumFdActions,
+    struct Ert_PollFdTimerAction      *aTimerActions,
+    const char * const                *aTimerNames,
+    size_t                             aNumTimerActions,
+    struct Ert_PollFdCompletionMethod  aCompletionQuery)
 {
     int rc = -1;
 
@@ -117,14 +119,16 @@ ert_createPollFd(struct Ert_PollFd                 *self,
 
 /* -------------------------------------------------------------------------- */
 struct Ert_PollFd *
-ert_closePollFd(struct Ert_PollFd *self)
+ert_closePollFd(
+    struct Ert_PollFd *self)
 {
     return 0;
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_runPollFdLoop(struct Ert_PollFd *self)
+ert_runPollFdLoop(
+    struct Ert_PollFd *self)
 {
     int rc = -1;
 
@@ -180,11 +184,12 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
             timeout_ms = -1;
         else
         {
-            struct Ert_MilliSeconds ert_timeoutDuration = ERT_MSECS(timeout.duration);
+            struct Ert_MilliSeconds timeoutDuration =
+                ERT_MSECS(timeout.duration);
 
-            timeout_ms = ert_timeoutDuration.ms;
+            timeout_ms = timeoutDuration.ms;
 
-            if (0 > timeout_ms || ert_timeoutDuration.ms != timeout_ms)
+            if (0 > timeout_ms || timeoutDuration.ms != timeout_ms)
                 timeout_ms = INT_MAX;
         }
 
@@ -242,9 +247,9 @@ ert_runPollFdLoop(struct Ert_PollFd *self)
                     "poll %s %d (%s) (%s)",
                     self->mFdActions.mNames[ix],
                     self->mPoll[ix].fd,
-                    createPollEventText(
+                    ert_createPollEventText(
                         &pollEventText, self->mPoll[ix].events),
-                    createPollEventText(
+                    ert_createPollEventText(
                         &pollRcvdEventText, self->mPoll[ix].revents));
 
                 self->mPoll[ix].revents &= self->mPoll[ix].events;

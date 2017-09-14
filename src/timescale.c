@@ -69,7 +69,8 @@ Ert_Duration_(struct Ert_NanoSeconds duration)
 
 /* -------------------------------------------------------------------------- */
 uint64_t
-ert_changeTimeScale_(uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale)
+ert_changeTimeScale_(
+    uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale)
 {
     if (aSrcScale < aDstScale)
     {
@@ -115,7 +116,9 @@ ert_changeTimeScale_(uint64_t aSrcTime, size_t aSrcScale, size_t aDstScale)
 
 /* -------------------------------------------------------------------------- */
 struct timespec
-ert_earliestTime(const struct timespec *aLhs, const struct timespec *aRhs)
+ert_earliestTime(
+    const struct timespec *aLhs,
+    const struct timespec *aRhs)
 {
     if (aLhs->tv_sec < aRhs->tv_sec)
         return *aLhs;
@@ -131,7 +134,8 @@ ert_earliestTime(const struct timespec *aLhs, const struct timespec *aRhs)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_NanoSeconds
-ert_timeValToNanoSeconds(const struct timeval *aTimeVal)
+ert_timeValToNanoSeconds(
+    const struct timeval *aTimeVal)
 {
     uint64_t ns = aTimeVal->tv_sec;
 
@@ -140,7 +144,8 @@ ert_timeValToNanoSeconds(const struct timeval *aTimeVal)
 
 /* -------------------------------------------------------------------------- */
 struct timeval
-ert_timeValFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds)
+ert_timeValFromNanoSeconds(
+    struct Ert_NanoSeconds aNanoSeconds)
 {
     return (struct timeval) {
         .tv_sec  = aNanoSeconds.ns / (1000 * 1000 * 1000),
@@ -150,7 +155,8 @@ ert_timeValFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_NanoSeconds
-ert_timeSpecToNanoSeconds(const struct timespec *aTimeSpec)
+ert_timeSpecToNanoSeconds(
+    const struct timespec *aTimeSpec)
 {
     uint64_t ns = aTimeSpec->tv_sec;
 
@@ -159,7 +165,8 @@ ert_timeSpecToNanoSeconds(const struct timespec *aTimeSpec)
 
 /* -------------------------------------------------------------------------- */
 struct timespec
-ert_timeSpecFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds)
+ert_timeSpecFromNanoSeconds(
+    struct Ert_NanoSeconds aNanoSeconds)
 {
     return (struct timespec) {
         .tv_sec  = aNanoSeconds.ns / (1000 * 1000 * 1000),
@@ -169,8 +176,9 @@ ert_timeSpecFromNanoSeconds(struct Ert_NanoSeconds aNanoSeconds)
 
 /* -------------------------------------------------------------------------- */
 struct itimerval
-ert_shortenIntervalTime(const struct itimerval *aTimer,
-                        struct Ert_Duration         aElapsed)
+ert_shortenIntervalTime(
+    const struct itimerval *aTimer,
+    struct Ert_Duration     aElapsed)
 {
     struct itimerval shortenedTimer = *aTimer;
 

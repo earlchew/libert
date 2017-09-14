@@ -34,7 +34,8 @@
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createStdFdFiller(struct Ert_StdFdFiller *self)
+ert_createStdFdFiller(
+    struct Ert_StdFdFiller *self)
 {
     int rc = -1;
 
@@ -94,7 +95,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_StdFdFiller *
-ert_closeStdFdFiller(struct Ert_StdFdFiller *self)
+ert_closeStdFdFiller(
+    struct Ert_StdFdFiller *self)
 {
     if (self)
     {

@@ -67,7 +67,9 @@ ert_monotonicTime(void)
 /* -------------------------------------------------------------------------- */
 #if __linux__
 int
-ert_procUptime(struct Ert_Duration *aUptime, const char *aFileName)
+ert_procUptime(
+    struct Ert_Duration *aUptime,
+    const char          *aFileName)
 {
     int   rc  = -1;
     char *buf = 0;
@@ -382,9 +384,10 @@ ert_monotonicDeadlineTimeExpired(
 
 /* -------------------------------------------------------------------------- */
 void
-ert_lapTimeTrigger(struct Ert_EventClockTime       *self,
-                   struct Ert_Duration              aPeriod,
-                   const struct Ert_EventClockTime *aTime)
+ert_lapTimeTrigger(
+    struct Ert_EventClockTime       *self,
+    struct Ert_Duration              aPeriod,
+    const struct Ert_EventClockTime *aTime)
 {
     self->eventclock = Ert_NanoSeconds(
         (aTime ? *aTime
@@ -393,8 +396,9 @@ ert_lapTimeTrigger(struct Ert_EventClockTime       *self,
 
 /* -------------------------------------------------------------------------- */
 void
-ert_lapTimeRestart(struct Ert_EventClockTime       *self,
-                   const struct Ert_EventClockTime *aTime)
+ert_lapTimeRestart(
+    struct Ert_EventClockTime       *self,
+    const struct Ert_EventClockTime *aTime)
 {
     ensure(self->eventclock.ns);
 
@@ -403,8 +407,9 @@ ert_lapTimeRestart(struct Ert_EventClockTime       *self,
 
 /* -------------------------------------------------------------------------- */
 void
-ert_lapTimeDelay(struct Ert_EventClockTime *self,
-                 struct Ert_Duration        aDelay)
+ert_lapTimeDelay(
+    struct Ert_EventClockTime *self,
+    struct Ert_Duration        aDelay)
 {
     ensure(self->eventclock.ns);
 
@@ -413,9 +418,10 @@ ert_lapTimeDelay(struct Ert_EventClockTime *self,
 
 /* -------------------------------------------------------------------------- */
 struct Ert_Duration
-ert_lapTimeSince(struct Ert_EventClockTime       *self,
-                 struct Ert_Duration              aPeriod,
-                 const struct Ert_EventClockTime *aTime)
+ert_lapTimeSince(
+    struct Ert_EventClockTime       *self,
+    struct Ert_Duration              aPeriod,
+    const struct Ert_EventClockTime *aTime)
 {
     struct Ert_EventClockTime tm;
 
@@ -449,7 +455,8 @@ ert_lapTimeSince(struct Ert_EventClockTime       *self,
 
 /* -------------------------------------------------------------------------- */
 void
-ert_monotonicSleep(struct Ert_Duration aPeriod)
+ert_monotonicSleep(
+    struct Ert_Duration aPeriod)
 {
     int rc;
 
@@ -468,7 +475,8 @@ ert_monotonicSleep(struct Ert_Duration aPeriod)
 
 /* -------------------------------------------------------------------------- */
 int
-Ert_Timekeeping_init(struct Ert_TimeKeepingModule *self)
+Ert_Timekeeping_init(
+    struct Ert_TimeKeepingModule *self)
 {
     int rc = -1;
 
@@ -490,7 +498,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_TimeKeepingModule *
-Ert_Timekeeping_exit(struct Ert_TimeKeepingModule *self)
+Ert_Timekeeping_exit(
+    struct Ert_TimeKeepingModule *self)
 {
     if (self)
         --moduleInit_;

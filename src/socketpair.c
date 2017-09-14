@@ -33,7 +33,9 @@
 
 /* -------------------------------------------------------------------------- */
 int
-ert_createSocketPair(struct Ert_SocketPair *self, unsigned aFlags)
+ert_createSocketPair(
+    struct Ert_SocketPair *self,
+    unsigned               aFlags)
 {
     int rc = -1;
 
@@ -58,21 +60,24 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_closeSocketPairParent(struct Ert_SocketPair *self)
+ert_closeSocketPairParent(
+    struct Ert_SocketPair *self)
 {
     self->mParentSocket = ert_closeUnixSocket(self->mParentSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 void
-ert_closeSocketPairChild(struct Ert_SocketPair *self)
+ert_closeSocketPairChild(
+    struct Ert_SocketPair *self)
 {
     self->mChildSocket = ert_closeUnixSocket(self->mChildSocket);
 }
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SocketPair *
-ert_closeSocketPair(struct Ert_SocketPair *self)
+ert_closeSocketPair(
+    struct Ert_SocketPair *self)
 {
     if (self)
     {

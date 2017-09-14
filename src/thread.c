@@ -39,9 +39,10 @@
 
 /* -------------------------------------------------------------------------- */
 static void *
-timedLock_(void *aLock,
-           int   aTryLock(void *),
-           int   aTimedLock(void *, const struct timespec *))
+timedLock_(
+    void *aLock,
+    int   aTryLock(void *),
+    int   aTimedLock(void *, const struct timespec *))
 {
     struct Ert_ProcessSigContTracker sigContTracker =
         Ert_ProcessSigContTracker();
@@ -105,7 +106,8 @@ ert_ownThreadId(void)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_Thread *
-ert_closeThread(struct Ert_Thread *self)
+ert_closeThread(
+    struct Ert_Thread *self)
 {
     if (self)
     {
@@ -143,7 +145,8 @@ struct Thread_
 };
 
 static void *
-createThread_(void *self_)
+createThread_(
+    void *self_)
 {
     struct Thread_ *self = self_;
 
@@ -175,7 +178,7 @@ createThread_(void *self_)
 struct Ert_Thread *
 ert_createThread(
     struct Ert_Thread           *self,
-    const char              *aName,
+    const char                  *aName,
     const struct Ert_ThreadAttr *aAttr,
     struct Ert_ThreadMethod      aMethod)
 {
@@ -255,7 +258,8 @@ ert_createThread(
 
 /* -------------------------------------------------------------------------- */
 int
-ert_joinThread(struct Ert_Thread *self)
+ert_joinThread(
+    struct Ert_Thread *self)
 {
     int rc = -1;
 
@@ -290,7 +294,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_cancelThread(struct Ert_Thread *self)
+ert_cancelThread(
+    struct Ert_Thread *self)
 {
     ABORT_IF(
         errno = pthread_cancel(self->mThread),
@@ -304,7 +309,9 @@ ert_cancelThread(struct Ert_Thread *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_killThread(struct Ert_Thread *self, int aSignal)
+ert_killThread(
+    struct Ert_Thread *self,
+    int                aSignal)
 {
     int rc = -1;
 
@@ -321,7 +328,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ThreadAttr *
-ert_createThreadAttr(struct Ert_ThreadAttr *self)
+ert_createThreadAttr(
+    struct Ert_ThreadAttr *self)
 {
     ABORT_IF(
         (errno = pthread_attr_init(&self->mAttr)),
@@ -336,7 +344,8 @@ ert_createThreadAttr(struct Ert_ThreadAttr *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ThreadAttr *
-ert_destroyThreadAttr(struct Ert_ThreadAttr *self)
+ert_destroyThreadAttr(
+    struct Ert_ThreadAttr *self)
 {
     ABORT_IF(
         (errno = pthread_attr_destroy(&self->mAttr)),
@@ -351,7 +360,8 @@ ert_destroyThreadAttr(struct Ert_ThreadAttr *self)
 
 /* -------------------------------------------------------------------------- */
 pthread_mutex_t *
-ert_createMutex(pthread_mutex_t *self)
+ert_createMutex(
+    pthread_mutex_t *self)
 {
     ABORT_IF(
         (errno = pthread_mutex_init(self, 0)),
@@ -366,7 +376,8 @@ ert_createMutex(pthread_mutex_t *self)
 
 /* -------------------------------------------------------------------------- */
 pthread_mutex_t *
-ert_destroyMutex(pthread_mutex_t *self)
+ert_destroyMutex(
+    pthread_mutex_t *self)
 {
     if (self)
     {
@@ -384,25 +395,30 @@ ert_destroyMutex(pthread_mutex_t *self)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-tryMutexLock_(void *self)
+tryMutexLock_(
+    void *self)
 {
     return pthread_mutex_trylock(self);
 }
 
 static ERT_CHECKED int
-tryMutexTimedLock_(void *self, const struct timespec *aDeadline)
+tryMutexTimedLock_(
+    void                  *self,
+    const struct timespec *aDeadline)
 {
     return pthread_mutex_timedlock(self, aDeadline);
 }
 
 static pthread_mutex_t *
-lockMutex_(pthread_mutex_t *self)
+lockMutex_(
+    pthread_mutex_t *self)
 {
     return timedLock_(self, tryMutexLock_, tryMutexTimedLock_);
 }
 
 pthread_mutex_t *
-ert_lockMutex(pthread_mutex_t *self)
+ert_lockMutex(
+    pthread_mutex_t *self)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -414,7 +430,8 @@ ert_lockMutex(pthread_mutex_t *self)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED pthread_mutex_t *
-unlockMutex_(pthread_mutex_t *self)
+unlockMutex_(
+    pthread_mutex_t *self)
 {
     if (self)
     {
@@ -429,7 +446,8 @@ unlockMutex_(pthread_mutex_t *self)
 }
 
 pthread_mutex_t *
-ert_unlockMutex(pthread_mutex_t *self)
+ert_unlockMutex(
+    pthread_mutex_t *self)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -438,7 +456,9 @@ ert_unlockMutex(pthread_mutex_t *self)
 
 /* -------------------------------------------------------------------------- */
 static pthread_mutex_t *
-ert_unlockMutexSignal_(pthread_mutex_t *self, pthread_cond_t *aCond)
+ert_unlockMutexSignal_(
+    pthread_mutex_t *self,
+    pthread_cond_t  *aCond)
 {
     if (self)
     {
@@ -463,7 +483,9 @@ ert_unlockMutexSignal_(pthread_mutex_t *self, pthread_cond_t *aCond)
 }
 
 pthread_mutex_t *
-ert_unlockMutexSignal(pthread_mutex_t *self, pthread_cond_t *aCond)
+ert_unlockMutexSignal(
+    pthread_mutex_t *self,
+    pthread_cond_t  *aCond)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -472,7 +494,9 @@ ert_unlockMutexSignal(pthread_mutex_t *self, pthread_cond_t *aCond)
 
 /* -------------------------------------------------------------------------- */
 static pthread_mutex_t *
-ert_unlockMutexBroadcast_(pthread_mutex_t *self, pthread_cond_t *aCond)
+ert_unlockMutexBroadcast_(
+    pthread_mutex_t *self,
+    pthread_cond_t  *aCond)
 {
     if (self)
     {
@@ -497,7 +521,9 @@ ert_unlockMutexBroadcast_(pthread_mutex_t *self, pthread_cond_t *aCond)
 }
 
 pthread_mutex_t *
-ert_unlockMutexBroadcast(pthread_mutex_t *self, pthread_cond_t *aCond)
+ert_unlockMutexBroadcast(
+    pthread_mutex_t *self,
+    pthread_cond_t  *aCond)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -506,7 +532,8 @@ ert_unlockMutexBroadcast(pthread_mutex_t *self, pthread_cond_t *aCond)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedMutex *
-ert_createSharedMutex(struct Ert_SharedMutex *self)
+ert_createSharedMutex(
+    struct Ert_SharedMutex *self)
 {
     pthread_mutexattr_t  mutexattr_;
     pthread_mutexattr_t *mutexattr = 0;
@@ -559,7 +586,8 @@ ert_createSharedMutex(struct Ert_SharedMutex *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedMutex *
-ert_destroySharedMutex(struct Ert_SharedMutex *self)
+ert_destroySharedMutex(
+    struct Ert_SharedMutex *self)
 {
     if (self)
         ABORT_IF(
@@ -570,8 +598,9 @@ ert_destroySharedMutex(struct Ert_SharedMutex *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedMutex *
-ert_lockSharedMutex(struct Ert_SharedMutex      *self,
-                struct Ert_MutexRepairMethod aRepair)
+ert_lockSharedMutex(
+    struct Ert_SharedMutex      *self,
+    struct Ert_MutexRepairMethod aRepair)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -599,7 +628,8 @@ ert_lockSharedMutex(struct Ert_SharedMutex      *self,
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedMutex *
-ert_unlockSharedMutex(struct Ert_SharedMutex *self)
+ert_unlockSharedMutex(
+    struct Ert_SharedMutex *self)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -612,7 +642,9 @@ ert_unlockSharedMutex(struct Ert_SharedMutex *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedMutex *
-ert_unlockSharedMutexSignal(struct Ert_SharedMutex *self, struct Ert_SharedCond *aCond)
+ert_unlockSharedMutexSignal(
+    struct Ert_SharedMutex *self,
+    struct Ert_SharedCond  *aCond)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -625,7 +657,9 @@ ert_unlockSharedMutexSignal(struct Ert_SharedMutex *self, struct Ert_SharedCond 
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedMutex *
-ert_unlockSharedMutexBroadcast(struct Ert_SharedMutex *self, struct Ert_SharedCond *aCond)
+ert_unlockSharedMutexBroadcast(
+    struct Ert_SharedMutex *self,
+    struct Ert_SharedCond  *aCond)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -638,7 +672,8 @@ ert_unlockSharedMutexBroadcast(struct Ert_SharedMutex *self, struct Ert_SharedCo
 
 /* -------------------------------------------------------------------------- */
 pthread_cond_t *
-ert_createCond(pthread_cond_t *self)
+ert_createCond(
+    pthread_cond_t *self)
 {
     pthread_condattr_t  condattr_;
     pthread_condattr_t *condattr = 0;
@@ -681,7 +716,8 @@ ert_createCond(pthread_cond_t *self)
 
 /* -------------------------------------------------------------------------- */
 pthread_cond_t *
-ert_destroyCond(pthread_cond_t *self)
+ert_destroyCond(
+    pthread_cond_t *self)
 {
     if (self)
     {
@@ -699,7 +735,9 @@ ert_destroyCond(pthread_cond_t *self)
 
 /* -------------------------------------------------------------------------- */
 static int
-waitCond_(pthread_cond_t *self, pthread_mutex_t *aMutex)
+waitCond_(
+    pthread_cond_t  *self,
+    pthread_mutex_t *aMutex)
 {
     ABORT_IF(
         (errno = pthread_cond_wait(self, aMutex),
@@ -714,7 +752,9 @@ waitCond_(pthread_cond_t *self, pthread_mutex_t *aMutex)
 }
 
 void
-ert_waitCond(pthread_cond_t *self, pthread_mutex_t *aMutex)
+ert_waitCond(
+    pthread_cond_t  *self,
+    pthread_mutex_t *aMutex)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -732,7 +772,7 @@ struct Ert_ThreadSigMask *
 ert_pushThreadSigMask(
     struct Ert_ThreadSigMask     *self,
     enum Ert_ThreadSigMaskAction  aAction,
-    const int                *aSigList)
+    const int                    *aSigList)
 {
     int maskAction;
     switch (aAction)
@@ -766,7 +806,8 @@ ert_pushThreadSigMask(
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedCond *
-ert_createSharedCond(struct Ert_SharedCond *self)
+ert_createSharedCond(
+    struct Ert_SharedCond *self)
 {
     pthread_condattr_t  condattr_;
     pthread_condattr_t *condattr = 0;
@@ -818,7 +859,8 @@ ert_createSharedCond(struct Ert_SharedCond *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_SharedCond *
-ert_destroySharedCond(struct Ert_SharedCond *self)
+ert_destroySharedCond(
+    struct Ert_SharedCond *self)
 {
     if (self)
         ABORT_IF(
@@ -829,7 +871,9 @@ ert_destroySharedCond(struct Ert_SharedCond *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_waitSharedCond(struct Ert_SharedCond *self, struct Ert_SharedMutex *aMutex)
+ert_waitSharedCond(
+    struct Ert_SharedCond  *self,
+    struct Ert_SharedMutex *aMutex)
 {
     ensure( ! ert_ownProcessSignalContext());
 
@@ -838,7 +882,8 @@ ert_waitSharedCond(struct Ert_SharedCond *self, struct Ert_SharedMutex *aMutex)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ThreadSigMask *
-ert_popThreadSigMask(struct Ert_ThreadSigMask *self)
+ert_popThreadSigMask(
+    struct Ert_ThreadSigMask *self)
 {
     if (self)
         ABORT_IF(pthread_sigmask(SIG_SETMASK, &self->mSigSet, 0));
@@ -848,7 +893,8 @@ ert_popThreadSigMask(struct Ert_ThreadSigMask *self)
 
 /* -------------------------------------------------------------------------- */
 int
-ert_waitThreadSigMask(const int *aSigList)
+ert_waitThreadSigMask(
+    const int *aSigList)
 {
     int rc = -1;
 
@@ -886,7 +932,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ThreadSigMutex *
-ert_createThreadSigMutex(struct Ert_ThreadSigMutex *self)
+ert_createThreadSigMutex(
+    struct Ert_ThreadSigMutex *self)
 {
     self->mMutex = ert_createMutex(&self->mMutex_);
     self->mCond  = ert_createCond(&self->mCond_);
@@ -898,7 +945,8 @@ ert_createThreadSigMutex(struct Ert_ThreadSigMutex *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ThreadSigMutex *
-ert_destroyThreadSigMutex(struct Ert_ThreadSigMutex *self)
+ert_destroyThreadSigMutex(
+    struct Ert_ThreadSigMutex *self)
 {
     if (self)
     {
@@ -913,7 +961,8 @@ ert_destroyThreadSigMutex(struct Ert_ThreadSigMutex *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ThreadSigMutex *
-ert_lockThreadSigMutex(struct Ert_ThreadSigMutex *self)
+ert_lockThreadSigMutex(
+    struct Ert_ThreadSigMutex *self)
 {
     /* When acquiring the lock, first ensure that no signal is delivered
      * within the context of this thread, and only then lock the mutex
@@ -953,7 +1002,8 @@ ert_lockThreadSigMutex(struct Ert_ThreadSigMutex *self)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ThreadSigMutex *
-ert_unlockThreadSigMutex(struct Ert_ThreadSigMutex *self)
+ert_unlockThreadSigMutex(
+    struct Ert_ThreadSigMutex *self)
 {
     if (self)
     {
@@ -990,7 +1040,8 @@ ert_unlockThreadSigMutex(struct Ert_ThreadSigMutex *self)
 
 /* -------------------------------------------------------------------------- */
 unsigned
-ert_ownThreadSigMutexLocked(struct Ert_ThreadSigMutex *self)
+ert_ownThreadSigMutexLocked(
+    struct Ert_ThreadSigMutex *self)
 {
     unsigned locked;
 
@@ -1010,7 +1061,8 @@ ert_ownThreadSigMutexLocked(struct Ert_ThreadSigMutex *self)
 
 /* -------------------------------------------------------------------------- */
 pthread_rwlock_t *
-ert_createRWMutex(pthread_rwlock_t *self)
+ert_createRWMutex(
+    pthread_rwlock_t *self)
 {
     ABORT_IF(
         (errno = pthread_rwlock_init(self, 0)),
@@ -1025,7 +1077,8 @@ ert_createRWMutex(pthread_rwlock_t *self)
 
 /* -------------------------------------------------------------------------- */
 pthread_rwlock_t *
-ert_destroyRWMutex(pthread_rwlock_t *self)
+ert_destroyRWMutex(
+    pthread_rwlock_t *self)
 {
     if (self)
     {
@@ -1043,20 +1096,24 @@ ert_destroyRWMutex(pthread_rwlock_t *self)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_tryRWMutexRdLock_(void *self)
+ert_tryRWMutexRdLock_(
+    void *self)
 {
     return pthread_rwlock_tryrdlock(self);
 }
 
 static ERT_CHECKED int
-ert_tryRWMutexTimedRdLock_(void *self, const struct timespec *aDeadline)
+ert_tryRWMutexTimedRdLock_(
+    void                  *self,
+    const struct timespec *aDeadline)
 {
     return pthread_rwlock_timedrdlock(self, aDeadline);
 }
 
 struct Ert_RWMutexReader *
-ert_createRWMutexReader(struct Ert_RWMutexReader *self,
-                    pthread_rwlock_t     *aMutex)
+ert_createRWMutexReader(
+    struct Ert_RWMutexReader *self,
+    pthread_rwlock_t         *aMutex)
 {
     ABORT_UNLESS(
         self->mMutex = timedLock_(
@@ -1067,7 +1124,8 @@ ert_createRWMutexReader(struct Ert_RWMutexReader *self,
 
 /* -------------------------------------------------------------------------- */
 struct Ert_RWMutexReader *
-ert_destroyRWMutexReader(struct Ert_RWMutexReader *self)
+ert_destroyRWMutexReader(
+    struct Ert_RWMutexReader *self)
 {
     if (self)
     {
@@ -1085,20 +1143,24 @@ ert_destroyRWMutexReader(struct Ert_RWMutexReader *self)
 
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
-ert_tryRWMutexWrLock_(void *self)
+ert_tryRWMutexWrLock_(
+    void *self)
 {
     return pthread_rwlock_trywrlock(self);
 }
 
 static ERT_CHECKED int
-ert_tryRWMutexTimedWrLock_(void *self, const struct timespec *aDeadline)
+ert_tryRWMutexTimedWrLock_(
+    void                  *self,
+    const struct timespec *aDeadline)
 {
     return pthread_rwlock_timedwrlock(self, aDeadline);
 }
 
 struct Ert_RWMutexWriter *
-ert_createRWMutexWriter(struct Ert_RWMutexWriter *self,
-                    pthread_rwlock_t     *aMutex)
+ert_createRWMutexWriter(
+    struct Ert_RWMutexWriter *self,
+    pthread_rwlock_t         *aMutex)
 {
     ABORT_UNLESS(
         self->mMutex = timedLock_(
@@ -1109,7 +1171,8 @@ ert_createRWMutexWriter(struct Ert_RWMutexWriter *self,
 
 /* -------------------------------------------------------------------------- */
 struct Ert_RWMutexWriter *
-ert_destroyRWMutexWriter(struct Ert_RWMutexWriter *self)
+ert_destroyRWMutexWriter(
+    struct Ert_RWMutexWriter *self)
 {
     if (self)
     {

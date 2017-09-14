@@ -172,8 +172,9 @@ ert_closePollFd(
 
 /* -------------------------------------------------------------------------- */
 const char *
-createPollEventText(
-    struct Ert_PollEventText *aPollEventText, unsigned aPollEventMask);
+ert_createPollEventText(
+    struct Ert_PollEventText *aPollEventText,
+    unsigned                  aPollEventMask);
 
 /* -------------------------------------------------------------------------- */
 

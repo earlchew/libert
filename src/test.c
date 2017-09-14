@@ -50,14 +50,16 @@ static unsigned          moduleInit_;
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_testMode(enum Ert_TestLevel aLevel)
+ert_testMode(
+    enum Ert_TestLevel aLevel)
 {
     return aLevel <= gErtOptions_.mTest;
 }
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_testAction(enum Ert_TestLevel aLevel)
+ert_testAction(
+    enum Ert_TestLevel aLevel)
 {
     /* If test mode has been enabled, choose to activate a test action
      * a small percentage of the time. */
@@ -67,7 +69,8 @@ ert_testAction(enum Ert_TestLevel aLevel)
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_testSleep(enum Ert_TestLevel aLevel)
+ert_testSleep(
+    enum Ert_TestLevel aLevel)
 {
     bool slept = false;
 
@@ -83,7 +86,8 @@ ert_testSleep(enum Ert_TestLevel aLevel)
             slept = true;
             ert_monotonicSleep(
                 Ert_Duration(
-                    ERT_NSECS(Ert_MicroSeconds(ert_fetchRandomRange(500 * 1000)))));
+                    ERT_NSECS(
+                        Ert_MicroSeconds(ert_fetchRandomRange(500 * 1000)))));
         }
     }
 
@@ -99,7 +103,8 @@ ert_testErrorLevel(void)
 
 /* -------------------------------------------------------------------------- */
 bool
-ert_testFinally(const struct Ert_ErrorFrame *aFrame)
+ert_testFinally(
+    const struct Ert_ErrorFrame *aFrame)
 {
     bool inject = false;
 
@@ -137,7 +142,9 @@ ert_testFinally(const struct Ert_ErrorFrame *aFrame)
 
 /* -------------------------------------------------------------------------- */
 int
-Ert_Test_init(struct Ert_TestModule *self, const char *aErrorEnv)
+Ert_Test_init(
+    struct Ert_TestModule *self,
+    const char            *aErrorEnv)
 {
     int rc = -1;
 
@@ -189,7 +196,8 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 struct Ert_TestModule *
-Ert_Test_exit(struct Ert_TestModule *self)
+Ert_Test_exit(
+    struct Ert_TestModule *self)
 {
     if (self)
     {

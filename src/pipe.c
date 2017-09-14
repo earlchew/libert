@@ -173,14 +173,14 @@ Finally:
 
 /* -------------------------------------------------------------------------- */
 int
-nonBlockingPipe(struct Ert_Pipe *self, unsigned aNonBlocking)
+ert_nonBlockingPipe(struct Ert_Pipe *self, unsigned aNonBlocking)
 {
     int rc = -1;
 
     ERROR_IF(
-        nonBlockingFile(self->mRdFile, aNonBlocking));
+        ert_nonBlockingFile(self->mRdFile, aNonBlocking));
     ERROR_IF(
-        nonBlockingFile(self->mWrFile, aNonBlocking));
+        ert_nonBlockingFile(self->mWrFile, aNonBlocking));
 
     rc = 0;
 
