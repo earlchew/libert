@@ -52,101 +52,22 @@ TEST_CFLAGS        = $(TEST_FLAGS) $(COMMON_CFLAGS)
 TEST_CXXFLAGS      = $(TEST_FLAGS) $(COMMON_CXXFLAGS)
 TESTS              = $(check_PROGRAMS) $(check_SCRIPTS)
 
-check_PROGRAMS      = _splicetest
-check_PROGRAMS     += _isblockingtest
-check_PROGRAMS     += _deadlinetest
-check_PROGRAMS     += _ensuretest
-check_PROGRAMS     += _fdsettest
-check_PROGRAMS     += _systemtest
-check_PROGRAMS     += _timekeepingtest
-check_PROGRAMS     += _envtest
-check_PROGRAMS     += _errortest
-check_PROGRAMS     += _eventlatchtest
-check_PROGRAMS     += _eventpipetest
-check_PROGRAMS     += _fdtest
-check_PROGRAMS     += _fileeventqueuetest
-check_PROGRAMS     += _filetest
-check_PROGRAMS     += _lambdatest
-check_PROGRAMS     += _methodtest
-check_PROGRAMS     += _unixsockettest
-check_PROGRAMS     += _parsetest
-check_PROGRAMS     += _processtest
-check_PROGRAMS     += _printftest
-check_PROGRAMS     += _threadtest
+check_PROGRAMS      = $(libert_a_TESTS)
 noinst_PROGRAMS     =
 noinst_SCRIPTS      = $(check_SCRIPTS)
 noinst_LTLIBRARIES  = libgoogletest.la
 lib_LIBRARIES       = libert.a
 
-_splicetest_SOURCES = _splicetest.c
-
-_timekeepingtest_SOURCES = _timekeepingtest.cc
-_timekeepingtest_LDADD   = $(TEST_LIBS)
-
-_deadlinetest_SOURCES = _deadlinetest.cc
-_deadlinetest_LDADD   = $(TEST_LIBS)
-
-_envtest_SOURCES = _envtest.cc
-_envtest_LDADD   = $(TEST_LIBS)
-
-_ensuretest_SOURCES = _ensuretest.c
-_ensuretest_LDADD   = $(TEST_LIBS)
-
-_errortest_SOURCES = _errortest.cc
-_errortest_LDADD   = $(TEST_LIBS)
-
-_eventlatchtest_SOURCES = _eventlatchtest.cc
-_eventlatchtest_LDADD   = $(TEST_LIBS)
-
-_eventpipetest_SOURCES = _eventpipetest.cc
-_eventpipetest_LDADD   = $(TEST_LIBS)
-
-_fdsettest_SOURCES = _fdsettest.cc
-_fdsettest_LDADD   = $(TEST_LIBS)
-
-_fdtest_SOURCES = _fdtest.cc
-_fdtest_LDADD   = $(TEST_LIBS)
-
-_fileeventqueuetest_SOURCES = _fileeventqueuetest.cc
-_fileeventqueuetest_LDADD   = $(TEST_LIBS)
-
-_filetest_SOURCES = _filetest.cc
-_filetest_LDADD   = $(TEST_LIBS)
-
-_lambdatest_SOURCES = _lambdatest.cc
-_lambdatest_LDADD   = $(TEST_LIBS)
-
-_methodtest_SOURCES = _methodtest.cc
-_methodtest_LDADD   = $(TEST_LIBS)
-
-_parsetest_SOURCES = _parsetest.cc
-_parsetest_LDADD   = $(TEST_LIBS)
-
-_printftest_SOURCES = _printftest.cc
-_printftest_LDADD   = $(TEST_LIBS)
-
-_processtest_SOURCES = _processtest.cc
-_processtest_LDADD   = $(TEST_LIBS)
-
-_systemtest_SOURCES = _systemtest.cc
-_systemtest_LDADD   = $(TEST_LIBS)
-
-_threadtest_SOURCES = _threadtest.cc
-_threadtest_LDADD   = $(TEST_LIBS)
-
-_unixsockettest_SOURCES = _unixsockettest.cc
-_unixsockettest_LDADD   = $(TEST_LIBS)
-
-_isblockingtest_SOURCES = _isblockingtest.c
-_isblockingtest_LDADD   = $(TEST_LIBS)
-
 include libert_a.am
-$(call WILDCARD,libert_a,libert_a_SOURCES,[a-z]*.[ch])
+$(call WILDCARD_LIB,libert_a,libert_a_SOURCES,[a-z]*.[ch])
 libert_a_CFLAGS = $(COMMON_CFLAGS)
 
 include libert_a_h.am
-$(call WILDCARD,libert_a_h,nobase_libert_a_HEADERS,ert/*.h)
+$(call WILDCARD_LIB,libert_a_h,nobase_libert_a_HEADERS,ert/*.h)
 libert_adir = $(includedir)
+
+include libert_a_tests.am
+$(call WILDCARD_TESTS,libert_a_tests,libert_a_TESTS,_*.c _*.cc,$$(TEST_LIBS))
 
 libgoogletest_la_SOURCES  = gtest-all.cc
 libgoogletest_la_CPPFLAGS = -I ../googletest
