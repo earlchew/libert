@@ -97,13 +97,15 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
     mEventActivity = &mEventActivity_;
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
@@ -118,7 +120,8 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
      * activity since event activity has not yet been re-armed. */
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     /* Now re-arm the event activity, and verify that polling results
@@ -130,13 +133,15 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
     EXPECT_EQ(1, eventCount_);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -153,7 +158,8 @@ TEST_F(FileEventQueueTest, ReadyArmPollClose)
     mEventActivity = &mEventActivity_;
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
@@ -163,13 +169,15 @@ TEST_F(FileEventQueueTest, ReadyArmPollClose)
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(1, eventCount_);
 
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -186,13 +194,15 @@ TEST_F(FileEventQueueTest, ArmPollReadyClose)
     mEventActivity = &mEventActivity_;
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 
     EXPECT_EQ(0, ert_ringBellSocketPairChild(mTestSocket));
@@ -202,7 +212,8 @@ TEST_F(FileEventQueueTest, ArmPollReadyClose)
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -223,7 +234,8 @@ TEST_F(FileEventQueueTest, ArmClose)
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -248,7 +260,8 @@ TEST_F(FileEventQueueTest, ArmReadyClose)
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -278,7 +291,8 @@ TEST_F(FileEventQueueTest, ReadyArmClose)
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -296,7 +310,7 @@ TEST_F(FileEventQueueTest, Close)
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -318,7 +332,8 @@ TEST_F(FileEventQueueTest, ReadyClose)
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 

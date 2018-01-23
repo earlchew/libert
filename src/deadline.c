@@ -39,9 +39,9 @@ ert_createDeadline(
 
     self->mSince          = ERT_EVENTCLOCKTIME_INIT;
     self->mTime           = self->mSince;
-    self->mRemaining      = ZeroDuration;
+    self->mRemaining      = Ert_ZeroDuration;
     self->mSigContTracker = Ert_ProcessSigContTracker();
-    self->mDuration_      = aDuration ? *aDuration : ZeroDuration;
+    self->mDuration_      = aDuration ? *aDuration : Ert_ZeroDuration;
     self->mDuration       = aDuration ? &self->mDuration_ : 0;
     self->mExpired        = false;
 

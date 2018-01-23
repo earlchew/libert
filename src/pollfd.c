@@ -143,7 +143,7 @@ ert_runPollFdLoop(
 
         polltm = ert_eventclockTime();
 
-        struct Ert_Duration timeout   = ZeroDuration;
+        struct Ert_Duration timeout   = Ert_ZeroDuration;
         size_t          chosen    = self->mTimerActions.mSize;
         size_t          numActive = 0;
 
@@ -162,7 +162,7 @@ ert_runPollFdLoop(
                         &polltm))
                 {
                     chosen  = ix;
-                    timeout = ZeroDuration;
+                    timeout = Ert_ZeroDuration;
                     break;
                 }
 

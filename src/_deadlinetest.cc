@@ -218,7 +218,7 @@ TEST_F(DeadlineTest, ZeroTimeout)
     struct Ert_Deadline  deadline_;
     struct Ert_Deadline *deadline = 0;
 
-    EXPECT_EQ(0, ert_createDeadline(&deadline_, &ZeroDuration));
+    EXPECT_EQ(0, ert_createDeadline(&deadline_, &Ert_ZeroDuration));
     deadline = &deadline_;
 
     // Verify that a zero timeout is not expired on the first iteration.

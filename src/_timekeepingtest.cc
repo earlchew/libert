@@ -143,7 +143,7 @@ TEST(TimeKeepingTest, DeadlineRunsOnce)
 {
     struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
 
-    EXPECT_FALSE(ert_deadlineTimeExpired(&since, ZeroDuration, 0, 0));
+    EXPECT_FALSE(ert_deadlineTimeExpired(&since, Ert_ZeroDuration, 0, 0));
 }
 
 TEST(TimeKeepingTest, DeadlineExpires)
@@ -151,7 +151,7 @@ TEST(TimeKeepingTest, DeadlineExpires)
     auto period = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(1000)));
 
     struct Ert_EventClockTime since     = ERT_EVENTCLOCKTIME_INIT;
-    struct Ert_Duration       remaining = ZeroDuration;
+    struct Ert_Duration       remaining = Ert_ZeroDuration;
 
     auto startTimeOuter = ert_monotonicTime();
     EXPECT_FALSE(ert_deadlineTimeExpired(&since, period, &remaining, 0));
@@ -186,7 +186,7 @@ TEST(TimeKeepingTest, MonotonicDeadlineRunsOnce)
     struct Ert_MonotonicDeadline deadline = ERT_MONOTONICDEADLINE_INIT;
 
     EXPECT_FALSE(
-        ert_monotonicDeadlineTimeExpired(&deadline, ZeroDuration, 0, 0));
+        ert_monotonicDeadlineTimeExpired(&deadline, Ert_ZeroDuration, 0, 0));
 }
 
 TEST(TimeKeepingTest, MonotonicDeadlineExpires)
@@ -194,7 +194,7 @@ TEST(TimeKeepingTest, MonotonicDeadlineExpires)
     auto period = Ert_Duration(ERT_NSECS(Ert_MilliSeconds(1000)));
 
     struct Ert_MonotonicDeadline deadline  = ERT_MONOTONICDEADLINE_INIT;
-    struct Ert_Duration          remaining = ZeroDuration;
+    struct Ert_Duration          remaining = Ert_ZeroDuration;
 
     auto startTimeOuter = ert_monotonicTime();
     EXPECT_FALSE(
@@ -248,20 +248,20 @@ TEST(TimeKeepingTest, LapTimeSinceNoPeriod)
 
     struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
 
-    EXPECT_FALSE(ert_lapTimeSince(&since, ZeroDuration, 0).duration.ns);
+    EXPECT_FALSE(ert_lapTimeSince(&since, Ert_ZeroDuration, 0).duration.ns);
 
     {
         ert_monotonicSleep(period);
 
         auto lapTime = ERT_MSECS(
-            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+            ert_lapTimeSince(&since, Ert_ZeroDuration, 0).duration).ms / 100;
 
         auto interval = ERT_MSECS(period.duration).ms / 100;
 
         EXPECT_EQ(1 * interval, lapTime);
 
         lapTime = ERT_MSECS(
-            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+            ert_lapTimeSince(&since, Ert_ZeroDuration, 0).duration).ms / 100;
 
         EXPECT_EQ(1 * interval, lapTime);
     }
@@ -270,14 +270,14 @@ TEST(TimeKeepingTest, LapTimeSinceNoPeriod)
         ert_monotonicSleep(period);
 
         auto lapTime = ERT_MSECS(
-            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+            ert_lapTimeSince(&since, Ert_ZeroDuration, 0).duration).ms / 100;
 
         auto interval = ERT_MSECS(period.duration).ms / 100;
 
         EXPECT_EQ(2 * interval, lapTime);
 
         lapTime = ERT_MSECS(
-            ert_lapTimeSince(&since, ZeroDuration, 0).duration).ms / 100;
+            ert_lapTimeSince(&since, Ert_ZeroDuration, 0).duration).ms / 100;
 
         EXPECT_EQ(2 * interval, lapTime);
     }
@@ -290,7 +290,7 @@ TEST(TimeKeepingTest, LapTimeSinceWithPeriod)
 
     struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
 
-    EXPECT_FALSE(ert_lapTimeSince(&since, ZeroDuration, 0).duration.ns);
+    EXPECT_FALSE(ert_lapTimeSince(&since, Ert_ZeroDuration, 0).duration.ns);
 
     {
         ert_monotonicSleep(sleepPeriod);

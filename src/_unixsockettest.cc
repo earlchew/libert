@@ -80,7 +80,7 @@ TEST(UnixSocketTest, AbstractServer)
     EXPECT_EQ(0, ert_acceptUnixSocket(&peersock_, serversock));
     peersock = &peersock_;
 
-    EXPECT_EQ(1, ert_waitUnixSocketWriteReady(clientsock, &ZeroDuration));
+    EXPECT_EQ(1, ert_waitUnixSocketWriteReady(clientsock, &Ert_ZeroDuration));
 
     struct ucred cred;
 

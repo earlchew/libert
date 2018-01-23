@@ -818,7 +818,7 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Ert_Duration *aTimeout)
     struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
     struct Ert_Duration       remaining;
 
-    const struct Ert_Duration timeout = aTimeout ? *aTimeout : ZeroDuration;
+    const struct Ert_Duration timeout = aTimeout ? *aTimeout : Ert_ZeroDuration;
 
     struct Ert_ProcessSigContTracker sigContTracker =
         Ert_ProcessSigContTracker();
@@ -944,7 +944,7 @@ waitFdReadyDeadline_(
                             return waitFdReady_(
                                 self_->mFd,
                                 self_->mPollMask,
-                                &ZeroDuration);
+                                &Ert_ZeroDuration);
                         })),
                 Ert_DeadlineWaitMethod(
                     &readyDeadline,
@@ -1006,7 +1006,8 @@ readFdDeadline_(int aFd,
                         ERT_LAMBDA(
                             int, (int *fd),
                             {
-                                return ert_waitFdReadReady(*fd, &ZeroDuration);
+                                return ert_waitFdReadReady(
+                                    *fd, &Ert_ZeroDuration);
                             })),
                     Ert_DeadlineWaitMethod(
                         &aFd,
@@ -1099,7 +1100,8 @@ writeFdDeadline_(int aFd,
                         ERT_LAMBDA(
                             int, (int *fd),
                             {
-                                return ert_waitFdWriteReady(*fd, &ZeroDuration);
+                                return ert_waitFdWriteReady(
+                                    *fd, &Ert_ZeroDuration);
                             })),
                     Ert_DeadlineWaitMethod(
                         &aFd,

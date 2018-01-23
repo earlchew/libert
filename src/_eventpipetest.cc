@@ -44,7 +44,7 @@ TEST(EventPipeTest, ResetOnce)
 
     EXPECT_EQ(
         0,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -61,14 +61,14 @@ TEST(EventPipeTest, SetOnce)
 
     EXPECT_EQ(
         1,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     char buf[1];
     EXPECT_EQ(1, ert_readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
 
     EXPECT_EQ(
         0,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -86,14 +86,14 @@ TEST(EventPipeTest, SetTwice)
 
     EXPECT_EQ(
         1,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     char buf[1];
     EXPECT_EQ(1, ert_readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
 
     EXPECT_EQ(
         0,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -111,7 +111,7 @@ TEST(EventPipeTest, SetOnceResetOnce)
 
     EXPECT_EQ(
         0,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
@@ -132,7 +132,7 @@ TEST(EventPipeTest, SetOnceResetTwice)
 
     EXPECT_EQ(
         0,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
 
@@ -153,14 +153,14 @@ TEST(EventPipeTest, SetOnceResetOnceSetOnce)
 
     EXPECT_EQ(
         1,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     char buf[1];
     EXPECT_EQ(1, ert_readFile(eventPipe->mPipe->mRdFile, buf, 1, 0));
 
     EXPECT_EQ(
         0,
-        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &ZeroDuration));
+        ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }

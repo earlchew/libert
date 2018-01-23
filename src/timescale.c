@@ -33,7 +33,7 @@
 #include <sys/time.h>
 
 /* -------------------------------------------------------------------------- */
-const struct Ert_Duration ZeroDuration =
+const struct Ert_Duration Ert_ZeroDuration =
     { .duration = { { .ns = 0 } } };
 
 /* -------------------------------------------------------------------------- */

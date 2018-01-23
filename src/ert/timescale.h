@@ -164,7 +164,7 @@ struct Ert_Duration
     struct Ert_NanoSeconds duration;
 };
 
-extern const struct Ert_Duration ZeroDuration;
+extern const struct Ert_Duration Ert_ZeroDuration;
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
