@@ -273,14 +273,18 @@ ert_logErrorFrameSequence(void);
 #ifndef __cplusplus
 #define breadcrumb Ert_Error_breadcrumb_
 #define debug      Ert_Error_debug_
+#define debuglevel Ert_Error_debuglevel_
 #endif
 
 #define Ert_Error_breadcrumb_() \
     ert_errorDebug(__func__, __FILE__, __LINE__, ".")
 
+#define Ert_Error_debuglevel_(aLevel) \
+    ((aLevel) < gErtOptions_.mDebug)
+
 #define Ert_Error_debug_(aLevel, ...)                                    \
     do                                                                   \
-        if ((aLevel) < gErtOptions_.mDebug)                              \
+        if (Ert_Error_debuglevel_((aLevel)))                             \
             ert_errorDebug(__func__, __FILE__, __LINE__, ## __VA_ARGS__);\
     while (0)
 
