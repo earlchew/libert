@@ -88,7 +88,7 @@ testFinallyIfOk()
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ok(),
         {
             errno = 0;
@@ -96,11 +96,11 @@ testFinallyIfOk()
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
-        finally_warn_if(rc, nilClass, print);
+        ert_finally_warn_if(rc, nilClass, print);
     });
 
     return rc;
@@ -118,7 +118,7 @@ testFinallyIfFail_1()
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         fail(),
         {
             errno = -1;
@@ -126,15 +126,15 @@ testFinallyIfFail_1()
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
-        finally_warn_if(rc,
+        ert_finally_warn_if(rc,
                         nilClass, print,
                         "Error context at testFinallyIfFail_1");
 
-        ABORT_UNLESS(
+        ERT_ABORT_UNLESS(
             testFinallyIfFail_0());
     });
 
@@ -146,7 +146,7 @@ testFinallyIfFail_2()
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         testFinallyIfFail_1(),
         {
             errno = -2;
@@ -154,15 +154,15 @@ testFinallyIfFail_2()
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
-        finally_warn_if(rc,
+        ert_finally_warn_if(rc,
                         nilClass, print,
                         "Error context at testFinallyIfFail_2");
 
-        ABORT_UNLESS(
+        ERT_ABORT_UNLESS(
             testFinallyIfFail_1());
     });
 

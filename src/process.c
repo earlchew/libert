@@ -197,7 +197,7 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
         ert_switchErrorFrameStack(Ert_ErrorFrameStackSignal);
 
     struct Ert_ProcessSignalName sigName;
-    debug(1,
+    ert_debug(1,
           "dispatch signal %s",
           ert_formatProcessSignalName(&sigName, aSigNum));
 
@@ -229,7 +229,7 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
 static void
 dispatchSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         runSigAction_(aSigNum, aSigInfo, aSigContext);
     });
@@ -250,7 +250,7 @@ runSigHandler_(int aSigNum)
         ert_switchErrorFrameStack(Ert_ErrorFrameStackSignal);
 
     struct Ert_ProcessSignalName sigName;
-    debug(1,
+    ert_debug(1,
           "dispatch signal %s",
           ert_formatProcessSignalName(&sigName, aSigNum));
 
@@ -282,7 +282,7 @@ runSigHandler_(int aSigNum)
 static void
 dispatchSigHandler_(int aSigNum)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         runSigHandler_(aSigNum);
     });
@@ -295,7 +295,7 @@ changeSigAction_(unsigned          aSigNum,
 {
     int rc = -1;
 
-    ensure(ERT_NUMBEROF(processSignals_.mVector) > aSigNum);
+    ert_ensure(ERT_NUMBEROF(processSignals_.mVector) > aSigNum);
 
     struct Ert_RWMutexReader  sigVecLock_;
     struct Ert_RWMutexReader *sigVecLock = 0;
@@ -322,7 +322,7 @@ changeSigAction_(unsigned          aSigNum,
          * See the wrappers in eintr_.c that wrap system calls
          * to ensure that restart semantics are available. */
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (nextAction.sa_flags & SA_RESTART));
 
         /* Require that signal delivery is not recursive to avoid
@@ -331,10 +331,10 @@ changeSigAction_(unsigned          aSigNum,
          * terminate the program. */
 
         sigset_t filledSigSet;
-        ERROR_IF(
+        ERT_ERROR_IF(
             sigfillset(&filledSigSet));
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             sigdelset(&filledSigSet, SIGABRT));
 
         nextAction.sa_mask   = filledSigSet;
@@ -366,7 +366,7 @@ changeSigAction_(unsigned          aSigNum,
     actionLock = ert_lockMutex(processSignals_.mVector[aSigNum].mActionMutex);
 
     struct sigaction prevAction;
-    ERROR_IF(
+    ERT_ERROR_IF(
         sigaction(aSigNum, &nextAction, &prevAction));
 
     /* Do not overwrite the output result unless the underlying
@@ -379,9 +379,9 @@ changeSigAction_(unsigned          aSigNum,
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         actionLock = ert_unlockMutex(actionLock);
 
@@ -410,7 +410,7 @@ ert_ignoreProcessSigPipe(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGPIPE,
             (struct sigaction) { .sa_handler = SIG_IGN },
@@ -418,9 +418,9 @@ ert_ignoreProcessSigPipe(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -433,7 +433,7 @@ resetProcessSigPipe_(void)
     if (SIG_ERR != processSigPipeAction_.sa_handler ||
         (processSigPipeAction_.sa_flags & SA_SIGINFO))
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             changeSigAction_(SIGPIPE, processSigPipeAction_, 0));
 
         processSigPipeAction_.sa_handler = SIG_ERR;
@@ -442,9 +442,9 @@ resetProcessSigPipe_(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -479,11 +479,11 @@ sigCont_(int aSigNum)
         &processSigCont_.mSigMutex);
 
     if (ert_ownWatchProcessMethodNil(processSigCont_.mMethod))
-        debug(1, "detected SIGCONT");
+        ert_debug(1, "detected SIGCONT");
     else
     {
-        debug(1, "observed SIGCONT");
-        ABORT_IF(
+        ert_debug(1, "observed SIGCONT");
+        ERT_ABORT_IF(
             ert_callWatchProcessMethod(processSigCont_.mMethod));
     }
 
@@ -495,16 +495,16 @@ hookProcessSigCont_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGCONT,
             (struct sigaction) { .sa_handler = sigCont_ }, 0));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -514,7 +514,7 @@ unhookProcessSigCont_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGCONT,
             (struct sigaction) { .sa_handler = SIG_DFL },
@@ -522,9 +522,9 @@ unhookProcessSigCont_(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -545,14 +545,14 @@ resetProcessSigCont_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         updateProcessSigContMethod_(Ert_WatchProcessMethodNil()));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -562,14 +562,14 @@ ert_watchProcessSigCont(struct Ert_WatchProcessMethod aMethod)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         updateProcessSigContMethod_(aMethod));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -611,7 +611,7 @@ ert_checkProcessSigContTracker(
 {
     unsigned sigContCount = self->mCount;
 
-    ensure(1 && sigContCount);
+    ert_ensure(1 && sigContCount);
 
     self->mCount = fetchProcessSigContTracker_();
 
@@ -636,18 +636,18 @@ sigStop_(int aSigNum)
 
     if (ert_ownWatchProcessMethodNil(processSigStop_.mMethod))
     {
-        debug(1, "detected SIGTSTP");
+        ert_debug(1, "detected SIGTSTP");
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             raise(SIGSTOP),
             {
-                terminate(errno, "Unable to stop process");
+                ert_terminate(errno, "Unable to stop process");
             });
     }
     else
     {
-        debug(1, "observed SIGTSTP");
-        ABORT_IF(
+        ert_debug(1, "observed SIGTSTP");
+        ERT_ABORT_IF(
             ert_callWatchProcessMethod(processSigStop_.mMethod));
     }
 
@@ -659,7 +659,7 @@ hookProcessSigStop_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGTSTP,
             (struct sigaction) { .sa_handler = sigStop_ },
@@ -667,9 +667,9 @@ hookProcessSigStop_(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -679,7 +679,7 @@ unhookProcessSigStop_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGTSTP,
             (struct sigaction) { .sa_handler = SIG_DFL },
@@ -687,9 +687,9 @@ unhookProcessSigStop_(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -710,14 +710,14 @@ resetProcessSigStop_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         updateProcessSigStopMethod_(Ert_WatchProcessMethodNil()));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -727,14 +727,14 @@ ert_watchProcessSigStop(struct Ert_WatchProcessMethod aMethod)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         updateProcessSigStopMethod_(aMethod));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -753,8 +753,8 @@ sigChld_(int aSigNum)
 {
     if ( ! ert_ownWatchProcessMethodNil(processSigChldMethod_))
     {
-        debug(1, "observed SIGCHLD");
-        ABORT_IF(
+        ert_debug(1, "observed SIGCHLD");
+        ERT_ABORT_IF(
             ert_callWatchProcessMethod(processSigChldMethod_));
     }
 }
@@ -764,7 +764,7 @@ resetProcessChildrenWatch_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGCHLD,
             (struct sigaction) { .sa_handler = SIG_DFL },
@@ -774,9 +774,9 @@ resetProcessChildrenWatch_(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -790,7 +790,7 @@ ert_watchProcessChildren(struct Ert_WatchProcessMethod aMethod)
 
     processSigChldMethod_ = aMethod;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGCHLD,
             (struct sigaction) { .sa_handler = sigChld_ },
@@ -798,9 +798,9 @@ ert_watchProcessChildren(struct Ert_WatchProcessMethod aMethod)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             processSigChldMethod_ = sigChldMethod;
@@ -827,11 +827,11 @@ static void
 clockTick_(int aSigNum)
 {
     if (ert_ownWatchProcessMethodNil(processClockMethod_))
-        debug(1, "received clock tick");
+        ert_debug(1, "received clock tick");
     else
     {
-        debug(1, "observed clock tick");
-        ABORT_IF(
+        ert_debug(1, "observed clock tick");
+        ERT_ABORT_IF(
             ert_callWatchProcessMethod(processClockMethod_));
     }
 }
@@ -850,10 +850,10 @@ resetProcessClockWatch_(void)
             .it_interval = { .tv_sec = 0 },
         };
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             setitimer(ITIMER_REAL, &disableClock, 0));
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             changeSigAction_(SIGALRM, processClockTickSigAction_, 0));
 
         processClockMethod_ = Ert_WatchProcessMethodNil();
@@ -866,9 +866,9 @@ resetProcessClockWatch_(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -886,7 +886,7 @@ ert_watchProcessClock(struct Ert_WatchProcessMethod aMethod,
     struct sigaction  prevAction_;
     struct sigaction *prevAction = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         changeSigAction_(
             SIGALRM,
             (struct sigaction) { .sa_handler = clockTick_ },
@@ -898,10 +898,10 @@ ert_watchProcessClock(struct Ert_WatchProcessMethod aMethod,
 
     struct itimerval clockTimer;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         getitimer(ITIMER_REAL, &clockTimer));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         clockTimer.it_value.tv_sec || clockTimer.it_value.tv_usec,
         {
             errno = EPERM;
@@ -911,7 +911,7 @@ ert_watchProcessClock(struct Ert_WatchProcessMethod aMethod,
     clockTimer.it_value    = ert_timeValFromNanoSeconds(
         processClockTickPeriod_.duration);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         setitimer(ITIMER_REAL, &clockTimer, 0));
 
     processClockTickSigAction_ = *prevAction;
@@ -919,17 +919,17 @@ ert_watchProcessClock(struct Ert_WatchProcessMethod aMethod,
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
         {
             if (prevAction)
-                ABORT_IF(
+                ERT_ABORT_IF(
                     changeSigAction_(SIGALRM, *prevAction, 0),
                     {
-                        terminate(errno, "Unable to revert SIGALRM handler");
+                        ert_terminate(errno, "Unable to revert SIGALRM handler");
                     });
 
             processClockMethod_ = clockMethod;
@@ -970,7 +970,7 @@ caughtSignal_(int aSigNum, siginfo_t *aSigInfo, void *aUContext_)
         struct Ert_Pid pid = Ert_Pid(aSigInfo->si_pid);
         struct Ert_Uid uid = Ert_Uid(aSigInfo->si_uid);
 
-        debug(1, "observed %s pid %" PRId_Ert_Pid " uid %" PRId_Ert_Uid,
+        ert_debug(1, "observed %s pid %" PRId_Ert_Pid " uid %" PRId_Ert_Uid,
               ert_formatProcessSignalName(&sigName, aSigNum),
               FMTd_Ert_Pid(pid),
               FMTd_Ert_Uid(uid));
@@ -991,7 +991,7 @@ ert_watchProcessSignals(struct Ert_WatchProcessSignalMethod aMethod)
     {
         struct SignalWatch *watchedSig = processWatchedSignals_ + ix;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             changeSigAction_(
                 watchedSig->mSigNum,
                 (struct sigaction) { .sa_sigaction = caughtSignal_,
@@ -1003,9 +1003,9 @@ ert_watchProcessSignals(struct Ert_WatchProcessSignalMethod aMethod)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
         {
@@ -1018,11 +1018,11 @@ Finally:
                 {
                     struct Ert_ProcessSignalName sigName;
 
-                    ABORT_IF(
+                    ERT_ABORT_IF(
                         changeSigAction_(
                             watchedSig->mSigNum, watchedSig->mSigAction, 0),
                         {
-                            terminate(
+                            ert_terminate(
                                 errno,
                                 "Unable to revert action for %s",
                                 ert_formatProcessSignalName(
@@ -1086,15 +1086,15 @@ resetSignals_(void)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         resetProcessSigStop_());
-    ERROR_IF(
+    ERT_ERROR_IF(
         resetProcessSigCont_());
-    ERROR_IF(
+    ERT_ERROR_IF(
         resetProcessClockWatch_());
-    ERROR_IF(
+    ERT_ERROR_IF(
         resetProcessSignalsWatch_());
-    ERROR_IF(
+    ERT_ERROR_IF(
         resetProcessChildrenWatch_());
 
     /* Do not call resetProcessSigPipe_() here since this function is
@@ -1103,15 +1103,15 @@ resetSignals_(void)
      * defer the call to execProcess() so that new programs will have
      * SIGPIPE delivered.
      *
-     *    if (resetProcessSigPipe_())
-     *       goto Finally_;
+     *    ERT_ERROR_IF(
+     *        resetProcessSigPipe_());
      */
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1124,15 +1124,15 @@ ert_initProcessDirName(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         0 > sprintf(self->mDirName,
                     ERT_PROCESS_DIRNAME_FMT_, FMTd_Ert_Pid(aPid)));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1177,24 +1177,24 @@ ert_fetchProcessState(struct Ert_Pid aPid)
 
     static const char processStatFileNameFmt_[] = "%s/stat";
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_initProcessDirName(&processDirName, aPid));
 
     {
         char processStatFileName[strlen(processDirName.mDirName) +
                                  sizeof(processStatFileNameFmt_)];
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             0 > sprintf(processStatFileName,
                         processStatFileNameFmt_, processDirName.mDirName));
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (statFd = ert_openFd(processStatFileName, O_RDONLY, 0),
              -1 == statFd));
     }
 
     ssize_t statlen;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (statlen = ert_readFdFully(statFd, &statBuf, 0),
          -1 == statlen));
 
@@ -1209,7 +1209,7 @@ ert_fetchProcessState(struct Ert_Pid aPid)
                 switch (bufptr[1])
                 {
                 default:
-                    ERROR_IF(
+                    ERT_ERROR_IF(
                         true,
                         {
                             errno = ENOSYS;
@@ -1228,9 +1228,9 @@ ert_fetchProcessState(struct Ert_Pid aPid)
         }
     }
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         statFd = ert_closeFd(statFd);
 
@@ -1250,15 +1250,15 @@ createProcessLock_(
     self->mFile = 0;
     self->mLock = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_temporaryFile(&self->mFile_));
     self->mFile = &self->mFile_;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1279,18 +1279,18 @@ lockProcessLock_(
 {
     int rc = -1;
 
-    ensure( ! self->mLock);
+    ert_ensure( ! self->mLock);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
 
     self->mLock = &Ert_LockTypeWrite;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1300,9 +1300,9 @@ static void
 unlockProcessLock_(
     struct ProcessLock *self)
 {
-    ensure(self->mLock);
+    ert_ensure(self->mLock);
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         ert_unlockFileRegion(self->mFile, 0, 0));
 
     self->mLock = 0;
@@ -1315,9 +1315,9 @@ forkProcessLock_(
 {
     if (self->mLock)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_unlockFileRegion(self->mFile, 0, 0));
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_lockFileRegion(self->mFile, Ert_LockTypeWrite, 0, 0));
     }
 }
@@ -1334,15 +1334,15 @@ ert_acquireProcessAppLock(void)
     if (1 == ert_ownThreadSigMutexLocked(processLock_.mMutex))
     {
         if (processLock_.mLock)
-            ERROR_IF(
+            ERT_ERROR_IF(
                 lockProcessLock_(processLock_.mLock));
     }
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             lock = ert_unlockThreadSigMutex(lock);
@@ -1367,9 +1367,9 @@ ert_releaseProcessAppLock(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });
@@ -1383,10 +1383,10 @@ ert_createProcessAppLock(void)
 {
     struct Ert_ProcessAppLock *self = &processAppLock_;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         ert_acquireProcessAppLock(),
         {
-            terminate(errno, "Unable to acquire application lock");
+            ert_terminate(errno, "Unable to acquire application lock");
         });
 
     return self;
@@ -1399,12 +1399,12 @@ ert_destroyProcessAppLock(
 {
     if (self)
     {
-        ensure(&processAppLock_ == self);
+        ert_ensure(&processAppLock_ == self);
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_releaseProcessAppLock(),
             {
-                terminate(errno, "Unable to release application lock");
+                ert_terminate(errno, "Unable to release application lock");
             });
     }
 
@@ -1423,7 +1423,7 @@ const struct Ert_File *
 ert_ownProcessAppLockFile(
     const struct Ert_ProcessAppLock *self)
 {
-    ensure(&processAppLock_ == self);
+    ert_ensure(&processAppLock_ == self);
 
     return processLock_.mLock ? processLock_.mLock->mFile : 0;
 }
@@ -1436,7 +1436,7 @@ ert_acquireProcessForkChildLock_(
     struct Ert_Tid tid = ert_ownThreadId();
     struct Ert_Pid pid = ert_ownProcessId();
 
-    ensure( ! self->mProcess.mPid || self->mProcess.mPid == pid.mPid);
+    ert_ensure( ! self->mProcess.mPid || self->mProcess.mPid == pid.mPid);
 
     if (self->mThread.mTid == tid.mTid)
         ++self->mCount;
@@ -1448,7 +1448,7 @@ ert_acquireProcessForkChildLock_(
         self->mThread  = tid;
         self->mProcess = pid;
 
-        ensure( ! self->mCount);
+        ert_ensure( ! self->mCount);
 
         ++self->mCount;
     }
@@ -1467,24 +1467,24 @@ ert_relinquishProcessForkChildLock_(
         struct Ert_Tid tid = ert_ownThreadId();
         struct Ert_Pid pid = ert_ownProcessId();
 
-        ensure(self->mCount);
-        ensure(self->mMutex == &self->mMutex_);
+        ert_ensure(self->mCount);
+        ert_ensure(self->mMutex == &self->mMutex_);
 
         /* Note that the owning tid will not match in the main thread
          * of the child process (which will have a different tid) after
          * the lock is acquired and the parent process is forked. */
 
-        ensure(self->mProcess.mPid);
+        ert_ensure(self->mProcess.mPid);
 
         if (self->mProcess.mPid == pid.mPid)
-            ensure(self->mThread.mTid == tid.mTid);
+            ert_ensure(self->mThread.mTid == tid.mTid);
         else
         {
             self->mProcess = pid;
             self->mThread  = tid;
         }
 
-        ensure(aRelease <= self->mCount);
+        ert_ensure(aRelease <= self->mCount);
 
         self->mCount -= aRelease;
 
@@ -1524,7 +1524,7 @@ ert_reapProcessChild(struct Ert_Pid aPid, int *aStatus)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         -1 == aPid.mPid || ! aPid.mPid,
         {
             errno = EINVAL;
@@ -1534,16 +1534,16 @@ ert_reapProcessChild(struct Ert_Pid aPid, int *aStatus)
 
     do
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             (pid = waitpid(aPid.mPid, aStatus, __WALL),
              -1 == pid && EINTR != errno));
     } while (pid != aPid.mPid);
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1564,9 +1564,9 @@ waitProcessChild_(const siginfo_t *aSigInfo)
     case CLD_DUMPED: rc = Ert_ChildProcessStateDumped;  break;
     }
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1577,7 +1577,7 @@ ert_waitProcessChild(struct Ert_Pid aPid)
     struct Ert_ChildProcessState rc =
         { .mChildState = Ert_ChildProcessStateError };
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         -1 == aPid.mPid || ! aPid.mPid,
         {
             errno = EINVAL;
@@ -1588,7 +1588,7 @@ ert_waitProcessChild(struct Ert_Pid aPid)
     do
     {
         siginfo.si_pid = 0;
-        ERROR_IF(
+        ERT_ERROR_IF(
             waitid(P_PID, aPid.mPid, &siginfo, WEXITED | WNOWAIT) &&
             EINTR != errno);
 
@@ -1596,16 +1596,16 @@ ert_waitProcessChild(struct Ert_Pid aPid)
 
     rc.mChildStatus = siginfo.si_status;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (rc.mChildState = waitProcessChild_(&siginfo),
          Ert_ChildProcessStateError == rc.mChildState),
         {
             errno = EINVAL;
         });
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1624,7 +1624,7 @@ ert_monitorProcessChild(struct Ert_Pid aPid)
         siginfo.si_pid = 0;
 
         int waitErr;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (waitErr = waitid(P_PID, aPid.mPid, &siginfo,
                    WEXITED | WSTOPPED | WCONTINUED | WNOHANG | WNOWAIT),
             waitErr && EINTR != errno));
@@ -1643,7 +1643,7 @@ ert_monitorProcessChild(struct Ert_Pid aPid)
         switch (siginfo.si_code)
         {
         default:
-            ERROR_IF(
+            ERT_ERROR_IF(
                 true,
                 {
                     errno = EINVAL;
@@ -1664,9 +1664,9 @@ ert_monitorProcessChild(struct Ert_Pid aPid)
         }
     }
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1686,7 +1686,7 @@ ert_waitProcessChildren()
         siginfo.si_pid = 0;
 
         pid_t waitErr;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (waitErr = waitid(P_ALL, 0, &siginfo, WEXITED | WNOWAIT),
              waitErr && EINTR != errno && ECHILD != errno));
         if (waitErr && EINTR == errno)
@@ -1696,7 +1696,7 @@ ert_waitProcessChildren()
             pid = Ert_Pid(0);
         else
         {
-            ensure(siginfo.si_pid);
+            ert_ensure(siginfo.si_pid);
             pid = Ert_Pid(siginfo.si_pid);
         }
 
@@ -1705,9 +1705,9 @@ ert_waitProcessChildren()
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc ? Ert_Pid(-1) : pid;
 }
@@ -1783,23 +1783,23 @@ createForkProcessChannel_(
     /* Prevent the fork communication channels from inadvertently becoming
      * stdin, stdout or stderr. */
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createStdFdFiller(&stdFdFiller_));
     stdFdFiller = &stdFdFiller_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createPipe(&self->mResultPipe_, O_CLOEXEC));
     self->mResultPipe = &self->mResultPipe_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createBellSocketPair(&self->mResultSocket_, O_CLOEXEC));
     self->mResultSocket = &self->mResultSocket_;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self = closeForkProcessChannel_(self);
@@ -1832,16 +1832,16 @@ includeForkProcessChannelFdSet_(
     for (unsigned ix = 0; ERT_NUMBEROF(filelist) > ix; ++ix)
     {
         if (filelist[ix])
-            ERROR_IF(
+            ERT_ERROR_IF(
                 ert_insertFdSetFile(aFdSet, filelist[ix]) &&
                 EEXIST != errno);
     }
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1868,16 +1868,16 @@ excludeForkProcessChannelFdSet_(
     for (unsigned ix = 0; ERT_NUMBEROF(filelist) > ix; ++ix)
     {
         if (filelist[ix])
-            ERROR_IF(
+            ERT_ERROR_IF(
                 ert_removeFdSetFile(aFdSet, filelist[ix]) &&
                 ENOENT != errno);
     }
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1889,18 +1889,18 @@ sendForkProcessChannelResult_(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         sizeof(*aResult) != ert_writeFile(
             self->mResultPipe->mWrFile, (char *) aResult, sizeof(*aResult), 0));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_ringBellSocketPairChild(self->mResultSocket));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1912,18 +1912,18 @@ recvForkProcessChannelResult_(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_waitBellSocketPairParent(self->mResultSocket, 0));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         sizeof(*aResult) != ert_readFile(
             self->mResultPipe->mRdFile, (char *) aResult, sizeof(*aResult), 0));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1934,14 +1934,14 @@ recvForkProcessChannelAcknowledgement_(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_waitBellSocketPairChild(self->mResultSocket, 0));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1964,12 +1964,12 @@ callForkMethod_(struct Ert_ForkProcessMethod aMethod)
 
     if ( ! ert_ownForkProcessMethodNil(aMethod))
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (status = ert_callForkProcessMethod(aMethod),
              -1 == status || (errno = 0, 0 > status || 255 < status)),
             {
                 if (-1 != status)
-                    terminate(
+                    ert_terminate(
                         0,
                         "Out of range exit status %d", status);
             });
@@ -1985,18 +1985,18 @@ callForkMethod_(struct Ert_ForkProcessMethod aMethod)
 
         char exitCmd[sizeof(exitCmdFmt) + sizeof(status) * CHAR_BIT];
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             0 > sprintf(exitCmd, exitCmdFmt, status),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to format exit status command: %d", status);
             });
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             (execl("/bin/sh", "sh", "-c", exitCmd, (char *) 0), true),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to exit process: %s", exitCmd);
             });
@@ -2024,7 +2024,7 @@ forkProcessChild_PostParent_(
      * to set its own process group */
 
     if (Ert_ForkProcessSetProcessGroup == aOption)
-        ERROR_IF(
+        ERT_ERROR_IF(
             setpgid(aChildPid.mPid,
                     aChildPgid.mPgid ? aChildPgid.mPgid : aChildPid.mPid));
 
@@ -2039,7 +2039,7 @@ forkProcessChild_PostParent_(
 #ifdef __linux__
     {
         long clocktick;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (clocktick = sysconf(_SC_CLK_TCK),
              -1 == clocktick));
 
@@ -2070,23 +2070,23 @@ forkProcessChild_PostParent_(
          processChannel;
          processChannel = processChannel->mPrev)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             excludeForkProcessChannelFdSet_(processChannel, aBlacklistFds));
     }
 
     {
         struct ForkProcessResult_ forkResult;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             recvForkProcessChannelResult_(self, &forkResult));
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             forkResult.mReturnCode,
             {
                 errno = forkResult.mErrCode;
             });
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             ! ert_ownPostForkParentProcessMethodNil(aPostForkParentMethod) &&
             ert_callPostForkParentProcessMethod(
                 aPostForkParentMethod, aChildPid));
@@ -2097,7 +2097,7 @@ forkProcessChild_PostParent_(
          * remain valid, but leave stderr intact. */
 
         {
-            ERROR_IF(
+            ERT_ERROR_IF(
                 ert_createStdFdFiller(&stdFdFiller_));
             stdFdFiller = &stdFdFiller_;
 
@@ -2123,30 +2123,30 @@ forkProcessChild_PostParent_(
                 int altFd = stdfdlist[ix].mAltFd;
 
                 int err;
-                ERROR_IF(
+                ERT_ERROR_IF(
                     (err = ert_removeFdSet(aBlacklistFds, fd),
                      err && ENOENT != errno));
 
                 if ( ! err && -1 != altFd)
-                    ERROR_IF(
+                    ERT_ERROR_IF(
                         fd != ert_duplicateFd(altFd, fd));
             }
 
             stdFdFiller = ert_closeStdFdFiller(stdFdFiller);
         }
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_closeFdOnlyBlackList(aBlacklistFds));
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             sendForkProcessChannelAcknowledgement_(self));
     }
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         stdFdFiller = ert_closeStdFdFiller(stdFdFiller);
     });
@@ -2177,12 +2177,12 @@ forkProcessChild_PostChild_(
 
     if (Ert_ForkProcessSetSessionLeader == aOption)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             -1 == setsid());
     }
     else if (Ert_ForkProcessSetProcessGroup == aOption)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             setpgid(0, aChildPgid.mPgid));
     }
 
@@ -2190,18 +2190,18 @@ forkProcessChild_PostChild_(
      * to catch signals. The parent should have set the signal
      * mask appropriately. */
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         resetSignals_());
 
     closeForkProcessChannelResultParent_(self);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         includeForkProcessChannelFdSet_(self, aWhitelistFds));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_closeFdExceptWhiteList(aWhitelistFds));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ! ert_ownPostForkChildProcessMethodNil(aPostForkChildMethod) &&
         ert_callPostForkChildProcessMethod(aPostForkChildMethod));
 
@@ -2235,7 +2235,7 @@ forkProcessChild_PostChild_(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
     if (rc)
     {
@@ -2291,17 +2291,17 @@ ert_forkProcessChild(
     struct Ert_ProcessForkChildLock_ *forkLock =
         ert_acquireProcessForkChildLock_(&processForkChildLock_);
 
-    ensure(Ert_ForkProcessSetProcessGroup == aOption || ! aPgid.mPgid);
+    ert_ensure(Ert_ForkProcessSetProcessGroup == aOption || ! aPgid.mPgid);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFdSet(&blacklistFds_));
     blacklistFds = &blacklistFds_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFdSet(&whitelistFds_));
     whitelistFds = &whitelistFds_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ! ert_ownPreForkProcessMethodNil(aPreForkMethod) &&
         ert_callPreForkProcessMethod(
             aPreForkMethod,
@@ -2315,7 +2315,7 @@ ert_forkProcessChild(
      * has been run so that these additional file descriptors are
      * not visible to that method. */
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         createForkProcessChannel_(&forkChannel_, &forkLock->mChannelList));
     forkChannel = &forkChannel_;
 
@@ -2331,19 +2331,19 @@ ert_forkProcessChild(
 
     for (unsigned ix = 0; ERT_NUMBEROF(stdfdlist) > ix; ++ix)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_insertFdSet(whitelistFds, stdfdlist[ix]) && EEXIST != errno);
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_removeFdSet(blacklistFds, stdfdlist[ix]) && ENOENT != errno);
     }
 
     if (processLock_.mLock)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_insertFdSetFile(whitelistFds,
                             processLock_.mLock->mFile) && EEXIST != errno);
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_removeFdSetFile(blacklistFds,
                             processLock_.mLock->mFile) && ENOENT != errno);
     }
@@ -2361,7 +2361,7 @@ ert_forkProcessChild(
     switch (childPid.mPid)
     {
     default:
-        ERROR_IF(
+        ERT_ERROR_IF(
             forkProcessChild_PostParent_(
                 forkChannel,
                 aOption,
@@ -2401,15 +2401,15 @@ ert_forkProcessChild(
 
         callForkMethod_(aForkMethod);
 
-        ensure(0);
+        ert_ensure(0);
         break;
     }
 
     rc = childPid.mPid;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         forkChannel  = closeForkProcessChannel_(forkChannel);
         blacklistFds = ert_closeFdSet(blacklistFds);
@@ -2425,7 +2425,7 @@ Finally:
             if (-1 != childPid.mPid)
             {
                 int status;
-                ABORT_IF(
+                ERT_ABORT_IF(
                     ert_reapProcessChild(childPid, &status));
             }
         }
@@ -2459,7 +2459,7 @@ forkProcessDaemonSignalHandler_(
     ++self->mHangUp;
 
     struct Ert_ProcessSignalName sigName;
-    debug(1,
+    ert_debug(1,
           "daemon received %s pid %" PRId_Ert_Pid " uid %" PRId_Ert_Uid,
           ert_formatProcessSignalName(&sigName, aSigNum),
           FMTd_Ert_Pid(aPid),
@@ -2478,7 +2478,7 @@ forkProcessDaemonChild_(
 
     struct ForkProcessDaemonSigHandler sigHandler = { .mHangUp = 0 };
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_watchProcessSignals(
             Ert_WatchProcessSignalMethod(
                 &sigHandler, &forkProcessDaemonSignalHandler_)));
@@ -2486,35 +2486,35 @@ forkProcessDaemonChild_(
     /* Once the signal handler is established to catch SIGHUP, allow
      * the parent to stop and then make the daemon process an orphan. */
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_waitThreadSigMask((const int []) { SIGHUP, 0 }));
 
     self->mSigMask = ert_popThreadSigMask(self->mSigMask);
 
-    debug(0, "daemon orphaned");
+    ert_debug(0, "daemon orphaned");
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         sizeof(daemonPid.mPid) == ert_sendUnixSocket(
             self->mSyncSocket->mChildSocket,
             (void *) &daemonPid.mPid,
             sizeof(daemonPid.mPid)));
 
     char buf[1];
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         sizeof(buf) == ert_recvUnixSocket(
             self->mSyncSocket->mChildSocket, buf, sizeof(buf)));
 
     self->mSyncSocket = ert_closeSocketPair(self->mSyncSocket);
 
     if ( ! ert_ownForkProcessMethodNil(self->mForkMethod))
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_callForkProcessMethod(self->mForkMethod));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -2528,7 +2528,7 @@ forkProcessDaemonGuardian_(
     ert_closeSocketPairParent(self->mSyncSocket);
 
     struct Ert_Pid daemonPid;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (daemonPid = ert_forkProcessChild(
             Ert_ForkProcessSetProcessGroup,
             Ert_Pgid(0),
@@ -2571,7 +2571,7 @@ forkProcessDaemonGuardian_(
 
     while (1)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             kill(daemonPid.mPid, SIGSTOP));
 
         ert_monotonicSleep(Ert_Duration(ERT_NSECS(Ert_MilliSeconds(100))));
@@ -2586,9 +2586,9 @@ forkProcessDaemonGuardian_(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -2601,28 +2601,28 @@ forkProcessDaemonPreparation_(
     int rc = -1;
 
     if ( ! ert_ownPreForkProcessMethodNil(self->mPreForkMethod))
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_callPreForkProcessMethod(self->mPreForkMethod, aPreFork));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_removeFdSet(
             aPreFork->mBlacklistFds,
             self->mSyncSocket->mParentSocket->mSocket->mFile->mFd) &&
         ENOENT != errno);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_insertFdSet(
             aPreFork->mWhitelistFds,
             self->mSyncSocket->mParentSocket->mSocket->mFile->mFd) &&
         EEXIST != errno);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_removeFdSet(
             aPreFork->mBlacklistFds,
             self->mSyncSocket->mChildSocket->mSocket->mFile->mFd) &&
         ENOENT != errno);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_insertFdSet(
             aPreFork->mWhitelistFds,
             self->mSyncSocket->mChildSocket->mSocket->mFile->mFd) &&
@@ -2630,9 +2630,9 @@ forkProcessDaemonPreparation_(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -2655,7 +2655,7 @@ ert_forkProcessDaemon(
     sigMask = ert_pushThreadSigMask(
         &sigMask_, Ert_ThreadSigMaskBlock, (const int []) { SIGHUP, 0 });
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createSocketPair(&syncSocket_, O_CLOEXEC));
     syncSocket = &syncSocket_;
 
@@ -2669,7 +2669,7 @@ ert_forkProcessDaemon(
     };
 
     struct Ert_Pid serverPid;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (serverPid = ert_forkProcessChild(
             Ert_ForkProcessInheritProcessGroup,
             Ert_Pgid(0),
@@ -2690,28 +2690,28 @@ ert_forkProcessDaemon(
          -1 == serverPid.mPid));
 
     int status;
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_reapProcessChild(serverPid, &status));
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         WIFEXITED(status) && ! WEXITSTATUS(status));
 
     struct Ert_Pid daemonPid;
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         sizeof(daemonPid.mPid) == ert_recvUnixSocket(syncSocket->mParentSocket,
                                                  (void *) &daemonPid.mPid,
                                                  sizeof(daemonPid.mPid)));
 
     char buf[1] = { 0 };
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         sizeof(buf) == ert_sendUnixSocket(
             syncSocket->mParentSocket, buf, sizeof(buf)));
 
     rc = daemonPid.mPid;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         syncSocket = ert_closeSocketPair(syncSocket);
 
@@ -2730,17 +2730,17 @@ ert_execProcess(const char *aCmd, const char * const *aArgv)
      * was no previous call to forkProcess(), though this is normally
      * the case. */
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         resetProcessSigPipe_());
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         errno = pthread_sigmask(SIG_SETMASK, &processSigMask_, 0));
 
     execvp(aCmd, (char * const *) aArgv);
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 }
 
 /* -------------------------------------------------------------------------- */
@@ -2775,21 +2775,21 @@ ert_signalProcessGroup(struct Ert_Pgid aPgid, int aSignal)
 
     struct Ert_ProcessSignalName sigName;
 
-    ensure(aPgid.mPgid);
+    ert_ensure(aPgid.mPgid);
 
-    debug(0,
+    ert_debug(0,
           "sending %s to process group pgid %" PRId_Ert_Pgid,
           ert_formatProcessSignalName(&sigName, aSignal),
           FMTd_Ert_Pgid(aPgid));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         killpg(aPgid.mPgid, aSignal));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -2938,7 +2938,7 @@ ert_ownProcessGroupId(void)
 struct Ert_Pgid
 ert_fetchProcessGroupId(struct Ert_Pid aPid)
 {
-    ensure(aPid.mPid);
+    ert_ensure(aPid.mPid);
 
     return Ert_Pgid(getpgid(aPid.mPid));
 }
@@ -2965,7 +2965,7 @@ ert_extractProcessExitStatus(int aStatus, struct Ert_Pid aPid)
     {
         struct Ert_ProcessSignalName sigName;
 
-        debug(
+        ert_debug(
             0,
             "process pid %" PRId_Ert_Pid " terminated by %s",
             FMTd_Ert_Pid(aPid),
@@ -2976,7 +2976,7 @@ ert_extractProcessExitStatus(int aStatus, struct Ert_Pid aPid)
             exitCode.mStatus = 255;
     }
 
-    debug(0,
+    ert_debug(0,
           "process pid %" PRId_Ert_Pid " exit code %" PRId_Ert_ExitCode,
           FMTd_Ert_Pid(aPid),
           FMTd_Ert_ExitCode(exitCode));
@@ -3075,17 +3075,17 @@ ert_purgeProcessOrphanedFds(void)
                         return 0;
                     })));
 
-        ensure(fdWhiteList.mLen == numFds);
+        ert_ensure(fdWhiteList.mLen == numFds);
     }
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_closeFdDescriptors(whiteList, ERT_NUMBEROF(whiteList)));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -3104,7 +3104,7 @@ prepareFork_(void)
 
     processFork_.mLock = ert_lockThreadSigMutex(processLock_.mMutex);
 
-    ensure(
+    ert_ensure(
         0 < ert_ownThreadSigMutexLocked(processLock_.mMutex));
 
     /* Acquire the processSigVecLock_ for writing to ensure that there
@@ -3124,7 +3124,7 @@ prepareFork_(void)
 
     processFork_.mParentPid = ert_ownProcessId();
 
-    debug(1, "prepare fork");
+    ert_debug(1, "prepare fork");
 }
 
 static void
@@ -3159,9 +3159,9 @@ postForkParent_(void)
     /* This function is called in the context of the parent process
      * immediately after the fork completes. */
 
-    debug(1, "groom forked parent");
+    ert_debug(1, "groom forked parent");
 
-    ensure(ert_ownProcessId().mPid == processFork_.mParentPid.mPid);
+    ert_ensure(ert_ownProcessId().mPid == processFork_.mParentPid.mPid);
 
     completeFork_();
 }
@@ -3180,7 +3180,7 @@ postForkChild_(void)
     if (processLock_.mLock)
         forkProcessLock_(processLock_.mLock);
 
-    debug(1, "groom forked child");
+    ert_debug(1, "groom forked child");
 
     /* Do not check the parent pid here because it is theoretically possible
      * that the parent will have terminated and the pid reused by the time
@@ -3240,7 +3240,7 @@ Ert_Process_init(
     self->mModule      = self;
     self->mErrorModule = 0;
 
-    ensure( ! moduleInit_);
+    ert_ensure( ! moduleInit_);
 
     processArg0_ = aArg0;
 
@@ -3250,7 +3250,7 @@ Ert_Process_init(
     /* Open file descriptors to overlay stdin, stdout and stderr
      * to prevent other files inadvertently taking on these personas. */
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_openStdFds());
 
     /* Ensure that the recorded time base is non-zero to allow it
@@ -3275,7 +3275,7 @@ Ert_Process_init(
          * for use in the child process. Be aware that once functions
          * are registered, there is no way to deregister them. */
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             errno = pthread_atfork(
                 prepareProcessFork_,
                 ert_postProcessForkParent_,
@@ -3284,22 +3284,22 @@ Ert_Process_init(
         moduleInitAtFork_ = true;
     }
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         Ert_Error_init(&self->mErrorModule_));
     self->mErrorModule = &self->mErrorModule_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         errno = pthread_sigmask(SIG_BLOCK, 0, &processSigMask_));
 
-    ensure( ! processLock_.mLock);
+    ert_ensure( ! processLock_.mLock);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         createProcessLock_(&processLock_.mLock_));
     processLock_.mLock = &processLock_.mLock_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         hookProcessSigCont_());
-    ERROR_IF(
+    ERT_ERROR_IF(
         hookProcessSigStop_());
     hookedSignals = true;
 
@@ -3307,17 +3307,17 @@ Ert_Process_init(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
         {
             if (hookedSignals)
             {
-                ABORT_IF(
+                ERT_ABORT_IF(
                     unhookProcessSigStop_());
-                ABORT_IF(
+                ERT_ABORT_IF(
                     unhookProcessSigCont_());
             }
 
@@ -3340,20 +3340,20 @@ Ert_Process_exit(
 {
     if (self)
     {
-        ensure( ! --moduleInit_);
+        ert_ensure( ! --moduleInit_);
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             unhookProcessSigStop_());
-        ABORT_IF(
+        ERT_ABORT_IF(
             unhookProcessSigCont_());
 
         struct ProcessLock *processLock = processLock_.mLock;
         processLock_.mLock = 0;
 
-        ensure(processLock);
+        ert_ensure(processLock);
         closeProcessLock_(processLock);
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             errno = pthread_sigmask(SIG_SETMASK, &processSigMask_, 0));
 
         self->mErrorModule = Ert_Error_exit(self->mErrorModule);

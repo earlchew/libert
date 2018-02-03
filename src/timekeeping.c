@@ -52,10 +52,10 @@ ert_monotonicTime(void)
 {
     struct timespec ts;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         clock_gettime(CLOCK_MONOTONIC, &ts),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to fetch monotonic time");
         });
@@ -75,24 +75,24 @@ ert_procUptime(
     char *buf = 0;
     int   fd  = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (fd = ert_openFd(aFileName, O_RDONLY, 0),
          -1 == fd));
 
     ssize_t buflen;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (buflen = ert_readFdFully(fd, &buf, 64),
          -1 == buflen));
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         buflen,
         {
             errno = ERANGE;
         });
 
     char *end;
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (end = strchr(buf, ' ')),
         {
             errno = ERANGE;
@@ -108,14 +108,14 @@ ert_procUptime(
         switch (*ptr)
         {
         default:
-            ERROR_IF(
+            ERT_ERROR_IF(
                 true,
                 {
                     errno = ERANGE;
                 });
 
         case '.':
-            ERROR_IF(
+            ERT_ERROR_IF(
                 fracdigits,
                 {
                     errno = ERANGE;
@@ -136,7 +136,7 @@ ert_procUptime(
         }
 
         uint64_t value = uptime_ns * 10;
-        ERROR_IF(
+        ERT_ERROR_IF(
             value / 10 != uptime_ns || value + digit < uptime_ns,
             {
                 errno = ERANGE;
@@ -151,7 +151,7 @@ ert_procUptime(
     switch (fracdigits / 2)
     {
     default:
-        ERROR_IF(
+        ERT_ERROR_IF(
             true,
             {
                 errno = ERANGE;
@@ -173,9 +173,9 @@ ert_procUptime(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd = ert_closeFd(fd);
 
@@ -203,10 +203,10 @@ ert_bootclockTime(void)
 
                 struct Ert_Duration uptime;
 
-                ABORT_IF(
+                ERT_ABORT_IF(
                     ert_procUptime(&uptime, procUptimeFileName),
                     {
-                        terminate(
+                        ert_terminate(
                             errno,
                             "Unable to read %s", procUptimeFileName);
                     });
@@ -217,10 +217,10 @@ ert_bootclockTime(void)
             }
 #endif
 
-            ABORT_IF(
+            ERT_ABORT_IF(
                 true,
                 {
-                    terminate(
+                    ert_terminate(
                         errno,
                         "Unable to fetch boot time");
                 });
@@ -251,7 +251,7 @@ ert_eventclockTime(void)
             ert_monotonicTime().monotonic.ns
                 - eventClockTimeBase_.monotonic.ns) };
 
-    ensure(tm.eventclock.ns);
+    ert_ensure(tm.eventclock.ns);
 
     return tm;
 }
@@ -262,10 +262,10 @@ ert_wallclockTime(void)
 {
     struct timespec ts;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         clock_gettime(CLOCK_REALTIME, &ts),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to fetch monotonic time");
         });
@@ -316,7 +316,7 @@ ert_deadlineTimeExpired(
 
         *self = *aTime;
 
-        ensure(self->eventclock.ns);
+        ert_ensure(self->eventclock.ns);
 
         remaining_ns = aPeriod.duration.ns;
         expired      = false;
@@ -400,7 +400,7 @@ ert_lapTimeRestart(
     struct Ert_EventClockTime       *self,
     const struct Ert_EventClockTime *aTime)
 {
-    ensure(self->eventclock.ns);
+    ert_ensure(self->eventclock.ns);
 
     *self = aTime ? *aTime : ert_eventclockTime();
 }
@@ -411,7 +411,7 @@ ert_lapTimeDelay(
     struct Ert_EventClockTime *self,
     struct Ert_Duration        aDelay)
 {
-    ensure(self->eventclock.ns);
+    ert_ensure(self->eventclock.ns);
 
     self->eventclock.ns += aDelay.duration.ns;
 }
@@ -447,7 +447,7 @@ ert_lapTimeSince(
 
         *self = *aTime;
 
-        ensure(self->eventclock.ns);
+        ert_ensure(self->eventclock.ns);
     }
 
     return Ert_Duration(Ert_NanoSeconds(lapTime_ns));
@@ -470,7 +470,7 @@ ert_monotonicSleep(
             CLOCK_MONOTONIC, TIMER_ABSTIME, &sleepTime, 0);
     while (EINTR == rc);
 
-    ensure( ! rc);
+    ert_ensure( ! rc);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -489,9 +489,9 @@ Ert_Timekeeping_init(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

@@ -40,15 +40,15 @@ ert_createBellSocketPair(
 
     self->mSocketPair = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createSocketPair(&self->mSocketPair_, aFlags));
     self->mSocketPair = &self->mSocketPair_;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self->mSocketPair = ert_closeSocketPair(self->mSocketPair);
@@ -96,7 +96,7 @@ ringBellSocketPair_(
     int err;
 
     err = -1;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (err = ert_writeUnixSocket(aSocket, buf, 1, 0),
          1 != err),
         {
@@ -108,9 +108,9 @@ ringBellSocketPair_(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -142,7 +142,7 @@ waitBellSocketPair_(
     char buf[1];
 
     err = -1;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (err = ert_readUnixSocket(aSocket, buf, 1, aTimeout),
          1 != err),
         {
@@ -154,9 +154,9 @@ waitBellSocketPair_(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

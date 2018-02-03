@@ -54,15 +54,15 @@ ert_createSocket(
 
     self->mFile = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFile(&self->mFile_, aFd));
     self->mFile = &self->mFile_;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -148,7 +148,7 @@ ert_acceptSocket(
     switch (aFlags)
     {
     default:
-        ERROR_IF(
+        ERT_ERROR_IF(
             true,
             {
                 errno = EINVAL;
@@ -162,7 +162,7 @@ ert_acceptSocket(
 
     while (1)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             (fd = accept4(self->mFile->mFd, 0, 0, flags),
              -1 == fd && EINTR != errno));
         if (-1 != fd)
@@ -171,9 +171,9 @@ ert_acceptSocket(
 
     rc = fd;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (-1 == rc)
             fd = ert_closeFd(fd);
@@ -219,10 +219,10 @@ ert_ownSocketError(
 
     socklen_t len = sizeof(*aError);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         getsockopt(self->mFile->mFd, SOL_SOCKET, SO_ERROR, aError, &len));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         sizeof(*aError) != len,
         {
             errno = EINVAL;
@@ -230,9 +230,9 @@ ert_ownSocketError(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -247,10 +247,10 @@ ert_ownSocketPeerCred(
 
     socklen_t len = sizeof(*aCred);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         getsockopt(self->mFile->mFd, SOL_SOCKET, SO_PEERCRED, aCred, &len));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         sizeof(*aCred) != len,
         {
             errno = EINVAL;
@@ -258,9 +258,9 @@ ert_ownSocketPeerCred(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

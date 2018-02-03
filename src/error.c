@@ -214,7 +214,7 @@ createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
 static void
 initErrorFrame_(void)
 {
-    ensure(0 == Ert_ErrorFrameStackThread);
+    ert_ensure(0 == Ert_ErrorFrameStackThread);
 
     if ( ! errorStack_.mStack)
     {
@@ -249,7 +249,7 @@ initErrorFrame_(void)
             errorStack_.mStack->mSequence = *iter;
         }
 
-        ensure(parentChunk);
+        ert_ensure(parentChunk);
 
         setErrorKey_(parentChunk);
     }
@@ -372,7 +372,7 @@ ert_ownErrorFrame(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
                            Ert_ErrorFrameChunkList,
                            mStackList);
 
-            ensure(prevChunk);
+            ert_ensure(prevChunk);
 
             begin = prevChunk->mBegin;
             end   = prevChunk->mEnd;
@@ -424,7 +424,7 @@ ert_pushErrorUnwindFrame_(void)
 void
 ert_popErrorUnwindFrame_(struct Ert_ErrorUnwindFrame_ *self)
 {
-    ensure(self->mActive);
+    ert_ensure(self->mActive);
 
     --self->mActive;
 }
@@ -447,7 +447,7 @@ tryErrTextLength_(int aErrCode, size_t *aSize)
     char errCodeText[*aSize];
 
     const char *errText;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (errno = 0,
          errText = strerror_r(aErrCode, errCodeText, sizeof(errCodeText)),
          errno));
@@ -456,9 +456,9 @@ tryErrTextLength_(int aErrCode, size_t *aSize)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -474,7 +474,7 @@ findErrTextLength_(int aErrCode)
     {
         size_t textSize = textCapacity;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             tryErrTextLength_(aErrCode, &textSize));
 
         if (textCapacity > textSize)
@@ -484,14 +484,14 @@ findErrTextLength_(int aErrCode)
         }
 
         textSize = 2 * textCapacity;
-        ensure(textCapacity < textSize);
+        ert_ensure(textCapacity < textSize);
 
         textCapacity = textSize;
     }
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -632,7 +632,7 @@ print_(
      * writeFd(). Use of dprintf() is restricted to error cases, and in
      * these cases output can be truncated do to EINTR. */
 
-    FINALLY
+    ERT_FINALLY
     ({
         struct Ert_Pid pid = ert_ownProcessId();
         struct Ert_Tid tid = ert_ownThreadId();
@@ -806,7 +806,7 @@ printf_(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         va_list args;
 
@@ -824,7 +824,7 @@ errorEnsureBacktrace_(int aFd, int aDepth)
 
     char **frames = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         0 >= aDepth,
         {
             errno = EINVAL;
@@ -835,7 +835,7 @@ errorEnsureBacktrace_(int aFd, int aDepth)
 
         int depth = backtrace(symbols, aDepth);
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (0 > depth || aDepth <= depth),
             {
                 errno = EAGAIN;
@@ -854,9 +854,9 @@ errorEnsureBacktrace_(int aFd, int aDepth)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         free(frames);
     });
@@ -872,7 +872,7 @@ ert_errorEnsure(
     unsigned    aLine,
     const char *aPredicate)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         static const char msgFmt[] = "Assertion failure - %s";
 
@@ -915,7 +915,7 @@ ert_errorDebug(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         va_list args;
 
@@ -937,7 +937,7 @@ ert_errorWarn(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         struct Ert_ErrorFrameSequence frameSequence =
             ert_pushErrorFrameSequence();
@@ -965,7 +965,7 @@ ert_errorMessage(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         va_list args;
 
@@ -987,7 +987,7 @@ ert_errorTerminate(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    FINALLY
+    ERT_FINALLY
     ({
         struct Ert_ErrorFrameSequence frameSequence =
             ert_pushErrorFrameSequence();
@@ -1023,7 +1023,7 @@ Error_exit_(struct Ert_ErrorModule *self)
 
         if (file)
         {
-            ABORT_IF(
+            ERT_ABORT_IF(
                 fclose(file));
 
             free(printBuf_.mBuf);
@@ -1065,7 +1065,7 @@ Ert_Error_init(struct Ert_ErrorModule *self)
 
     if ( ! moduleInit_)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             Ert_Printf_init(&self->mPrintfModule_));
         self->mPrintfModule = &self->mPrintfModule_;
 
@@ -1073,7 +1073,7 @@ Ert_Error_init(struct Ert_ErrorModule *self)
         printBuf_.mSize = 0;
 
         FILE *file;
-        ERROR_UNLESS(
+        ERT_ERROR_UNLESS(
             (file = open_memstream(&printBuf_.mBuf, &printBuf_.mSize)));
 
         appLock = ert_createProcessAppLock();
@@ -1085,9 +1085,9 @@ Ert_Error_init(struct Ert_ErrorModule *self)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         appLock = ert_destroyProcessAppLock(appLock);
 

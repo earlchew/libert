@@ -49,11 +49,11 @@ timedLock_(
 
     while (1)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = aTryLock(aLock),
              errno && EBUSY != errno && EOWNERDEAD != errno),
             {
-                terminate(errno, "Unable to acquire lock");
+                ert_terminate(errno, "Unable to acquire lock");
             });
 
         if (EBUSY != errno)
@@ -74,11 +74,11 @@ timedLock_(
                     tm.wallclock.ns
                         + ERT_NSECS(Ert_Seconds(timeout_s * 60)).ns));
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = aTimedLock(aLock, &deadline),
              errno && ETIMEDOUT != errno && EOWNERDEAD != errno),
             {
-                terminate(errno,
+                ert_terminate(errno,
                           "Unable to acquire lock after %us", timeout_s);
             });
 
@@ -117,10 +117,10 @@ ert_closeThread(
 
         if ( ! self->mJoined)
         {
-            ABORT_IF(
+            ERT_ABORT_IF(
                 ert_joinThread(self),
                 {
-                    terminate(errno,
+                    ert_terminate(errno,
                               "Unable to join thread%s%s",
                               ! self->mName ? "" : " ",
                               ! self->mName ? "" : self->mName);
@@ -155,10 +155,10 @@ createThread_(
     pthread_mutex_t *lock = ert_lockMutex(&self->mMutex);
 
     if (self->mName)
-        ABORT_IF(
+        ERT_ABORT_IF(
             errno = pthread_setname_np(pthread_self(), self->mName),
             {
-                terminate(errno,
+                ert_terminate(errno,
                           "Unable to set thread name %s", self->mName);
             });
 
@@ -169,7 +169,7 @@ createThread_(
      * not rely on a struct Ert_Thread instance because a detached thread
      * will not have one. */
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         ert_callThreadMethod(method));
 
     return 0;
@@ -205,10 +205,10 @@ ert_createThread(
 
         if (aName)
         {
-            ABORT_UNLESS(
+            ERT_ABORT_UNLESS(
                 self->mName = strdup(aName),
                 {
-                    terminate(errno, "Unable to copy thread name %s", aName);
+                    ert_terminate(errno, "Unable to copy thread name %s", aName);
                 });
         }
 
@@ -219,17 +219,17 @@ ert_createThread(
              * and close the thread. */
 
             int detached;
-            ABORT_IF(
+            ERT_ABORT_IF(
                 (errno = pthread_attr_getdetachstate(&aAttr->mAttr, &detached)),
                 {
-                    terminate(
+                    ert_terminate(
                         errno,
                         "Unable to query detached state attribute "
                         "for thread %s",
                         aName);
                 });
 
-            ABORT_IF(
+            ERT_ABORT_IF(
                 detached,
                 {
                     errno = EINVAL;
@@ -241,11 +241,11 @@ ert_createThread(
 
     self->mJoined = false;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_create(
             &self->mThread, aAttr ? &aAttr->mAttr : 0, createThread_, &thread)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to create thread %s", aName);
         });
@@ -263,31 +263,31 @@ ert_joinThread(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         self->mJoined,
         {
             errno = EINVAL;
         });
 
     void *future;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (errno = pthread_join(self->mThread, &future)));
 
     self->mJoined = true;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         PTHREAD_CANCELED == future,
         {
             errno = ECANCELED;
         });
 
-    ensure( ! future);
+    ert_ensure( ! future);
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -297,10 +297,10 @@ void
 ert_cancelThread(
     struct Ert_Thread *self)
 {
-    ABORT_IF(
+    ERT_ABORT_IF(
         errno = pthread_cancel(self->mThread),
         {
-            terminate(errno,
+            ert_terminate(errno,
                       "Unable to cancel thread%s%s",
                       ! self->mName ? "" : " ",
                       ! self->mName ? "" : self->mName);
@@ -315,13 +315,13 @@ ert_killThread(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         errno = pthread_kill(self->mThread, aSignal));
 
     rc = 0;
 
-Finally:
-    FINALLY({});
+Ert_Finally:
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -331,10 +331,10 @@ struct Ert_ThreadAttr *
 ert_createThreadAttr(
     struct Ert_ThreadAttr *self)
 {
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_attr_init(&self->mAttr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to create thread attribute");
         });
@@ -347,10 +347,10 @@ struct Ert_ThreadAttr *
 ert_destroyThreadAttr(
     struct Ert_ThreadAttr *self)
 {
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_attr_destroy(&self->mAttr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to destroy thread attribute");
         });
@@ -363,10 +363,10 @@ pthread_mutex_t *
 ert_createMutex(
     pthread_mutex_t *self)
 {
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_mutex_init(self, 0)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to create mutex");
         });
@@ -381,10 +381,10 @@ ert_destroyMutex(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_mutex_destroy(self)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to destroy mutex");
             });
@@ -420,9 +420,9 @@ pthread_mutex_t *
 ert_lockMutex(
     pthread_mutex_t *self)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
-    ABORT_UNLESS(
+    ERT_ABORT_UNLESS(
         lockMutex_(self));
 
     return self;
@@ -435,10 +435,10 @@ unlockMutex_(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_mutex_unlock(self)),
             {
-                terminate(errno, "Unable to unlock mutex");
+                ert_terminate(errno, "Unable to unlock mutex");
             });
     }
 
@@ -449,7 +449,7 @@ pthread_mutex_t *
 ert_unlockMutex(
     pthread_mutex_t *self)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     return unlockMutex_(self);
 }
@@ -462,18 +462,18 @@ ert_unlockMutexSignal_(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_cond_signal(aCond)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to signal to condition variable");
             });
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_mutex_unlock(self)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to lock mutex");
             });
@@ -487,7 +487,7 @@ ert_unlockMutexSignal(
     pthread_mutex_t *self,
     pthread_cond_t  *aCond)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     return ert_unlockMutexSignal_(self, aCond);
 }
@@ -500,18 +500,18 @@ ert_unlockMutexBroadcast_(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_cond_broadcast(aCond)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to broadcast to condition variable");
             });
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_mutex_unlock(self)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to lock mutex");
             });
@@ -525,7 +525,7 @@ ert_unlockMutexBroadcast(
     pthread_mutex_t *self,
     pthread_cond_t  *aCond)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     return ert_unlockMutexBroadcast_(self, aCond);
 }
@@ -538,45 +538,45 @@ ert_createSharedMutex(
     pthread_mutexattr_t  mutexattr_;
     pthread_mutexattr_t *mutexattr = 0;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_mutexattr_init(&mutexattr_)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to allocate mutex attribute");
         });
     mutexattr = &mutexattr_;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_mutexattr_setpshared(mutexattr,
                                               PTHREAD_PROCESS_SHARED)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to set mutex attribute PTHREAD_PROCESS_SHARED");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_mutexattr_setrobust(mutexattr,
                                              PTHREAD_MUTEX_ROBUST)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to set mutex attribute PTHREAD_MUTEX_ROBUST");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_mutex_init(&self->mMutex, mutexattr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to create shared mutex");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_mutexattr_destroy(mutexattr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to destroy mutex attribute");
         });
@@ -590,7 +590,7 @@ ert_destroySharedMutex(
     struct Ert_SharedMutex *self)
 {
     if (self)
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_destroyMutex(&self->mMutex));
 
     return 0;
@@ -602,22 +602,22 @@ ert_lockSharedMutex(
     struct Ert_SharedMutex      *self,
     struct Ert_MutexRepairMethod aRepair)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     if ( ! lockMutex_(&self->mMutex))
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_callMutexRepairMethod(aRepair),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to repair mutex consistency");
             });
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_mutex_consistent(&self->mMutex)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to restore mutex consistency");
             });
@@ -631,10 +631,10 @@ struct Ert_SharedMutex *
 ert_unlockSharedMutex(
     struct Ert_SharedMutex *self)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     if (self)
-        ABORT_IF(
+        ERT_ABORT_IF(
             unlockMutex_(&self->mMutex));
 
     return 0;
@@ -646,10 +646,10 @@ ert_unlockSharedMutexSignal(
     struct Ert_SharedMutex *self,
     struct Ert_SharedCond  *aCond)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     if (self)
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_unlockMutexSignal_(&self->mMutex, &aCond->mCond));
 
     return 0;
@@ -661,10 +661,10 @@ ert_unlockSharedMutexBroadcast(
     struct Ert_SharedMutex *self,
     struct Ert_SharedCond  *aCond)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     if (self)
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_unlockMutexBroadcast_(&self->mMutex, &aCond->mCond));
 
     return 0;
@@ -678,35 +678,35 @@ ert_createCond(
     pthread_condattr_t  condattr_;
     pthread_condattr_t *condattr = 0;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_condattr_init(&condattr_)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to allocate condition variable attribute");
         });
     condattr = &condattr_;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_condattr_setclock(condattr, CLOCK_MONOTONIC)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to set condition attribute CLOCK_MONOTONIC");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_cond_init(self, condattr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to create condition variable");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_condattr_destroy(condattr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to destroy condition attribute");
         });
@@ -721,10 +721,10 @@ ert_destroyCond(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_cond_destroy(self)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to destroy condition variable");
             });
@@ -739,11 +739,11 @@ waitCond_(
     pthread_cond_t  *self,
     pthread_mutex_t *aMutex)
 {
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_cond_wait(self, aMutex),
          errno && EOWNERDEAD != errno),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to wait for condition variable");
         });
@@ -756,12 +756,12 @@ ert_waitCond(
     pthread_cond_t  *self,
     pthread_mutex_t *aMutex)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         waitCond_(self, aMutex),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Condition variable mutex owner has terminated");
         });
@@ -778,7 +778,7 @@ ert_pushThreadSigMask(
     switch (aAction)
     {
     default:
-        ABORT_IF(
+        ERT_ABORT_IF(
             true,
             {
                 errno = EINVAL;
@@ -791,15 +791,15 @@ ert_pushThreadSigMask(
     sigset_t sigSet;
 
     if ( ! aSigList)
-        ABORT_IF(sigfillset(&sigSet));
+        ERT_ABORT_IF(sigfillset(&sigSet));
     else
     {
-        ABORT_IF(sigemptyset(&sigSet));
+        ERT_ABORT_IF(sigemptyset(&sigSet));
         for (size_t ix = 0; aSigList[ix]; ++ix)
-            ABORT_IF(sigaddset(&sigSet, aSigList[ix]));
+            ERT_ABORT_IF(sigaddset(&sigSet, aSigList[ix]));
     }
 
-    ABORT_IF(pthread_sigmask(maskAction, &sigSet, &self->mSigSet));
+    ERT_ABORT_IF(pthread_sigmask(maskAction, &sigSet, &self->mSigSet));
 
     return self;
 }
@@ -812,44 +812,44 @@ ert_createSharedCond(
     pthread_condattr_t  condattr_;
     pthread_condattr_t *condattr = 0;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_condattr_init(&condattr_)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to allocate condition variable attribute");
         });
     condattr = &condattr_;
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_condattr_setclock(condattr, CLOCK_MONOTONIC)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to set condition attribute CLOCK_MONOTONIC");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_condattr_setpshared(condattr,
                                              PTHREAD_PROCESS_SHARED)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to set condition attribute PTHREAD_PROCESS_SHARED");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_cond_init(&self->mCond, condattr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to create shared condition variable");
         });
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_condattr_destroy(condattr)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to destroy condition attribute");
         });
@@ -863,7 +863,7 @@ ert_destroySharedCond(
     struct Ert_SharedCond *self)
 {
     if (self)
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_destroyCond(&self->mCond));
 
     return 0;
@@ -875,7 +875,7 @@ ert_waitSharedCond(
     struct Ert_SharedCond  *self,
     struct Ert_SharedMutex *aMutex)
 {
-    ensure( ! ert_ownProcessSignalContext());
+    ert_ensure( ! ert_ownProcessSignalContext());
 
     return waitCond_(&self->mCond, &aMutex->mMutex) ? -1 : 0;
 }
@@ -886,7 +886,7 @@ ert_popThreadSigMask(
     struct Ert_ThreadSigMask *self)
 {
     if (self)
-        ABORT_IF(pthread_sigmask(SIG_SETMASK, &self->mSigSet, 0));
+        ERT_ABORT_IF(pthread_sigmask(SIG_SETMASK, &self->mSigSet, 0));
 
     return 0;
 }
@@ -901,19 +901,19 @@ ert_waitThreadSigMask(
     sigset_t sigSet;
 
     if ( ! aSigList)
-        ERROR_IF(
+        ERT_ERROR_IF(
             sigemptyset(&sigSet));
     else
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             sigfillset(&sigSet));
         for (size_t ix = 0; aSigList[ix]; ++ix)
-            ERROR_IF(
+            ERT_ERROR_IF(
                 sigdelset(&sigSet, aSigList[ix]));
     }
 
     int err = 0;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (err = sigsuspend(&sigSet),
          -1 != err || EINTR != errno),
         {
@@ -923,9 +923,9 @@ ert_waitThreadSigMask(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -950,7 +950,7 @@ ert_destroyThreadSigMutex(
 {
     if (self)
     {
-        ensure( ! self->mLocked);
+        ert_ensure( ! self->mLocked);
 
         self->mCond  = ert_destroyCond(self->mCond);
         self->mMutex = ert_destroyMutex(self->mMutex);
@@ -973,7 +973,7 @@ ert_lockThreadSigMutex(
         ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
 
     pthread_mutex_t *lock;
-    ABORT_UNLESS(
+    ERT_ABORT_UNLESS(
         lock = lockMutex_(self->mMutex));
 
     if (self->mLocked && ! pthread_equal(self->mOwner, pthread_self()))
@@ -991,8 +991,8 @@ ert_lockThreadSigMutex(
 
     lock = unlockMutex_(lock);
 
-    ensure(self->mLocked);
-    ensure(pthread_equal(self->mOwner, pthread_self()));
+    ert_ensure(self->mLocked);
+    ert_ensure(pthread_equal(self->mOwner, pthread_self()));
 
     if (1 != self->mLocked)
         threadSigMask = ert_popThreadSigMask(threadSigMask);
@@ -1007,8 +1007,8 @@ ert_unlockThreadSigMutex(
 {
     if (self)
     {
-        ensure(self->mLocked);
-        ensure(pthread_equal(self->mOwner, pthread_self()));
+        ert_ensure(self->mLocked);
+        ert_ensure(pthread_equal(self->mOwner, pthread_self()));
 
         unsigned locked = self->mLocked - 1;
 
@@ -1020,7 +1020,7 @@ ert_unlockThreadSigMutex(
             struct Ert_ThreadSigMask *threadSigMask  = &threadSigMask_;
 
             pthread_mutex_t *lock;
-            ABORT_UNLESS(
+            ERT_ABORT_UNLESS(
                 lock = lockMutex_(self->mMutex));
 
             self->mLocked = 0;
@@ -1046,7 +1046,7 @@ ert_ownThreadSigMutexLocked(
     unsigned locked;
 
     pthread_mutex_t *lock;
-    ABORT_UNLESS(
+    ERT_ABORT_UNLESS(
         lock = lockMutex_(self->mMutex));
 
     locked = self->mLocked;
@@ -1064,10 +1064,10 @@ pthread_rwlock_t *
 ert_createRWMutex(
     pthread_rwlock_t *self)
 {
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_rwlock_init(self, 0)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to create rwlock");
         });
@@ -1082,10 +1082,10 @@ ert_destroyRWMutex(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_rwlock_destroy(self)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to destroy rwlock");
             });
@@ -1115,7 +1115,7 @@ ert_createRWMutexReader(
     struct Ert_RWMutexReader *self,
     pthread_rwlock_t         *aMutex)
 {
-    ABORT_UNLESS(
+    ERT_ABORT_UNLESS(
         self->mMutex = timedLock_(
             aMutex, ert_tryRWMutexRdLock_, ert_tryRWMutexTimedRdLock_));
 
@@ -1129,10 +1129,10 @@ ert_destroyRWMutexReader(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_rwlock_unlock(self->mMutex)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to release rwlock reader lock");
             });
@@ -1162,7 +1162,7 @@ ert_createRWMutexWriter(
     struct Ert_RWMutexWriter *self,
     pthread_rwlock_t         *aMutex)
 {
-    ABORT_UNLESS(
+    ERT_ABORT_UNLESS(
         self->mMutex = timedLock_(
             aMutex, ert_tryRWMutexWrLock_, ert_tryRWMutexTimedWrLock_));
 
@@ -1176,10 +1176,10 @@ ert_destroyRWMutexWriter(
 {
     if (self)
     {
-        ABORT_IF(
+        ERT_ABORT_IF(
             (errno = pthread_rwlock_unlock(self->mMutex)),
             {
-                terminate(
+                ert_terminate(
                     errno,
                     "Unable to release rwlock writer lock");
             });

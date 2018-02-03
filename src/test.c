@@ -125,7 +125,7 @@ ert_testFinally(
 
             unsigned choice = ert_fetchRandomRange(ERT_NUMBEROF(errTable));
 
-            debug(0,
+            ert_debug(0,
                   "inject %s into %s %s %u",
                   errTable[choice].mText,
                   aFrame->mName,
@@ -158,11 +158,11 @@ Ert_Test_init(
 
         if (aErrorEnv)
         {
-            ERROR_IF(
+            ERT_ERROR_IF(
                 ert_getEnvUInt64(aErrorEnv, &errorTrigger) && ENOENT != errno);
         }
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (state = mmap(0,
                           sizeof(*testState_),
                           PROT_READ | PROT_WRITE,
@@ -179,14 +179,14 @@ Ert_Test_init(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
         {
             if (MAP_FAILED != state)
-                ABORT_IF(
+                ERT_ABORT_IF(
                     munmap(state, sizeof(*state)));
         }
     });
@@ -206,7 +206,7 @@ Ert_Test_exit(
         if (state)
         {
             testState_ = 0;
-            ABORT_IF(
+            ERT_ABORT_IF(
                 munmap(state, sizeof(*state)));
         }
     }

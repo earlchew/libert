@@ -132,7 +132,7 @@
                             break;                              \
                     });                                         \
                                                                 \
-            ABORT_IF(                                           \
+            ERT_ABORT_IF(                                           \
                 pthread_atfork(lock_, unlock_, unlock_));       \
         }),                                                     \
         ({ }))

@@ -44,14 +44,14 @@ ert_createStdFdFiller(
 
     int fd[2];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         pipe(fd),
         {
             fd[0] = -1;
             fd[1] = -1;
         });
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         -1 == fd[0] || -1 == fd[1],
         {
             errno = EBADF;
@@ -63,25 +63,25 @@ ert_createStdFdFiller(
 
     fd[1] = ert_closeFd(fd[1]);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFile(&self->mFile_[0], fd[0]));
     self->mFile[0] = &self->mFile_[0];
 
     fd[0] = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_duplicateFile(&self->mFile_[1], &self->mFile_[0]));
     self->mFile[1] = &self->mFile_[1];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_duplicateFile(&self->mFile_[2], &self->mFile_[0]));
     self->mFile[2] = &self->mFile_[2];
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd[0] = ert_closeFd(fd[0]);
         fd[1] = ert_closeFd(fd[1]);

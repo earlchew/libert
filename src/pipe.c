@@ -44,35 +44,35 @@ ert_createPipe(struct Ert_Pipe *self, unsigned aFlags)
     self->mRdFile = 0;
     self->mWrFile = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         aFlags & ~ (O_CLOEXEC | O_NONBLOCK),
         {
             errno = EINVAL;
         });
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         pipe2(fd, aFlags),
         {
             fd[0] = -1;
             fd[1] = -1;
         });
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         -1 == fd[0] || -1 == fd[1],
         {
             errno = EINVAL;
         });
 
-    ensure( ! ert_stdFd(fd[0]));
-    ensure( ! ert_stdFd(fd[1]));
+    ert_ensure( ! ert_stdFd(fd[0]));
+    ert_ensure( ! ert_stdFd(fd[1]));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFile(&self->mRdFile_, fd[0]));
     self->mRdFile = &self->mRdFile_;
 
     fd[0] = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFile(&self->mWrFile_, fd[1]));
     self->mWrFile = &self->mWrFile_;
 
@@ -80,9 +80,9 @@ ert_createPipe(struct Ert_Pipe *self, unsigned aFlags)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd[0] = ert_closeFd(fd[0]);
         fd[1] = ert_closeFd(fd[1]);
@@ -103,16 +103,16 @@ ert_detachPipeReader(struct Ert_Pipe *self)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_detachFile(self->mRdFile));
 
     self->mRdFile = 0;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -123,16 +123,16 @@ ert_detachPipeWriter(struct Ert_Pipe *self)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_detachFile(self->mWrFile));
 
     self->mWrFile = 0;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -157,16 +157,16 @@ ert_closePipeOnExec(struct Ert_Pipe *self, unsigned aCloseOnExec)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_closeFileOnExec(self->mRdFile, aCloseOnExec));
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_closeFileOnExec(self->mWrFile, aCloseOnExec));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -177,16 +177,16 @@ ert_nonBlockingPipe(struct Ert_Pipe *self, unsigned aNonBlocking)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_nonBlockingFile(self->mRdFile, aNonBlocking));
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_nonBlockingFile(self->mWrFile, aNonBlocking));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

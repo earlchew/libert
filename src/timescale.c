@@ -84,10 +84,10 @@ ert_changeTimeScale_(
 
         uint64_t dstTime = aSrcTime * scaleUp;
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             dstTime / scaleUp != aSrcTime,
             {
-                terminate(
+                ert_terminate(
                     0,
                     "Time scale overflow converting %" PRIu64 " "
                     "from scale %zu to scale %zu",

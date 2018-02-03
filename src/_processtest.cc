@@ -672,7 +672,7 @@ processForkTest_Error_()
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         true,
         {
             errno = EINVAL;
@@ -680,9 +680,9 @@ processForkTest_Error_()
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

@@ -53,15 +53,15 @@ ert_createPathName(struct Ert_PathName *self, const char *aFileName)
     self->mDirName   = 0;
     self->mDirFile   = 0;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (self->mFileName = strdup(aFileName)));
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (self->mDirName_ = strdup(self->mFileName)));
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (self->mBaseName_ = strdup(self->mFileName)));
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (self->mDirName  = strdup(dirname(self->mDirName_))));
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (self->mBaseName = strdup(basename(self->mBaseName_))));
 
     do
@@ -80,9 +80,9 @@ ert_createPathName(struct Ert_PathName *self, const char *aFileName)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             status = Ert_PathNameStatusError;

@@ -49,8 +49,8 @@ static void
 ert_markFileEventQueueActivityPending_(struct Ert_FileEventQueueActivity *self,
                                    struct epoll_event            *aPollEvent)
 {
-    ensure(self->mArmed);
-    ensure( ! self->mPending);
+    ert_ensure(self->mArmed);
+    ert_ensure( ! self->mPending);
 
     self->mPending = aPollEvent;
 }
@@ -61,9 +61,9 @@ ert_disarmFileEventQueueActivity_(struct Ert_FileEventQueueActivity *self)
 {
     struct Ert_FileEventQueueActivityMethod method = self->mMethod;
 
-    ensure(self->mArmed);
-    ensure(self->mPending);
-    ensure( ! ert_ownFileEventQueueActivityMethodNil(method));
+    ert_ensure(self->mArmed);
+    ert_ensure(self->mPending);
+    ert_ensure( ! ert_ownFileEventQueueActivityMethodNil(method));
 
     self->mArmed   = 0;
     self->mPending = 0;
@@ -78,7 +78,7 @@ ert_createFileEventQueue(struct Ert_FileEventQueue *self, int aQueueSize)
 {
     int rc = -1;
 
-    ensure(0 < aQueueSize);
+    ert_ensure(0 < aQueueSize);
 
     self->mFile         = 0;
     self->mQueue        = 0;
@@ -87,12 +87,12 @@ ert_createFileEventQueue(struct Ert_FileEventQueue *self, int aQueueSize)
     self->mNumArmed     = 0;
     self->mNumPending   = 0;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (self->mQueue = malloc(sizeof(*self->mQueue) * aQueueSize)));
 
     self->mQueueSize = aQueueSize;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFile(
             &self->mFile_,
             epoll_create1(EPOLL_CLOEXEC)));
@@ -100,9 +100,9 @@ ert_createFileEventQueue(struct Ert_FileEventQueue *self, int aQueueSize)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
         {
@@ -129,14 +129,14 @@ ert_controlFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
         .data   = { .ptr = aEvent },
     };
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         epoll_ctl(self->mFile->mFd, aCtlOp, aEvent->mFile->mFd, &pollEvent));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -162,8 +162,8 @@ ert_closeFileEventQueue(struct Ert_FileEventQueue *self)
 {
     if (self)
     {
-        ensure( ! self->mNumArmed);
-        ensure( ! self->mNumPending);
+        ert_ensure( ! self->mNumArmed);
+        ert_ensure( ! self->mNumPending);
 
         self->mFile = ert_closeFile(self->mFile);
 
@@ -183,9 +183,9 @@ ert_lodgeFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
 {
     int rc = -1;
 
-    ensure(aEvent->mArmed);
+    ert_ensure(aEvent->mArmed);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_controlFileEventQueueActivity_(
             self, aEvent, aEvent->mArmed | EPOLLONESHOT, EPOLL_CTL_MOD));
 
@@ -193,9 +193,9 @@ ert_lodgeFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -206,16 +206,16 @@ ert_purgeFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
                              struct Ert_FileEventQueueActivity *aEvent,
                              struct epoll_event            *aPollEvent)
 {
-    ensure(self->mNumArmed);
+    ert_ensure(self->mNumArmed);
 
-    ABORT_IF(
+    ERT_ABORT_IF(
         ert_controlFileEventQueueActivity_(self, aEvent, 0, EPOLL_CTL_MOD));
 
     --self->mNumArmed;
 
     if (aPollEvent)
     {
-        ensure(&self->mQueue[0]               <= aPollEvent &&
+        ert_ensure(&self->mQueue[0]               <= aPollEvent &&
                &self->mQueue[self->mQueueSize] > aPollEvent);
 
         *aPollEvent = (struct epoll_event) { };
@@ -246,7 +246,7 @@ ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
         }
 
         int polledEvents;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (polledEvents = epoll_wait(
                self->mFile->mFd, self->mQueue, self->mQueueSize, timeout_ms),
              -1 == polledEvents && EINTR != errno));
@@ -263,7 +263,7 @@ ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
 
         self->mQueuePending = polledEvents;
 
-        ensure(self->mNumArmed >= polledEvents);
+        ert_ensure(self->mNumArmed >= polledEvents);
 
         self->mNumArmed   -= polledEvents;
         self->mNumPending += polledEvents;
@@ -280,16 +280,16 @@ ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
         {
             --self->mNumPending;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 ert_disarmFileEventQueueActivity_(event));
         }
     }
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -308,14 +308,14 @@ ert_createFileEventQueueActivity(struct Ert_FileEventQueueActivity *self,
     self->mPending = 0;
     self->mMethod  = Ert_FileEventQueueActivityMethodNil();
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_attachFileEventQueueActivity_(self->mQueue, self));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -328,21 +328,21 @@ ert_armFileEventQueueActivity(struct Ert_FileEventQueueActivity      *self,
 {
     int rc = -1;
 
-    ensure( ! self->mArmed);
-    ensure( ! self->mPending);
-    ensure(ert_ownFileEventQueueActivityMethodNil(self->mMethod));
+    ert_ensure( ! self->mArmed);
+    ert_ensure( ! self->mPending);
+    ert_ensure(ert_ownFileEventQueueActivityMethodNil(self->mMethod));
 
     self->mArmed  = pollTriggers_[aTrigger];
     self->mMethod = aMethod;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_lodgeFileEventQueueActivity_(self->mQueue, self));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -361,7 +361,7 @@ ert_closeFileEventQueueActivity(struct Ert_FileEventQueueActivity *self)
         self->mPending = 0;
         self->mMethod  = Ert_FileEventQueueActivityMethodNil();
 
-        ABORT_IF(
+        ERT_ABORT_IF(
             ert_detachFileEventQueueActivity_(self->mQueue, self));
     }
 

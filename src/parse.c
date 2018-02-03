@@ -88,11 +88,11 @@ ert_parseInt(const char *aArg, int *aValue)
     int rc = -1;
 
     long long value;
-    ERROR_IF(
+    ERT_ERROR_IF(
         parseLongLong_(aArg, &value));
     *aValue = value;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         *aValue - value,
         {
             errno = EINVAL;
@@ -100,9 +100,9 @@ ert_parseInt(const char *aArg, int *aValue)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -114,11 +114,11 @@ ert_parseUInt(const char *aArg, unsigned *aValue)
     int rc = -1;
 
     unsigned long long value;
-    ERROR_IF(
+    ERT_ERROR_IF(
         parseUnsignedLongLong_(aArg, &value));
     *aValue = value;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         *aValue - value,
         {
             errno = EINVAL;
@@ -126,9 +126,9 @@ ert_parseUInt(const char *aArg, unsigned *aValue)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -140,11 +140,11 @@ ert_parseUInt64(const char *aArg, uint64_t *aValue)
     int rc = -1;
 
     unsigned long long value;
-    ERROR_IF(
+    ERT_ERROR_IF(
         parseUnsignedLongLong_(aArg, &value));
     *aValue = value;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         *aValue - value,
         {
             errno = EINVAL;
@@ -152,9 +152,9 @@ ert_parseUInt64(const char *aArg, uint64_t *aValue)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -166,11 +166,11 @@ ert_parsePid(const char *aArg, struct Ert_Pid *aValue)
     int rc = -1;
 
     unsigned long long value;
-    ERROR_IF(
+    ERT_ERROR_IF(
         parseUnsignedLongLong_(aArg, &value));
     *aValue = Ert_Pid(value);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         aValue->mPid - value || 0 > aValue->mPid,
         {
             errno = EINVAL;
@@ -178,9 +178,9 @@ ert_parsePid(const char *aArg, struct Ert_Pid *aValue)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -208,10 +208,10 @@ ert_createParseArgListCSV(struct Ert_ParseArgList *self, const char *aArg)
                 ++wordcount;
         }
 
-        ERROR_UNLESS(
+        ERT_ERROR_UNLESS(
             (self->mArgs = strdup(aArg)));
 
-        ERROR_UNLESS(
+        ERT_ERROR_UNLESS(
             (self->mArgv = malloc(sizeof(*self->mArgv) * (wordcount + 1))));
 
         for (char *chptr = self->mArgs; ; )
@@ -239,7 +239,7 @@ ert_createParseArgListCSV(struct Ert_ParseArgList *self, const char *aArg)
             if ( ! tailptr)
                 tailptr = chptr;
 
-            ensure( ! *tailptr);
+            ert_ensure( ! *tailptr);
 
             while (tailptr != headptr)
             {
@@ -252,12 +252,12 @@ ert_createParseArgListCSV(struct Ert_ParseArgList *self, const char *aArg)
 
             if (self->mArgc == wordcount)
             {
-                ensure( ! *chptr);
+                ert_ensure( ! *chptr);
                 break;
             }
         }
 
-        ensure(self->mArgc == wordcount);
+        ert_ensure(self->mArgc == wordcount);
 
         /* Take care of the case where there appears to be one word, but
          * that word is in fact empty. */
@@ -270,9 +270,9 @@ ert_createParseArgListCSV(struct Ert_ParseArgList *self, const char *aArg)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self = ert_closeParseArgList(self);
@@ -301,7 +301,7 @@ ert_createParseArgListCopy(
         while (aArgv[argc])
             ++argc;
 
-        ERROR_UNLESS(
+        ERT_ERROR_UNLESS(
             argv = malloc(sizeof(*argv) * (1+argc)));
         argv[argc] = 0;
 
@@ -309,7 +309,7 @@ ert_createParseArgListCopy(
             argv[ax] = 0;
 
         for (unsigned ax = 0; ax < argc; ++ax)
-            ERROR_UNLESS(
+            ERT_ERROR_UNLESS(
                 argv[ax] = strdup(aArgv[ax]));
 
         self->mArgc = argc;
@@ -319,9 +319,9 @@ ert_createParseArgListCopy(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self = ert_closeParseArgList(self);

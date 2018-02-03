@@ -51,7 +51,7 @@ struct Ert_ErrorModule
 /* -------------------------------------------------------------------------- */
 /* Finally Unwinding
  *
- * Use ERROR_IF() and ERROR_UNLESS() to wrap calls to functions
+ * Use ERT_ERROR_IF() and ERROR_UNLESS() to wrap calls to functions
  * that have error returns.
  *
  * Only wrap function calls because error simulation will conditionally
@@ -61,52 +61,52 @@ struct Ert_ErrorModule
  * be used on the error return path. Destructors should have void
  * returns to avoid inadvertentl having an error return. */
 
-#define ERROR_IF_(Sense_, Predicate_, Message_, ...) \
-    do                                               \
-    {                                                \
-        /* Do not allow error management within      \
-         * FINALLY() blocks. */                      \
-                                                     \
-        const void *finally_                         \
-        __attribute__((__unused__)) = 0;             \
-                                                     \
-        struct Ert_ErrorFrame frame_ =               \
-            ERT_ERRORFRAME_INIT( (Message_) );       \
-                                                     \
-        /* Stack unwinding restarts if a new frame   \
-         * sequence is started. */                   \
-                                                     \
-        ert_restartErrorFrameSequence();             \
-                                                     \
-        if (ert_testFinally(&frame_) ||              \
-            Sense_ (Predicate_))                     \
-        {                                            \
-            __VA_ARGS__                              \
-                                                     \
-            ert_addErrorFrame(&frame_, errno);       \
-            goto Error_;                             \
-        }                                            \
-    }                                                \
+#define ERT_ERROR_IF_(Sense_, Predicate_, Message_, ...) \
+    do                                                   \
+    {                                                    \
+        /* Do not allow error management within          \
+         * ERT_FINALLY() blocks. */                      \
+                                                         \
+        const void *ert_finally_                         \
+        __attribute__((__unused__)) = 0;                 \
+                                                         \
+        struct Ert_ErrorFrame frame_ =                   \
+            ERT_ERRORFRAME_INIT( (Message_) );           \
+                                                         \
+        /* Stack unwinding restarts if a new frame       \
+         * sequence is started. */                       \
+                                                         \
+        ert_restartErrorFrameSequence();                 \
+                                                         \
+        if (ert_testFinally(&frame_) ||                  \
+            Sense_ (Predicate_))                         \
+        {                                                \
+            __VA_ARGS__                                  \
+                                                         \
+            ert_addErrorFrame(&frame_, errno);           \
+            goto Ert_Error_;                             \
+        }                                                \
+    }                                                    \
     while (0)
 
-#define ERROR_IF(Predicate_, ...)                  \
-    ERROR_IF_(/*!!*/, Predicate_, # Predicate_, ## __VA_ARGS__)
+#define ERT_ERROR_IF(Predicate_, ...)                  \
+    ERT_ERROR_IF_(/*!!*/, Predicate_, # Predicate_, ## __VA_ARGS__)
 
-#define ERROR_UNLESS(Predicate_, ...)              \
-    ERROR_IF_(!, Predicate_, # Predicate_, ##  __VA_ARGS__)
+#define ERT_ERROR_UNLESS(Predicate_, ...)              \
+    ERT_ERROR_IF_(!, Predicate_, # Predicate_, ##  __VA_ARGS__)
 
 /* -------------------------------------------------------------------------- */
-#define ABORT_IF(Predicate_, ...)                       \
-    UNWIND_IF_(                                         \
+#define ERT_ABORT_IF(Predicate_, ...)                   \
+    ERT_UNWIND_IF_(                                     \
         terminate, ert_errorTerminate, /*!!*/,          \
         Predicate_, # Predicate_, ## __VA_ARGS__)
 
-#define ABORT_UNLESS(Predicate_, ...)                   \
-    UNWIND_IF_(                                         \
+#define ERT_ABORT_UNLESS(Predicate_, ...)               \
+    ERT_UNWIND_IF_(                                     \
         terminate, ert_errorTerminate, !,               \
         Predicate_, # Predicate_, ## __VA_ARGS__)
 
-#define UNWIND_IF_(                                             \
+#define ERT_UNWIND_IF_(                                         \
     Action_, Actor_, Sense_, Predicate_, Message_, ...)         \
     do                                                          \
     {                                                           \
@@ -150,7 +150,7 @@ struct Ert_ErrorModule
     while (0)
 
 /* -------------------------------------------------------------------------- */
-#define FINALLY(...)      \
+#define ERT_FINALLY(...)  \
     do                    \
     {                     \
         int err_ = errno; \
@@ -158,19 +158,19 @@ struct Ert_ErrorModule
         errno = err_;     \
     } while (0)
 
-#define Finally                                 \
+#define Ert_Finally                             \
         /* Stack unwinding restarts if the      \
          * function completes without error. */ \
                                                 \
         ert_restartErrorFrameSequence();        \
                                                 \
-        int finally_                            \
+        int ert_finally_                        \
         __attribute__((__unused__));            \
                                                 \
-        goto Error_;                            \
-    Error_
+        goto Ert_Error_;                        \
+    Ert_Error_
 
-#define finally_warn_if_(Sense_, Predicate_, Self_, PrintfMethod_, ...)       \
+#define ert_finally_warn_if_(Sense_, Predicate_, Self_, PrintfMethod_, ...)   \
     do                                                                        \
     {                                                                         \
         if ( Sense_ (Predicate_))                                             \
@@ -184,12 +184,12 @@ struct Ert_ErrorModule
         }                                                                     \
     } while (0)
 
-#define finally_warn_if(Predicate_, Self_, PrintfMethod_, ...)          \
-    finally_warn_if_(                                                   \
+#define ert_finally_warn_if(Predicate_, Self_, PrintfMethod_, ...)      \
+    ert_finally_warn_if_(                                               \
         /*!!*/, Predicate_, Self_, PrintfMethod_, ## __VA_ARGS__)
 
-#define finally_warn_unless(Predicate_, Self_, PrintfMethod_, ...)       \
-    finally_warn_if_(                                                    \
+#define ert_finally_warn_unless(Predicate_, Self_, PrintfMethod_, ...)   \
+    ert_finally_warn_if_(                                                \
         !, Predicate_, Self_, PrintfMethod_, ## __VA_ARGS__)
 
 /* -------------------------------------------------------------------------- */
@@ -271,9 +271,9 @@ ert_logErrorFrameSequence(void);
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define breadcrumb Ert_Error_breadcrumb_
-#define debug      Ert_Error_debug_
-#define debuglevel Ert_Error_debuglevel_
+#define ert_breadcrumb Ert_Error_breadcrumb_
+#define ert_debug      Ert_Error_debug_
+#define ert_debuglevel Ert_Error_debuglevel_
 #endif
 
 #define Ert_Error_breadcrumb_() \
@@ -296,7 +296,7 @@ ert_errorDebug(
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define ensure Ert_Error_ensure_
+#define ert_ensure Ert_Error_ensure_
 #endif
 
 #define Ert_Error_ensure_(aPredicate)                                   \
@@ -312,7 +312,7 @@ ert_errorEnsure(const char *aFunction, const char *aFile, unsigned aLine,
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define warn Ert_Error_warn_
+#define ert_warn Ert_Error_warn_
 #endif
 
 #define Ert_Error_warn_(aErrCode, ...) \
@@ -327,7 +327,7 @@ ert_errorWarn(
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define message Ert_Error_message_
+#define ert_message Ert_Error_message_
 #endif
 
 #define Ert_Error_message_(aErrCode, ...) \
@@ -342,7 +342,7 @@ ert_errorMessage(
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus
-#define terminate Ert_Error_terminate_
+#define ert_terminate Ert_Error_terminate_
 #endif
 
 #define Ert_Error_terminate_(aErrCode, ...) \

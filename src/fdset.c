@@ -64,27 +64,27 @@ ert_printFdSet(
 
     int printed = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ERT_PRINTF(printed, fprintf(aFile, "<fdset %p", self)));
 
     struct Ert_FdSetElement_ *elem;
     RB_FOREACH(elem, Ert_FdSetTree_, &((struct Ert_FdSet *) self)->mRoot)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             ERT_PRINTF(
                 printed,
                 fprintf(aFile,
                         " (%d,%d)", elem->mRange.mLhs, elem->mRange.mRhs)));
     }
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ERT_PRINTF(printed, fprintf(aFile, ">")));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return printed ? printed : rc;
 }
@@ -114,9 +114,9 @@ ert_createFdSet(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -202,7 +202,7 @@ ert_invertFdSet(
 
     if (RB_EMPTY(&self->mRoot))
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_insertFdSetRange(self, Ert_FdRange(0, INT_MAX)));
     }
     else
@@ -238,12 +238,12 @@ ert_invertFdSet(
 
             if (prev->mRange.mLhs)
             {
-                ERROR_UNLESS(
+                ERT_ERROR_UNLESS(
                     elem = malloc(sizeof(*elem)));
 
                 elem->mRange = Ert_FdRange(0, prev->mRange.mLhs - 1);
 
-                ERROR_IF(
+                ERT_ERROR_IF(
                     RB_INSERT(Ert_FdSetTree_, &self->mRoot, elem),
                     {
                         errno = EEXIST;
@@ -267,9 +267,9 @@ ert_invertFdSet(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         free(elem);
     });
@@ -334,12 +334,12 @@ ert_insertFdSetRange(
 
     struct Ert_FdSetElement_ *elem = 0;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         elem = malloc(sizeof(*elem)));
 
     elem->mRange = aRange;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         RB_INSERT(Ert_FdSetTree_, &self->mRoot, elem),
         {
             errno = EEXIST;
@@ -351,13 +351,13 @@ ert_insertFdSetRange(
     struct Ert_FdSetElement_ *next =
         RB_NEXT(Ert_FdSetTree_, &self->mRoot, elem);
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         ! prev || ert_leftFdRangeOf(elem->mRange, prev->mRange),
         {
             errno = EEXIST;
         });
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         ! next || ert_rightFdRangeOf(elem->mRange, next->mRange),
         {
             errno = EEXIST;
@@ -387,9 +387,9 @@ ert_insertFdSetRange(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (inserted && elem)
             RB_REMOVE(Ert_FdSetTree_, &self->mRoot, elem);
@@ -416,7 +416,7 @@ ert_removeFdSetRange(
         .mRange = aRange,
     };
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         RB_EMPTY(&self->mRoot),
         {
             errno = ENOENT;
@@ -432,13 +432,13 @@ ert_removeFdSetRange(
 
     if ( ! contained)
     {
-        ERROR_UNLESS(
+        ERT_ERROR_UNLESS(
             elem = RB_PREV(Ert_FdSetTree_, &self->mRoot, elem),
             {
                 errno = ENOENT;
             });
 
-        ERROR_UNLESS(
+        ERT_ERROR_UNLESS(
             contained = ert_containsFdRange(elem->mRange, aRange),
             {
                 errno = ENOENT;
@@ -472,7 +472,7 @@ ert_removeFdSetRange(
           fdRange  = &fdRange_;
 
           elem->mRange = lhSide;
-          ERROR_IF(
+          ERT_ERROR_IF(
               ert_insertFdSetRange(self, rhSide));
 
           fdRange = 0;
@@ -482,9 +482,9 @@ ert_removeFdSetRange(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc && fdRange)
             elem->mRange = *fdRange;
@@ -507,7 +507,7 @@ ert_visitFdSet(
     RB_FOREACH(elem, Ert_FdSetTree_, &((struct Ert_FdSet *) self)->mRoot)
     {
         int err;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (err = ert_callFdSetVisitor(aVisitor, elem->mRange),
              -1 == err));
 
@@ -519,9 +519,9 @@ ert_visitFdSet(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc ? rc : visited;
 }
@@ -530,7 +530,7 @@ Finally:
 struct Ert_FdRange
 Ert_FdRange_(int aLhs, int aRhs)
 {
-    ensure(0 <= aLhs && aLhs <= aRhs);
+    ert_ensure(0 <= aLhs && aLhs <= aRhs);
 
     return (struct Ert_FdRange)
     {

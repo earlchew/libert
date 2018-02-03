@@ -47,15 +47,15 @@ ert_createEventPipe(
     LIST_INIT(&self->mLatchList_.mList);
     self->mLatchList = &self->mLatchList_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createPipe(&self->mPipe_, aFlags));
     self->mPipe = &self->mPipe_;
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self = ert_closeEventPipe(self);
@@ -72,7 +72,7 @@ ert_closeEventPipe(
     if (self)
     {
         if (self->mLatchList)
-            ensure(LIST_EMPTY(&self->mLatchList->mList));
+            ert_ensure(LIST_EMPTY(&self->mLatchList->mList));
         self->mLatchList = 0;
 
         self->mPipe  = ert_closePipe(self->mPipe);
@@ -101,7 +101,7 @@ ert_setEventPipe(
         char buf[1] = { 0 };
 
         ssize_t rv = 0;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (rv = write(self->mPipe->mWrFile->mFd, buf, sizeof(buf)),
              1 != rv),
             {
@@ -114,9 +114,9 @@ ert_setEventPipe(
 
     rc = signalled;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });
@@ -141,14 +141,14 @@ resetEventPipe_(
         char buf[1];
 
         ssize_t rv = 0;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (rv = read(self->mPipe->mRdFile->mFd, buf, sizeof(buf)),
              1 != rv),
             {
                 errno = -1 == rv ? errno : EIO;
             });
 
-        ensure( ! buf[0]);
+        ert_ensure( ! buf[0]);
 
         self->mSignalled = false;
         signalled        = 1;
@@ -156,9 +156,9 @@ resetEventPipe_(
 
     rc = signalled;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -172,15 +172,15 @@ ert_resetEventPipe(
     struct Ert_ThreadSigMutex *lock = ert_lockThreadSigMutex(self->mMutex);
 
     int signalled;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (signalled = resetEventPipe_(self),
          -1 == signalled));
 
     rc = signalled;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
      ({
          lock = ert_unlockThreadSigMutex(lock);
      });
@@ -235,7 +235,7 @@ ert_pollEventPipe(
         {
             called = -1;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (called = ert_pollEventLatchListEntry(iter, aPollTime),
                  -1 == called && ! pollCount));
 
@@ -254,19 +254,19 @@ ert_pollEventPipe(
         {
             int signalled = -1;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (signalled = resetEventPipe_(self),
                  -1 == signalled));
 
-            ensure(0 < signalled);
+            ert_ensure(0 < signalled);
         }
     }
 
     rc = pollCount;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });

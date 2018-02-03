@@ -59,14 +59,14 @@ ert_createEventLatch(
         .mLatch = self,
     };
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         self->mName = strdup(aName));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self = ert_closeEventLatch(self);
@@ -83,7 +83,7 @@ ert_closeEventLatch(
     if (self)
     {
         if (self->mPipe)
-            ABORT_IF(
+            ERT_ABORT_IF(
                 Ert_EventLatchSettingError == ert_unbindEventLatchPipe(self));
 
         self->mMutex = ert_destroyThreadSigMutex(self->mMutex);
@@ -117,7 +117,7 @@ signalEventLatch_(struct Ert_EventLatch *self)
         {
             signalled = -1;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (signalled = ert_setEventPipe(self->mPipe),
                  -1 == signalled && EINTR != errno));
 
@@ -126,9 +126,9 @@ signalEventLatch_(struct Ert_EventLatch *self)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -171,16 +171,16 @@ bindEventLatchPipe_(
             ert_attachEventPipeLatch_(self->mPipe, &self->mList);
 
             if (Ert_EventLatchSettingOff != setting)
-                ERROR_IF(
+                ERT_ERROR_IF(
                     signalEventLatch_(self));
         }
     }
 
     rc = setting;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });
@@ -194,8 +194,8 @@ ert_bindEventLatchPipe(
     struct Ert_EventPipe        *aPipe,
     struct Ert_EventLatchMethod  aMethod)
 {
-    ensure(aPipe);
-    ensure( ! self->mPipe);
+    ert_ensure(aPipe);
+    ert_ensure( ! self->mPipe);
 
     return bindEventLatchPipe_(self, aPipe, aMethod);
 }
@@ -228,7 +228,7 @@ ert_disableEventLatch(
             ? Ert_EventLatchSettingOn
             : Ert_EventLatchSettingOff;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             signalEventLatch_(self));
 
         self->mEvent = event ^ EVENTLATCH_DISABLE_MASK_;
@@ -236,9 +236,9 @@ ert_disableEventLatch(
 
     rc = setting;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });
@@ -267,7 +267,7 @@ ert_setEventLatch(
     {
         setting = Ert_EventLatchSettingOff;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             signalEventLatch_(self));
 
         self->mEvent = event ^ EVENTLATCH_DATA_MASK_;
@@ -275,9 +275,9 @@ ert_setEventLatch(
 
     rc = setting;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });
@@ -311,9 +311,9 @@ ert_resetEventLatch(
 
     rc = setting;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });
@@ -345,9 +345,9 @@ ert_ownEventLatchSetting(
 
     rc = setting;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });
@@ -368,11 +368,11 @@ ert_pollEventLatchListEntry(
     if (self->mLatch)
     {
         enum Ert_EventLatchSetting setting;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (setting = ert_resetEventLatch(self->mLatch),
              Ert_EventLatchSettingError == setting),
             {
-                warn(errno,
+                ert_warn(errno,
                      "Unable to reset event latch %" PRIs_Ert_Method,
                      FMTs_Ert_Method(self->mLatch, ert_printEventLatch));
             });
@@ -385,7 +385,7 @@ ert_pollEventLatchListEntry(
                 enabled = true;
             else
             {
-                ensure(Ert_EventLatchSettingDisabled == setting);
+                ert_ensure(Ert_EventLatchSettingDisabled == setting);
 
                 self->mLatch = 0;
 
@@ -394,16 +394,16 @@ ert_pollEventLatchListEntry(
 
             called = 1;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 ert_callEventLatchMethod(self->mMethod, enabled, aPollTime));
         }
     }
 
     rc = called;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

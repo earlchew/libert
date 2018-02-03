@@ -69,14 +69,14 @@ dlSymbolVisitor_(struct dl_phdr_info *aInfo, size_t aSize, void *aVisitor)
 
         if (addr <= visitor->mSoAddr && visitor->mSoAddr < addr + size)
         {
-            ERROR_UNLESS(
+            ERT_ERROR_UNLESS(
                 aInfo->dlpi_name,
                 {
                     errno = ENOENT;
                 });
 
             char *sopath;
-            ERROR_UNLESS(
+            ERT_ERROR_UNLESS(
                 (sopath = strdup(aInfo->dlpi_name)));
 
             visitor->mSoPath = sopath;
@@ -88,9 +88,9 @@ dlSymbolVisitor_(struct dl_phdr_info *aInfo, size_t aSize, void *aVisitor)
 
     rc = matched;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -117,7 +117,7 @@ ert_findDlSymbol(const char *aSymName, uintptr_t *aSymAddr, const char **aErr)
         void       *next = dlsym(RTLD_DEFAULT, aSymName);
         const char *err  = "<ERROR>";
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             err = dlerror(),
             {
                 if (aErr)
@@ -145,9 +145,9 @@ ert_findDlSymbol(const char *aSymName, uintptr_t *aSymAddr, const char **aErr)
         rc = visitor.mSoPath;
     }
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         lock = ert_unlockThreadSigMutex(lock);
     });

@@ -47,9 +47,9 @@ ert_createDeadline(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self = ert_closeDeadline(self);
@@ -89,7 +89,7 @@ ert_checkDeadlineExpired(
         ({
             ready = -1;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (ready = ert_callDeadlinePollMethod(aPollMethod),
                  -1 == ready));
         });
@@ -120,13 +120,13 @@ ert_checkDeadlineExpired(
         }
 
         if ( ! ready)
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (ready = ert_callDeadlineWaitMethod(
                     aWaitMethod,
                     self->mDuration ? &self->mRemaining : 0),
                  -1 == ready));
 
-        ensure(1 == ready || 0 == ready);
+        ert_ensure(1 == ready || 0 == ready);
 
     } while (0);
 
@@ -152,9 +152,9 @@ ert_checkDeadlineExpired(
 
     rc = ready;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

@@ -79,7 +79,7 @@ ert_createFile(
      * discover why the file descriptor is invalid. */
 
     int err = errno;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (-1 == aFd),
         {
             errno = err;
@@ -93,9 +93,9 @@ ert_createFile(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc && -1 != self->mFd)
             self->mFd = ert_closeFd(self->mFd);
@@ -155,7 +155,7 @@ temporaryFileCreate_(const char *aDirName)
     int rc = -1;
 
     int dirFd;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (dirFd = ert_openFd(aDirName, O_RDONLY | O_CLOEXEC, 0),
          -1 == dirFd));
 
@@ -170,7 +170,7 @@ temporaryFileCreate_(const char *aDirName)
     {
         temporaryFileName_(&fileName, &rnd);
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (fd = openat(dirFd,
                          fileName.mName,
                          O_CREAT | O_EXCL | O_RDWR | O_CLOEXEC, 0),
@@ -184,15 +184,15 @@ temporaryFileCreate_(const char *aDirName)
 
     ERT_TEST_RACE
     ({
-        ERROR_IF(
+        ERT_ERROR_IF(
             unlinkat(dirFd, fileName.mName, 0) && ENOENT == errno);
     });
 
     rc = fd;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         dirFd = ert_closeFd(dirFd);
     });
@@ -245,7 +245,7 @@ recvTemporaryFileProcessFd_(
     int rc = -1;
 
     ssize_t rdlen;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (rdlen = ert_recvUnixSocket(
             self->mSocketPair->mParentSocket,
             (void *) &self->mErr,
@@ -253,14 +253,14 @@ recvTemporaryFileProcessFd_(
          -1 == rdlen ||
          (errno = 0, sizeof(self->mErr) != rdlen)));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         self->mErr,
         {
             errno = self->mErr;
         });
 
     int tmpFd;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (tmpFd = ert_recvUnixSocketFd(
               self->mSocketPair->mParentSocket, O_CLOEXEC),
          -1 == tmpFd));
@@ -269,9 +269,9 @@ recvTemporaryFileProcessFd_(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -282,14 +282,14 @@ waitTemporaryFileProcessSocket_(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_joinThread(self->mThread));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -301,32 +301,32 @@ prepareTemporaryFileProcessSocket_(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createSocketPair(&self->mSocketPair_, O_CLOEXEC));
     self->mSocketPair = &self->mSocketPair_;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         self->mThread = ert_createThread(
             &self->mThread_,
             0,
             0,
             Ert_ThreadMethod(self, recvTemporaryFileProcessFd_)));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_insertFdSetFile(
             aFork->mWhitelistFds,
             self->mSocketPair->mParentSocket->mSocket->mFile));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_insertFdSetFile(
             aFork->mWhitelistFds,
             self->mSocketPair->mChildSocket->mSocket->mFile));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (rc)
             self = closeTemporaryFileProcess_(self);
@@ -356,22 +356,22 @@ sendTemporaryFileProcessFd_(
     self->mErr = -1 != fd ? 0 : (errno ? errno : EIO);
 
     ssize_t wrlen;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (wrlen = ert_sendUnixSocket(
             self->mSocketPair->mChildSocket,
             (void *) &self->mErr, sizeof(self->mErr)),
          -1 == wrlen || (errno = 0, sizeof(self->mErr) != wrlen)));
 
     if ( ! self->mErr)
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_sendUnixSocketFd(
                 self->mSocketPair->mChildSocket, fd));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -397,11 +397,11 @@ temporaryFile_(const char *aDirName)
     struct TemporaryFileProcess_  temporaryFileProcess_;
     struct TemporaryFileProcess_ *temporaryFileProcess;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         createTemporaryFileProcess_(&temporaryFileProcess_, aDirName));
     temporaryFileProcess = &temporaryFileProcess_;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (tempPid = ert_forkProcessChild(
             Ert_ForkProcessSetSessionLeader,
             Ert_Pgid(0),
@@ -437,13 +437,13 @@ temporaryFile_(const char *aDirName)
          -1 == tempPid.mPid));
 
     int status;
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_reapProcessChild(tempPid, &status));
 
     struct Ert_ExitCode exitCode =
         ert_extractProcessExitStatus(status, tempPid);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         exitCode.mStatus,
         {
             errno = ECHILD;
@@ -451,14 +451,14 @@ temporaryFile_(const char *aDirName)
 
     int retFd = temporaryFileProcess->mFd;
 
-    ensure(-1 != retFd);
+    ert_ensure(-1 != retFd);
 
     tmpFd = -1;
     rc    = retFd;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         temporaryFileProcess = closeTemporaryFileProcess_(temporaryFileProcess);
 
@@ -497,7 +497,7 @@ ert_temporaryFile(
 
         if ( ! ert_testAction(Ert_TestLevelRace))
         {
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (fd = ert_openFd(tmpDir,
                                  O_TMPFILE | O_RDWR | O_DIRECTORY | O_CLOEXEC,
                                  S_IWUSR | S_IRUSR),
@@ -508,20 +508,20 @@ ert_temporaryFile(
         }
 #endif
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (fd = temporaryFile_(tmpDir),
              -1 == fd));
 
     } while (0);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFile(self, fd));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -535,7 +535,7 @@ ert_detachFile(
 
     if (self)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             -1 == self->mFd);
 
         pthread_mutex_t *lock = ert_lockMutex(&fileList_.mMutex);
@@ -549,9 +549,9 @@ ert_detachFile(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -609,14 +609,14 @@ ert_duplicateFile(
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createFile(self, ert_duplicateFd(aFile->mFd, -1)));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

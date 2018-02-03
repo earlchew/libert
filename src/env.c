@@ -40,13 +40,13 @@ ert_deleteEnv(const char *aName)
 {
     int rc = -1;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         getenv(aName),
         {
             errno = ENOENT;
         });
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         unsetenv(aName),
         {
             if (ENOENT == errno)
@@ -55,9 +55,9 @@ ert_deleteEnv(const char *aName)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -68,7 +68,7 @@ ert_getEnvString(const char *aName, const char **aValue)
 {
     int rc = -1;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         *aValue = getenv(aName),
         {
             errno = ENOENT;
@@ -76,9 +76,9 @@ ert_getEnvString(const char *aName, const char **aValue)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -89,19 +89,19 @@ ert_setEnvString(const char *aName, const char *aValue)
 {
     const char *rc = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         setenv(aName, aValue, 1));
 
     const char *env;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_getEnvString(aName, &env));
 
     rc = env;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -114,17 +114,17 @@ ert_getEnvInt(const char *aName, int *aValue)
 
     const char *env;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_getEnvString(aName, &env));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_parseInt(env, aValue));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -137,19 +137,19 @@ ert_setEnvInt(const char *aName, int aValue)
 
     char value[sizeof("-") + sizeof(aValue) * CHAR_BIT];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         0 > sprintf(value, "%d", aValue));
 
     const char *env = 0;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (env = ert_setEnvString(aName, value)));
 
     rc = env;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -162,17 +162,17 @@ ert_getEnvUInt(const char *aName, unsigned *aValue)
 
     const char *env;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_getEnvString(aName, &env));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_parseUInt(env, aValue));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -185,19 +185,19 @@ ert_setEnvUInt(const char *aName, unsigned aValue)
 
     char value[sizeof(aValue) * CHAR_BIT];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         0 > sprintf(value, "%u", aValue));
 
     const char *env = 0;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (env = ert_setEnvString(aName, value)));
 
     rc = env;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -210,17 +210,17 @@ ert_getEnvUInt64(const char *aName, uint64_t *aValue)
 
     const char *env;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_getEnvString(aName, &env));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_parseUInt64(env, aValue));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -233,19 +233,19 @@ ert_setEnvUInt64(const char *aName, uint64_t aValue)
 
     char value[sizeof("-") + sizeof(aValue) * CHAR_BIT];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         0 > sprintf(value, "%" PRIu64, aValue));
 
     const char *env = 0;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (env = ert_setEnvString(aName, value)));
 
     rc = env;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -258,17 +258,17 @@ ert_getEnvPid(const char *aName, struct Ert_Pid *aValue)
 
     const char *env;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_getEnvString(aName, &env));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_parsePid(env, aValue));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -281,19 +281,19 @@ ert_setEnvPid(const char *aName, struct Ert_Pid aValue)
 
     char value[sizeof("-") + sizeof(aValue) * CHAR_BIT];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         0 > sprintf(value, "%" PRId_Ert_Pid, FMTd_Ert_Pid(aValue)));
 
     const char *env = 0;
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (env = ert_setEnvString(aName, value)));
 
     rc = env;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

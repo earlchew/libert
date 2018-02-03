@@ -82,7 +82,7 @@ ert_createUnixSocket(
 
     self->mSocket = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createSocket(&self->mSocket_,
                      socket(AF_UNIX,
                             SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)));
@@ -115,7 +115,7 @@ ert_createUnixSocket(
                 strncpy(sockAddr.sun_path, aName, sizeof(sockAddr.sun_path));
             else
             {
-                ERROR_IF(
+                ERT_ERROR_IF(
                     sizeof(sockAddr.sun_path) < aNameLen,
                     {
                         errno = EINVAL;
@@ -129,7 +129,7 @@ ert_createUnixSocket(
          * operation of the retry and name generation code. */
 
         int err;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (err = ert_bindSocket(
                 self->mSocket,
                 (struct sockaddr *) &sockAddr, sizeof(sockAddr)),
@@ -138,7 +138,7 @@ ert_createUnixSocket(
         if (err)
             continue;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_listenSocket(self->mSocket, aQueueLen));
 
         break;
@@ -146,9 +146,9 @@ ert_createUnixSocket(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY(
+    ERT_FINALLY(
     {
         if (rc)
             self->mSocket = ert_closeSocket(self->mSocket);
@@ -170,7 +170,7 @@ ert_acceptUnixSocket(
     while (1)
     {
         int err;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (err = ert_createSocket(
                 &self->mSocket_,
                 ert_acceptSocket(aServer->mSocket, O_NONBLOCK | O_CLOEXEC)),
@@ -183,9 +183,9 @@ ert_acceptUnixSocket(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY(
+    ERT_FINALLY(
     {
         if (rc)
             self->mSocket = ert_closeSocket(self->mSocket);
@@ -209,12 +209,12 @@ ert_connectUnixSocket(
 
     if ( ! aNameLen)
         aNameLen = strlen(aName);
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         aNameLen,
         {
             errno = EINVAL;
         });
-    ERROR_IF(
+    ERT_ERROR_IF(
         sizeof(sockAddr.sun_path) < aNameLen);
 
     sockAddr.sun_family = AF_UNIX;
@@ -222,7 +222,7 @@ ert_connectUnixSocket(
     memset(
         sockAddr.sun_path + aNameLen, 0, sizeof(sockAddr.sun_path) - aNameLen);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createSocket(
             &self->mSocket_,
             socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)));
@@ -230,7 +230,7 @@ ert_connectUnixSocket(
 
     while (1)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             (err = ert_connectSocket(
                 self->mSocket,
                 (struct sockaddr *) &sockAddr, sizeof(sockAddr)),
@@ -249,9 +249,9 @@ ert_connectUnixSocket(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY(
+    ERT_FINALLY(
     {
         if (rc)
             self->mSocket = ert_closeSocket(self->mSocket);
@@ -287,7 +287,7 @@ ert_createUnixSocketPair(
     aParent->mSocket = 0;
     aChild->mSocket  = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         aFlags & ~ (O_CLOEXEC | O_NONBLOCK),
         {
             errno = EINVAL;
@@ -301,23 +301,23 @@ ert_createUnixSocketPair(
     if (aFlags & O_CLOEXEC)
         sockFlags |= SOCK_CLOEXEC;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         socketpair(AF_UNIX, SOCK_STREAM | sockFlags, 0, fd),
         {
             fd[0] = -1;
             fd[1] = -1;
         });
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         -1 == fd[0] || -1 == fd[1]);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createSocket(&aParent->mSocket_, fd[0]));
     aParent->mSocket = &aParent->mSocket_;
 
     fd[0] = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createSocket(&aChild->mSocket_, fd[1]));
     aChild->mSocket = &aChild->mSocket_;
 
@@ -325,9 +325,9 @@ ert_createUnixSocketPair(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd[0] = ert_closeFd(fd[0]);
         fd[1] = ert_closeFd(fd[1]);
@@ -376,20 +376,20 @@ ert_sendUnixSocketFd(
     cmsg->cmsg_type  = SCM_RIGHTS;
     cmsg->cmsg_len   = CMSG_LEN(sizeof(aFd));
 
-    ensure(msg.msg_controllen >= cmsg->cmsg_len);
+    ert_ensure(msg.msg_controllen >= cmsg->cmsg_len);
 
     int *bufPtr = (void *) CMSG_DATA(cmsg);
 
     bufPtr[0] = aFd;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         sizeof(buf) != ert_sendSocketMsg(self->mSocket, &msg, 0));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -444,20 +444,20 @@ ert_recvUnixSocketFd_(
             }
         }
 
-        ensure(fdLen == ix);
+        ert_ensure(fdLen == ix);
     }
 
     for (struct cmsghdr *cmsg = CMSG_FIRSTHDR(aMsg);
          cmsg;
          cmsg = CMSG_NXTHDR(aMsg, cmsg))
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             cmsg->cmsg_level != SOL_SOCKET ||
             cmsg->cmsg_type  != SCM_RIGHTS ||
             CMSG_LEN(sizeof(fd)) != cmsg->cmsg_len);
     }
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         1 == fdLen && 0 <= fdPtr[0]);
 
     fd       = fdPtr[0];
@@ -465,9 +465,9 @@ ert_recvUnixSocketFd_(
 
     rc = fd;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         if (-1 != rc)
         {
@@ -492,7 +492,7 @@ ert_recvUnixSocketFd(
 
     char cmsgbuf[CMSG_SPACE(sizeof(fd))];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         aFlags & ~ O_CLOEXEC);
 
     unsigned flags = 0;
@@ -519,18 +519,18 @@ ert_recvUnixSocketFd(
     msg.msg_controllen = sizeof(cmsgbuf);
 
     ssize_t rdlen;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (rdlen = ert_recvSocketMsg(self->mSocket, &msg, flags),
          -1 == rdlen || (errno = EIO, sizeof(buf) != rdlen) || buf[0]));
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         msg.msg_controllen);
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (fd = ert_recvUnixSocketFd_(self, &msg),
          -1 == fd));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         MSG_CTRUNC & msg.msg_flags,
         {
             errno = EIO;
@@ -539,9 +539,9 @@ ert_recvUnixSocketFd(
     rc = fd;
     fd = -1;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd = ert_closeFd(fd);
     });

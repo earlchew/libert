@@ -42,7 +42,7 @@ ert_createSocketPair(
     self->mParentSocket = 0;
     self->mChildSocket  = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         ert_createUnixSocketPair(
             &self->mParentSocket_, &self->mChildSocket_, aFlags));
 
@@ -51,9 +51,9 @@ ert_createSocketPair(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

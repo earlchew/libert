@@ -943,7 +943,7 @@ initSystemCall(struct SystemCall *self)
 
         char *libName = ert_findDlSymbol(self->mName, &addr, &err);
 
-        ensure(libName);
+        ert_ensure(libName);
 
         free(libName);
 
@@ -1017,7 +1017,7 @@ ERT_EARLY_INITIALISER(
     ({
         for (size_t sx = 0; ERT_NUMBEROF(systemCall_) > sx; ++sx)
         {
-            ABORT_UNLESS(
+            ERT_ABORT_UNLESS(
                 initSystemCall(&systemCall_[sx]));
         }
     }),
@@ -1032,7 +1032,7 @@ interruptSystemCall(enum SystemCallKind aKind, const char *aErrName)
     uintptr_t addr = 0;
 
     if (ert_testAction(Ert_TestLevelRace) && 1 > ert_fetchRandomRange(10))
-        debug(0,
+        ert_debug(0,
               "inject %s into %s",
               (aErrName ? aErrName : "EINTR"),
               sysCall->mName);

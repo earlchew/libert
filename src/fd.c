@@ -53,7 +53,7 @@ ert_openFd(const char *aPath, int aFlags, mode_t aMode)
 
     do
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             (fd = open(aPath, aFlags, aMode),
              -1 == fd && EINTR != errno));
     }
@@ -61,9 +61,9 @@ ert_openFd(const char *aPath, int aFlags, mode_t aMode)
 
     rc = fd;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -77,7 +77,7 @@ openBlockedFd_(int aSelector, int aFd)
 
     int pipefd[2];
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         pipe2(pipefd, O_CLOEXEC));
 
     int selected   = 0 + aSelector;
@@ -89,7 +89,7 @@ openBlockedFd_(int aSelector, int aFd)
     {
         fd = pipefd[selected];
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             aFd != ert_duplicateFd(fd, aFd));
 
         fd = ert_closeFd(fd);
@@ -97,9 +97,9 @@ openBlockedFd_(int aSelector, int aFd)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd = ert_closeFd(fd);
     });
@@ -132,43 +132,43 @@ ert_openStdFds(void)
      * return eof or SIGPIPE on any attempted write. */
 
     int validStdin;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (validStdin = ert_ownFdValid(STDIN_FILENO),
          -1 == validStdin));
 
     int validStdout;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (validStdout = ert_ownFdValid(STDOUT_FILENO),
          -1 == validStdout));
 
     int validStderr;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (validStderr = ert_ownFdValid(STDERR_FILENO),
          -1 == validStderr));
 
     if ( ! validStdin)
-        ERROR_IF(
+        ERT_ERROR_IF(
             openBlockedInput_(STDIN_FILENO));
 
     if ( ! validStdout && ! validStderr)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             openBlockedOutput_(STDOUT_FILENO));
-        ERROR_IF(
+        ERT_ERROR_IF(
             STDERR_FILENO != ert_duplicateFd(STDOUT_FILENO, STDERR_FILENO));
     }
     else if ( ! validStdout)
-        ERROR_IF(
+        ERT_ERROR_IF(
             openBlockedOutput_(STDOUT_FILENO));
     else if ( ! validStderr)
-        ERROR_IF(
+        ERT_ERROR_IF(
             openBlockedOutput_(STDERR_FILENO));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -196,7 +196,7 @@ ert_closeFd(int aFd)
         int err;
         do
         {
-            ABORT_IF(
+            ERT_ABORT_IF(
                 (err = close(aFd),
                  err && EINTR != errno && EINPROGRESS != errno));
         } while (err && EINTR == errno);
@@ -241,7 +241,7 @@ closeFdWhiteListVisitor_(
     {
         int valid;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (valid = ert_ownFdValid(fd),
              -1 == valid));
 
@@ -253,9 +253,9 @@ closeFdWhiteListVisitor_(
 
     rc = (self->mFdLimit.rlim_cur <= fdEnd);
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -269,10 +269,10 @@ ert_closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet)
 
     whiteListVisitor.mFd = 0;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         getrlimit(RLIMIT_NOFILE, &whiteListVisitor.mFdLimit));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         -1 == ert_visitFdSet(
             aFdSet,
             Ert_FdSetVisitor(&whiteListVisitor, closeFdWhiteListVisitor_)));
@@ -281,7 +281,7 @@ ert_closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet)
      * whitelisted range, to the end of the process file descriptor
      * range. */
 
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         1 == closeFdWhiteListVisitor_(
             &whiteListVisitor,
             Ert_FdRange(
@@ -290,9 +290,9 @@ ert_closeFdExceptWhiteList(const struct Ert_FdSet *aFdSet)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -317,7 +317,7 @@ closeFdBlackListVisitor_(
     {
         int valid;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (valid = ert_ownFdValid(fd),
              -1 == valid));
 
@@ -335,9 +335,9 @@ closeFdBlackListVisitor_(
 
     rc = done;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -349,19 +349,19 @@ ert_closeFdOnlyBlackList(const struct Ert_FdSet *aFdSet)
 
     struct FdBlackListVisitor_ blackListVisitor;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         getrlimit(RLIMIT_NOFILE, &blackListVisitor.mFdLimit));
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         -1 == ert_visitFdSet(
             aFdSet,
             Ert_FdSetVisitor(&blackListVisitor, closeFdBlackListVisitor_)));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -387,7 +387,7 @@ ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
     {
         struct rlimit noFile;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             getrlimit(RLIMIT_NOFILE, &noFile));
 
         int whiteList[aWhiteListLen + 1];
@@ -397,7 +397,7 @@ ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
         for (size_t ix = 0; aWhiteListLen > ix; ++ix)
         {
             whiteList[ix] = aWhiteList[ix];
-            ensure(whiteList[aWhiteListLen] > whiteList[ix]);
+            ert_ensure(whiteList[aWhiteListLen] > whiteList[ix]);
         }
 
         qsort(
@@ -421,7 +421,7 @@ ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
                     ++purgedFds;
 
                     int valid;
-                    ERROR_IF(
+                    ERT_ERROR_IF(
                         (valid = ert_ownFdValid(fd),
                          -1 == valid));
 
@@ -430,7 +430,7 @@ ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
                 }
                 else
                 {
-                    debug(0, "not closing fd %d", fd);
+                    ert_debug(0, "not closing fd %d", fd);
 
                     while (ERT_NUMBEROF(whiteList) > ++wx)
                     {
@@ -444,14 +444,14 @@ ert_closeFdDescriptors(const int *aWhiteList, size_t aWhiteListLen)
             ++fd;
         }
 
-        debug(0, "purged %u fds", purgedFds);
+        ert_debug(0, "purged %u fds", purgedFds);
     }
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -473,7 +473,7 @@ ert_closeFdOnExec(int aFd, unsigned aCloseOnExec)
 
     if (aCloseOnExec)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             aCloseOnExec != O_CLOEXEC,
             {
                 errno = EINVAL;
@@ -486,21 +486,21 @@ ert_closeFdOnExec(int aFd, unsigned aCloseOnExec)
     }
 
     int prevFlags;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (prevFlags = fcntl(aFd, F_GETFD),
          -1 == prevFlags));
 
     int nextFlags = (prevFlags & ~FD_CLOEXEC) | closeOnExec;
 
     if (prevFlags != nextFlags)
-        ERROR_IF(
+        ERT_ERROR_IF(
             fcntl(aFd, F_SETFD, nextFlags));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -518,7 +518,7 @@ ert_duplicateFd(int aFd, int aTargetFd)
     int fd = -1;
 
     int cloexec;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (cloexec = ert_ownFdCloseOnExec(aFd),
          -1 == cloexec));
 
@@ -526,7 +526,7 @@ ert_duplicateFd(int aFd, int aTargetFd)
     {
         long otherFd = 0;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (fd = fcntl(aFd, cloexec ? F_DUPFD_CLOEXEC : F_DUPFD, otherFd),
              -1 == fd));
     }
@@ -536,16 +536,16 @@ ert_duplicateFd(int aFd, int aTargetFd)
     }
     else
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             (fd = dup3(aFd, aTargetFd, cloexec ? O_CLOEXEC : 0),
              -1 == fd));
     }
 
     rc = fd;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -559,28 +559,28 @@ ert_nullifyFd(int aFd)
     int fd = -1;
 
     int closeExec;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (closeExec = ert_ownFdCloseOnExec(aFd),
          -1 == closeExec));
 
     if (closeExec)
         closeExec = O_CLOEXEC;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (fd = ert_openFd(devNullPath_, O_WRONLY | closeExec, 0),
          -1 == fd));
 
     if (fd == aFd)
         fd = -1;
     else
-        ERROR_IF(
+        ERT_ERROR_IF(
             aFd != ert_duplicateFd(fd, aFd));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd = ert_closeFd(fd);
     });
@@ -598,7 +598,7 @@ ert_nonBlockingFd(int aFd, unsigned aNonBlocking)
 
     if (aNonBlocking)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             aNonBlocking != O_NONBLOCK,
             {
                 errno = EINVAL;
@@ -608,7 +608,7 @@ ert_nonBlockingFd(int aFd, unsigned aNonBlocking)
     }
 
     int prevStatusFlags;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (prevStatusFlags = fcntl(aFd, F_GETFL),
          -1 == prevStatusFlags));
 
@@ -619,7 +619,7 @@ ert_nonBlockingFd(int aFd, unsigned aNonBlocking)
         if (nonBlocking)
         {
             int descriptorFlags;
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (descriptorFlags = fcntl(aFd, F_GETFD),
                  -1 == descriptorFlags));
 
@@ -628,22 +628,22 @@ ert_nonBlockingFd(int aFd, unsigned aNonBlocking)
              * that are not going to be shared. This is not a water-tight
              * defense, but seeks to prevent some careless mistakes. */
 
-            ERROR_UNLESS(
+            ERT_ERROR_UNLESS(
                 descriptorFlags & FD_CLOEXEC,
                 {
                     errno = EBADF;
                 });
         }
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             fcntl(aFd, F_SETFL, nextStatusFlags));
     }
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -655,15 +655,15 @@ ert_ownFdNonBlocking(int aFd)
     int rc = -1;
 
     int flags;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (flags = fcntl(aFd, F_GETFL),
          -1 == flags));
 
     rc = flags & O_NONBLOCK ? 1 : 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -675,15 +675,15 @@ ert_ownFdCloseOnExec(int aFd)
     int rc = -1;
 
     int flags;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (flags = fcntl(aFd, F_GETFD),
          -1 == flags));
 
     rc = flags & FD_CLOEXEC ? 1 : 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -696,15 +696,15 @@ ert_ownFdFlags(int aFd)
 
     int flags = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (flags = fcntl(aFd, F_GETFL),
          -1 == flags));
 
     rc = flags;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -717,14 +717,14 @@ ert_ownFdValid(int aFd)
 
     int valid = 1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (-1 == ert_ownFdFlags(aFd) && (valid = 0, EBADF != errno)));
 
     rc = valid;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -768,7 +768,7 @@ ert_spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags)
         ssize_t bytes;
 
         do
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (bytes = read(aSrcFd, buffer, len),
                  -1 == bytes && EINTR != errno));
         while (-1 == bytes);
@@ -783,7 +783,7 @@ ert_spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags)
                 ssize_t wrote;
 
                 do
-                    ERROR_IF(
+                    ERT_ERROR_IF(
                         (wrote = write(aDstFd, bufptr, bufend - bufptr),
                          -1 == wrote && EINTR != errno));
                 while (-1 == wrote);
@@ -795,7 +795,7 @@ ert_spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags)
         rc = bytes;
     }
 
-Finally:
+Ert_Finally:
 
     return rc;
 }
@@ -835,7 +835,7 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Ert_Duration *aTimeout)
 
             int events;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (events = poll(pollfd, ERT_NUMBEROF(pollfd), 0),
                  -1 == events && EINTR != errno));
 
@@ -869,7 +869,7 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Ert_Duration *aTimeout)
         }
 
         int events;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (events = poll(pollfd, ERT_NUMBEROF(pollfd), timeout_ms),
              -1 == events && EINTR != errno));
 
@@ -891,9 +891,9 @@ waitFdReady_(int aFd, unsigned aPollMask, const struct Ert_Duration *aTimeout)
 
     rc = !! (pollfd[0].revents & aPollMask);
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -933,7 +933,7 @@ waitFdReadyDeadline_(
             .mPollMask = aPollMask,
         };
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (ready = ert_checkDeadlineExpired(
                 aDeadline,
                 Ert_DeadlinePollMethod(
@@ -962,9 +962,9 @@ waitFdReadyDeadline_(
 
     rc = ready;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -998,7 +998,7 @@ readFdDeadline_(int aFd,
         {
             int ready = -1;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (ready = ert_checkDeadlineExpired(
                     aDeadline,
                     Ert_DeadlinePollMethod(
@@ -1028,7 +1028,7 @@ readFdDeadline_(int aFd,
 
         ssize_t len;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (len = read(aFd, bufPtr, bufEnd - bufPtr),
              -1 == len && (EINTR       != errno &&
                            EWOULDBLOCK != errno &&
@@ -1045,7 +1045,7 @@ readFdDeadline_(int aFd,
             if (EWOULDBLOCK == errno || EAGAIN == errno)
             {
                 int rdReady;
-                ERROR_IF(
+                ERT_ERROR_IF(
                     (rdReady = ert_waitFdReadReadyDeadline(aFd, aDeadline),
                      -1 == rdReady && bufPtr == aBuf));
 
@@ -1061,9 +1061,9 @@ readFdDeadline_(int aFd,
 
     rc = bufPtr - aBuf;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1092,7 +1092,7 @@ writeFdDeadline_(int aFd,
         {
             int ready = -1;
 
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (ready = ert_checkDeadlineExpired(
                     aDeadline,
                     Ert_DeadlinePollMethod(
@@ -1122,7 +1122,7 @@ writeFdDeadline_(int aFd,
 
         ssize_t len;
 
-        ERROR_IF(
+        ERT_ERROR_IF(
             (len = aWriter(aFd, bufPtr, bufEnd - bufPtr),
              -1 == len && (EINTR       != errno &&
                            EWOULDBLOCK != errno &&
@@ -1139,7 +1139,7 @@ writeFdDeadline_(int aFd,
             if (EWOULDBLOCK == errno || EAGAIN == errno)
             {
                 int wrReady;
-                ERROR_IF(
+                ERT_ERROR_IF(
                     (wrReady = ert_waitFdWriteReadyDeadline(aFd, aDeadline),
                      -1 == wrReady && bufPtr == aBuf));
 
@@ -1155,9 +1155,9 @@ writeFdDeadline_(int aFd,
 
     rc = bufPtr - aBuf;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1183,16 +1183,16 @@ readFd_(int aFd,
 
     if (aTimeout)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_createDeadline(&deadline_, aTimeout));
         deadline = &deadline_;
     }
 
     rc = readFdDeadline_(aFd, aBuf, aLen, deadline, aReader);
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         deadline = ert_closeDeadline(deadline);
     });
@@ -1227,16 +1227,16 @@ writeFd_(int aFd,
 
     if (aTimeout)
     {
-        ERROR_IF(
+        ERT_ERROR_IF(
             ert_createDeadline(&deadline_, aTimeout));
         deadline = &deadline_;
     }
 
     rc = writeFdDeadline_(aFd, aBuf, aLen, deadline, aWriter);
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         deadline = ert_closeDeadline(deadline);
     });
@@ -1280,7 +1280,7 @@ ert_readFdFully(int aFd, char **aBuf, size_t aBufSize)
                 aBufSize ? aBufSize : ert_fetchSystemPageSize();
 
             char *ptr;
-            ERROR_UNLESS(
+            ERT_ERROR_UNLESS(
                 (ptr = realloc(buf, len)));
 
             end = ptr + (end - buf);
@@ -1289,7 +1289,7 @@ ert_readFdFully(int aFd, char **aBuf, size_t aBufSize)
         }
 
         ssize_t rdlen;
-        ERROR_IF(
+        ERT_ERROR_IF(
             (rdlen = ert_readFd(aFd, end, avail, 0),
              -1 == rdlen));
         if ( ! rdlen)
@@ -1307,9 +1307,9 @@ ert_readFdFully(int aFd, char **aBuf, size_t aBufSize)
         buf   = 0;
     }
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         free(buf);
     });
@@ -1327,7 +1327,7 @@ ert_lseekFd(int aFd, off_t aOffset, struct Ert_WhenceType aWhenceType)
     switch (aWhenceType.mType)
     {
     default:
-        ensure(0);
+        ert_ensure(0);
 
     case Ert_WhenceTypeStart_:
         ert_whenceType = SEEK_SET;
@@ -1344,9 +1344,9 @@ ert_lseekFd(int aFd, off_t aOffset, struct Ert_WhenceType aWhenceType)
 
     rc = lseek(aFd, aOffset, ert_whenceType);
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1361,7 +1361,7 @@ ert_lockFd(int aFd, struct Ert_LockType aLockType)
     switch (aLockType.mType)
     {
     default:
-        ensure(0);
+        ert_ensure(0);
 
     case Ert_LockTypeWrite_:
         ert_lockType = LOCK_EX;
@@ -1374,16 +1374,16 @@ ert_lockFd(int aFd, struct Ert_LockType aLockType)
 
     int err;
     do
-        ERROR_IF(
+        ERT_ERROR_IF(
             (err = flock(aFd, ert_lockType),
              err && EINTR != errno));
     while (err);
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1394,14 +1394,14 @@ ert_unlockFd(int aFd)
 {
     int rc = -1;
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         flock(aFd, LOCK_UN));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1417,7 +1417,7 @@ ert_lockFdRegion(
     switch (aLockType.mType)
     {
     default:
-        ensure(0);
+        ert_ensure(0);
 
     case Ert_LockTypeWrite_:
         ert_lockType = F_WRLCK;
@@ -1439,16 +1439,16 @@ ert_lockFdRegion(
 
     int err;
     do
-        ERROR_IF(
+        ERT_ERROR_IF(
             (err = fcntl(aFd, F_SETLKW, &lockRegion),
              -1 == err && EINTR != errno));
     while (err);
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1467,14 +1467,14 @@ ert_unlockFdRegion(int aFd, off_t aPos, off_t aLen)
         .l_len    = aLen,
     };
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         fcntl(aFd, F_SETLK, &lockRegion));
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
@@ -1495,13 +1495,13 @@ ert_ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
         .l_len    = aLen,
     };
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         fcntl(aFd, F_GETLK, &lockRegion));
 
     switch (lockRegion.l_type)
     {
     default:
-        ERROR_IF(
+        ERT_ERROR_IF(
             true,
             {
                 errno = EIO;
@@ -1523,9 +1523,9 @@ ert_ownFdRegionLocked(int aFd, off_t aPos, off_t aLen)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc ? Ert_LockTypeError : ert_lockType;
 }

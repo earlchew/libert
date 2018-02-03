@@ -51,15 +51,15 @@ fetchSystemIncarnation_(void)
 
     static const char procBootId[] = "/proc/sys/kernel/random/boot_id";
 
-    ERROR_IF(
+    ERT_ERROR_IF(
         (fd = ert_openFd(procBootId, O_RDONLY, 0),
          -1 == fd));
 
     ssize_t buflen;
-    ERROR_IF(
+    ERT_ERROR_IF(
         (buflen = ert_readFdFully(fd, &buf, 64),
          -1 == buflen));
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         buflen,
         {
             errno = EINVAL;
@@ -72,7 +72,7 @@ fetchSystemIncarnation_(void)
         end = buf + buflen;
 
     char *bootIncarnation;
-    ERROR_UNLESS(
+    ERT_ERROR_UNLESS(
         (bootIncarnation = malloc(buflen + 1)));
 
     memcpy(bootIncarnation, buf, buflen);
@@ -82,9 +82,9 @@ fetchSystemIncarnation_(void)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY
+    ERT_FINALLY
     ({
         fd = ert_closeFd(fd);
 
@@ -98,10 +98,10 @@ Finally:
 const char *
 ert_fetchSystemIncarnation(void)
 {
-    ABORT_IF(
+    ERT_ABORT_IF(
         (errno = pthread_once(&bootIncarnationOnce_, fetchSystemIncarnation_)),
         {
-            terminate(
+            ert_terminate(
                 errno,
                 "Unable to fetch system incarnation");
         });
@@ -118,9 +118,9 @@ ert_fetchSystemPageSize(void)
 {
     long pageSize = sysconf(_SC_PAGESIZE);
 
-    ABORT_IF(-1 == pageSize || ! pageSize,
+    ERT_ABORT_IF(-1 == pageSize || ! pageSize,
         {
-            terminate(
+            ert_terminate(
                 pageSize ? errno : 0,
                 "Unable to fetch system page size");
         });

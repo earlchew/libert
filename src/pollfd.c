@@ -176,7 +176,7 @@ ert_runPollFdLoop(
         }
 
         if (self->mTimerActions.mSize != chosen)
-            debug(1, "choose %s deadline", self->mTimerActions.mNames[chosen]);
+            ert_debug(1, "choose %s deadline", self->mTimerActions.mNames[chosen]);
 
         int timeout_ms;
 
@@ -193,11 +193,11 @@ ert_runPollFdLoop(
                 timeout_ms = INT_MAX;
         }
 
-        debug(1, "poll wait %dms", timeout_ms);
+        ert_debug(1, "poll wait %dms", timeout_ms);
 
         {
             int events;
-            ERROR_IF(
+            ERT_ERROR_IF(
                 (events = poll(
                      self->mPoll, self->mFdActions.mSize, timeout_ms),
                  -1 == events && EINTR != errno));
@@ -214,7 +214,7 @@ ert_runPollFdLoop(
         ({
             while (1)
             {
-                ERROR_IF(
+                ERT_ERROR_IF(
                     (events = poll(
                         self->mPoll, self->mFdActions.mSize, 0),
                      -1 == events && EINTR != errno));
@@ -235,14 +235,14 @@ ert_runPollFdLoop(
              * no matter what the caller has subscribed for. Only pay
              * attention to what was subscribed. */
 
-            debug(1, "polled event count %d", events);
+            ert_debug(1, "polled event count %d", events);
 
             for (size_t ix = 0; self->mFdActions.mSize > ix; ++ix)
             {
                 struct Ert_PollEventText pollEventText;
                 struct Ert_PollEventText pollRcvdEventText;
 
-                debug(
+                ert_debug(
                     1,
                     "poll %s %d (%s) (%s)",
                     self->mFdActions.mNames[ix],
@@ -256,17 +256,17 @@ ert_runPollFdLoop(
 
                 if (self->mPoll[ix].revents)
                 {
-                    ensure(rc);
+                    ert_ensure(rc);
 
                     ++eventCount;
 
                     if ( ! ert_ownPollFdCallbackMethodNil(
                              self->mFdActions.mActions[ix].mAction))
-                        ERROR_IF(
+                        ERT_ERROR_IF(
                             ert_callPollFdCallbackMethod(
                                 self->mFdActions.mActions[ix].mAction, &polltm),
                             {
-                                warn(
+                                ert_warn(
                                     errno,
                                     "Error dispatching %s",
                                     self->mFdActions.mNames[ix]);
@@ -277,7 +277,7 @@ ert_runPollFdLoop(
             /* Ensure that the interpretation of the poll events is being
              * correctly handled, to avoid a busy-wait poll loop. */
 
-            ensure(eventCount);
+            ert_ensure(eventCount);
         }
 
         /* With the file descriptors processed, any timeouts have had
@@ -303,18 +303,18 @@ ert_runPollFdLoop(
                     (void) ert_lapTimeSince(
                         &timerAction->mSince, timerAction->mPeriod, &polltm);
 
-                    debug(
+                    ert_debug(
                         1,
                         "expire %s timer with period %" PRIs_Ert_MilliSeconds,
                         self->mTimerActions.mNames[ix],
                         FMTs_Ert_MilliSeconds(
                             ERT_MSECS(timerAction->mPeriod.duration)));
 
-                    ERROR_IF(
+                    ERT_ERROR_IF(
                         ert_callPollFdCallbackMethod(
                             timerAction->mAction, &polltm),
                         {
-                            warn(errno,
+                            ert_warn(errno,
                                  "Error dispatching timer %s",
                                  self->mTimerActions.mNames[ix]);
                         });
@@ -325,9 +325,9 @@ ert_runPollFdLoop(
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }

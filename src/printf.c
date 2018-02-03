@@ -237,7 +237,7 @@ printf_method_call_(
 
     const struct Ert_PrintfMethod *self = self_;
 
-    ensure(self->mType == &ert_printfMethodType_);
+    ert_ensure(self->mType == &ert_printfMethodType_);
 
     return ert_callPrintfMethod_(self->mMethod, aFile);
 }
@@ -268,7 +268,7 @@ Ert_Printf_init(struct Ert_PrintfModule *self)
     {
         if ( ! moduleInitPrintf_)
         {
-            ERROR_IF(
+            ERT_ERROR_IF(
                 register_printf_specifier(
                     PRINTF_SPEC_METHOD,
                     printf_method_call_,
@@ -282,9 +282,9 @@ Ert_Printf_init(struct Ert_PrintfModule *self)
 
     rc = 0;
 
-Finally:
+Ert_Finally:
 
-    FINALLY({});
+    ERT_FINALLY({});
 
     return rc;
 }
