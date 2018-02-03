@@ -28,7 +28,6 @@
 */
 
 #include "ert/error.h"
-#include "ert/options.h"
 
 #include <stdlib.h>
 
