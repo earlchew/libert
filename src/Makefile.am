@@ -36,6 +36,8 @@ AM_CFLAGS     = $(TEST_CFLAGS)
 AM_CXXFLAGS   = $(TEST_CXXFLAGS)
 AM_LDFLAGS    =
 
+TESTS_ENVIRONMENT += $(CURDIR)/valgrind.sh
+
 OPT_FLAGS          = -O2
 COMMON_FLAGS       = $(OPT_FLAGS)
 COMMON_FLAGS      += -D_GNU_SOURCE -Wall -Werror
@@ -50,11 +52,11 @@ TEST_LIBS          = libert.a libgoogletest.la -ldl -lpthread -lrt
 TEST_FLAGS         = -DUNITTEST -I ../googletest/include
 TEST_CFLAGS        = $(TEST_FLAGS) $(COMMON_CFLAGS)
 TEST_CXXFLAGS      = $(TEST_FLAGS) $(COMMON_CXXFLAGS)
-TESTS              = $(check_PROGRAMS) $(check_SCRIPTS)
+TESTS              = $(check_PROGRAMS)
 
 check_PROGRAMS      = $(libert_a_TESTS)
 noinst_PROGRAMS     =
-noinst_SCRIPTS      = $(check_SCRIPTS)
+noinst_SCRIPTS      =
 noinst_LTLIBRARIES  = libgoogletest.la
 lib_LIBRARIES       = libert.a
 
@@ -73,7 +75,7 @@ libgoogletest_la_SOURCES  = gtest-all.cc
 libgoogletest_la_CPPFLAGS = -I ../googletest
 
 programs:	all
-	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS) $(check_SCRIPTS)
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 
 clean-local::
 	rm -f *.map
