@@ -159,6 +159,24 @@ temporaryFileCreate_(const char *aDirName)
         (dirFd = ert_openFd(aDirName, O_RDONLY | O_CLOEXEC, 0),
          -1 == dirFd));
 
+    /* To be safe, ensure that the temporary directory is not world
+     * writable, or else is either owned by the effective user or
+     * is owned by root and has its sticky bit set. */
+
+    struct stat dirStat;
+    ERT_ERROR_IF(
+        fstat(dirFd, &dirStat));
+
+    if (dirStat.st_mode & S_IWOTH)
+    {
+        ERT_ERROR_UNLESS(
+            0 == dirStat.st_uid && (dirStat.st_mode & S_ISVTX) ||
+            geteuid() == dirStat.st_uid,
+            {
+                errno = EACCES;
+            });
+    }
+
     uint32_t rnd =
         ert_ownProcessId().mPid ^ ERT_MSECS(ert_monotonicTime().monotonic).ms;
 
@@ -471,11 +489,12 @@ Ert_Finally:
 
 int
 ert_temporaryFile(
-    struct Ert_File *self)
+    struct Ert_File *self,
+    const char      *aDirPath)
 {
     int rc = -1;
 
-    const char *tmpDir = getenv("TMPDIR");
+    const char *tmpDir = aDirPath ? aDirPath : getenv("TMPDIR");
 
 #ifdef P_tmpdir
     if ( ! tmpDir)

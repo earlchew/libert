@@ -30,15 +30,17 @@
 #include "ert/file.h"
 #include "ert/process.h"
 #include "ert/fdset.h"
+#include "ert/env.h"
 
 #include "gtest/gtest.h"
 
-TEST(FileTest, TemporaryFile)
+static void
+testTemporaryFile(const char *aDirPath)
 {
     struct Ert_File  file_;
     struct Ert_File *file = 0;
 
-    ASSERT_EQ(0, ert_temporaryFile(&file_));
+    ASSERT_EQ(0, ert_temporaryFile(&file_, aDirPath));
     file = &file_;
 
     EXPECT_EQ(1, ert_writeFile(file, "A", 1, 0));
@@ -51,6 +53,17 @@ TEST(FileTest, TemporaryFile)
     EXPECT_EQ('A', buf[0]);
 
     file = ert_closeFile(file);
+}
+
+TEST(FileTest, TemporaryFile)
+{
+    /* Create the temporary file using the system defaults */
+
+    testTemporaryFile(0);
+
+    /* Create the temporary file in the current directory */
+
+    testTemporaryFile(".");
 }
 
 struct Ert_LockType
@@ -121,7 +134,7 @@ TEST(FileTest, LockFileRegion)
 
         gErtOptions_.mTest = Ert_TestLevelRace;
 
-        ASSERT_EQ(0, ert_temporaryFile(&file_));
+        ASSERT_EQ(0, ert_temporaryFile(&file_, 0));
         file = &file_;
 
         gErtOptions_.mTest = optTest;

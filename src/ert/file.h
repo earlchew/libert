@@ -84,7 +84,8 @@ struct Ert_File
 /* -------------------------------------------------------------------------- */
 ERT_CHECKED int
 ert_temporaryFile(
-    struct Ert_File *self);
+    struct Ert_File *self,
+    const char      *aDirPath);
 
 ERT_CHECKED int
 ert_createFile(

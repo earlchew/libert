@@ -1251,7 +1251,7 @@ createProcessLock_(
     self->mLock = 0;
 
     ERT_ERROR_IF(
-        ert_temporaryFile(&self->mFile_));
+        ert_temporaryFile(&self->mFile_, 0));
     self->mFile = &self->mFile_;
 
     rc = 0;
