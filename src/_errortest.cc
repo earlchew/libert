@@ -225,4 +225,36 @@ TEST_F(ErrorTest, FinallyIf)
     ert_restartErrorFrameSequence();
 }
 
+static int
+testDeeplyNested(int aLevel)
+{
+    int rc = -1;
+
+    if (aLevel)
+        ERT_ERROR_IF(testDeeplyNested(aLevel-1));
+    else
+    {
+        ERT_ERROR_IF(
+            -1,
+            {
+                errno = EACCES;
+            });
+    }
+
+    rc = 0;
+
+Ert_Finally:
+
+    return rc;
+}
+
+TEST_F(ErrorTest, DeeplyNested)
+{
+    long pageSize = sysconf(_SC_PAGESIZE);
+
+    ert_restartErrorFrameSequence();
+    testDeeplyNested(pageSize);
+    ert_logErrorFrameSequence();
+}
+
 #include "../googletest/src/gtest_main.cc"
