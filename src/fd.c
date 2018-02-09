@@ -31,6 +31,7 @@
 #include "ert/deadline.h"
 #include "ert/fdset.h"
 #include "ert/system.h"
+
 #include "eintr_.h"
 
 #include <stdlib.h>
@@ -796,6 +797,8 @@ ert_spliceFd(int aSrcFd, int aDstFd, size_t aLen, unsigned aFlags)
     }
 
 Ert_Finally:
+
+    ERT_FINALLY({});
 
     return rc;
 }
