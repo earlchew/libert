@@ -49,6 +49,24 @@ struct Ert_ErrorModule
 };
 
 /* -------------------------------------------------------------------------- */
+/* Light weight assertion
+ *
+ * Some <assert.h> implementations depend on malloc, whose wrapper in turn
+ * references ert/error.h causing infinite recursion.
+ */
+
+#define ert_Error_assert_(aPredicate)                           \
+    do                                                          \
+    {                                                           \
+        if (!(aPredicate))                                      \
+            ert_errorAssert_(# aPredicate, __FILE__, __LINE__); \
+    }                                                           \
+    while (0)
+
+void
+ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
+
+/* -------------------------------------------------------------------------- */
 /* Finally Unwinding
  *
  * Use ERT_ERROR_IF() and ERROR_UNLESS() to wrap calls to functions
@@ -73,8 +91,8 @@ struct Ert_ErrorModule
         struct Ert_ErrorFrame frame_ =                   \
             ERT_ERRORFRAME_INIT( (Message_) );           \
                                                          \
-        /* Stack unwinding restarts if a new frame       \
-         * sequence is started. */                       \
+        /* Activation of a new error frame implies       \
+         * a new stack unwinding sequence. */            \
                                                          \
         ert_restartErrorFrameSequence();                 \
                                                          \
@@ -86,6 +104,19 @@ struct Ert_ErrorModule
             ert_addErrorFrame(&frame_, errno);           \
             goto Ert_Error_;                             \
         }                                                \
+                                                         \
+        /* Stack unwinding restarts if the               \
+         * function completes without error.             \
+         *                                               \
+         * Minor optimisation, defer restarting          \
+         * the error frame sequence until the finally    \
+         * block to avoid gratuitous restarts when one   \
+         * error block activation and deactivation,      \
+         * is followed by another error block            \
+         * activation and deactivation, etc, until       \
+         * the finally block is activated. */            \
+                                                         \
+        /* ert_restartErrorFrameSequence(); */           \
     }                                                    \
     while (0)
 
@@ -110,8 +141,11 @@ struct Ert_ErrorModule
     Action_, Actor_, Sense_, Predicate_, Message_, ...)         \
     do                                                          \
     {                                                           \
-        /* Stack unwinding restarts if a new frame              \
-         * sequence is started. */                              \
+        /* Allow program termination to be triggered both       \
+         * inside and outside ERT_FINALLY() blocks.             \
+         *                                                      \
+         * Mark the beginning of new frame sequences should     \
+         * program termination be triggered here. */            \
                                                                 \
         struct Ert_ErrorFrameSequence frameSequence_ =          \
             ert_pushErrorFrameSequence();                       \
@@ -150,25 +184,42 @@ struct Ert_ErrorModule
     while (0)
 
 /* -------------------------------------------------------------------------- */
-#define ERT_FINALLY(...)  \
-    do                    \
-    {                     \
-        int err_ = errno; \
-        __VA_ARGS__;      \
-        errno = err_;     \
-    } while (0)
+/* Finally Block
+ *
+ * Split definitions across ERT_FINALLY and Ert_Finally so that the compiler
+ * will produce an error if the components of the idiom are not used
+ * as a pair:
+ *
+ * Ert_Finally:
+ *
+ *     ERT_FINALLY({ ... });
+ */
 
 #define Ert_Finally                             \
-        /* Stack unwinding restarts if the      \
-         * function completes without error. */ \
-                                                \
-        ert_restartErrorFrameSequence();        \
-                                                \
         int ert_finally_                        \
         __attribute__((__unused__));            \
                                                 \
+        /* Clean up any sequence of error       \
+         * block activation and deactivation    \
+         * pairs. */                            \
+                                                \
+        ert_restartErrorFrameSequence();        \
+                                                \
         goto Ert_Error_;                        \
-    Ert_Error_
+                                                \
+    Ert_Error_:                                 \
+                                                \
+        do                                      \
+        {                                       \
+            switch (0)                          \
+            {                                   \
+            default
+
+#define ERT_FINALLY(...)                        \
+                                                \
+                ERT_SCOPED_ERRNO(__VA_ARGS__);  \
+            }                                   \
+        } while (0)
 
 #define ert_finally_warn_if_(Sense_, Predicate_, Self_, PrintfMethod_, ...)   \
     do                                                                        \
@@ -191,6 +242,18 @@ struct Ert_ErrorModule
 #define ert_finally_warn_unless(Predicate_, Self_, PrintfMethod_, ...)   \
     ert_finally_warn_if_(                                                \
         !, Predicate_, Self_, PrintfMethod_, ## __VA_ARGS__)
+
+/* -------------------------------------------------------------------------- */
+#define ERT_SCOPED_ERRNO(...)                  \
+    do                                         \
+    {                                          \
+        int ert_errno_ = errno;                \
+                                               \
+        /* Guard against inadvertent breaks */ \
+        do { __VA_ARGS__; } while (0);         \
+                                               \
+        errno = ert_errno_;                    \
+    } while (0)
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ErrorUnwindFrame_

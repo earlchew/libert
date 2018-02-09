@@ -33,6 +33,8 @@
 #include "ert/process.h"
 #include "ert/queue.h"
 
+#include "eintr_.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -41,6 +43,155 @@
 #include <sys/mman.h>
 
 #include <valgrind/valgrind.h>
+
+/* -------------------------------------------------------------------------- */
+/* Unwinding Error Frame
+ *
+ * Error frames are used to provide context when a program terminates.
+ * The approach approximates exception stack unwinding without actual
+ * support for exception handling. Results depend on the implementation
+ * using ERROR_IF and ABORT_IF idioms.
+ *
+ * Rather than tracking stack frames in the program call stack, error
+ * frames are activated on the error frame stack only as errors are
+ * encountered in the program. Generally this means that error frames
+ * are pushed onto the error frame stack as errors propagate back up
+ * the program call stack.
+ *
+ * Each ERROR_IF is modelled as an Error-Block. The life cycle of
+ * an Error-Block comprises: activation (E), successful completion (S),
+ * and failed completion (F).
+ *
+ * Each ABORT_IF is modelled as an Abort-Block. The life ccle of
+ * an Abort-Block comprises: activation (A), successful completion (C),
+ * and program termination (T). Only the latter is important for unwinding
+ * the stack and logging program context.
+ *
+ * When program termination occurs, the error frame stack comprises
+ * the following important elements:
+ *
+ * Error Frame Stack:    ... T F F F
+ * Error Frame Index:    ...   2 3 4
+ * Error Frame Sequence: ... 2
+ * Program Stack Depth:  ... 4 7 6 5
+ *
+ * Activation of the Abort-Block is shown at program stack depth 4, and
+ * the most important thing to note is that program termination T is
+ * triggered by Error-Block failure F at program stack depth 5 (ie 4+1).
+ * Once program termination is triggered, the sequence of error frames F
+ * at successive program stack depths, and error frame indices, provides
+ * context for the program termination.
+ *
+ * Notice that the base error frame index matches the error frame sequence
+ * of the Abort-Block termination T. The error frames F are pushed on to
+ * the error frame stack (ie 2, 3, 4) in reverse order of invocation as
+ * shown by the program stack depth (ie 7, 6, 5).
+ *
+ * Any particular Error-Block failure does not necessarily lead to
+ * program termination:
+ *
+ * Error Frame Stack:    A F F T ...
+ * Error Frame Index:      0 1   ...
+ * Error Frame Sequence: 0     2 ...
+ * Program Stack Depth:  0 8 2 4 ...
+ *
+ * The above also illustrates how error frames F are pushed onto the
+ * error stack as they are created. This can lead to gaps because
+ * not all Error-Block activations E end in failure. A sequence of
+ * Error-Block activations can end in any mixture of success and failure.
+ *
+ * Activation of each new Abort-Block A advances the error frame sequence
+ * by using the current error frame index. The error frame sequence retreats
+ * to its previous value if the Abort-Block completes without termination.
+ *
+ * Advancing the error frame sequence in this way is important because
+ * the activation of the Abort-Block might be preceded by a candidate
+ * error frame sequence:
+ *
+ * Error Frame Stack:    A F F F A ...
+ * Error Frame Index:      0 1 2   ...
+ * Error Frame Sequence: 0       3 ...
+ * Program Stack Depth:  0 3 2 1 1 ...
+ *
+ * This example shows activation A at program stack depth 1. It is quite
+ * possible that this Abort-Block completes successfully, but execution
+ * continues and delivers the error frame sequence to the enclosing
+ * Abort-Block at program stack depth 0.
+ *
+ * This scenario can occur because:
+ *
+ *  o Abort-Block activations can occur any, in particular in Finally-Blocks
+ *  o Error-Block activations are not permitted in Finally-Blocks
+ *
+ * It is because Abort-Block activations are allowed in Finally-Blocks
+ * that they cannot trigger restarts of the candidate sequence of error
+ * frames. The Finally-Block is activated even after an Error-Block failure
+ * and restarting the candidate sequence would lose that record.
+ *
+ * Restarting of the candidate sequence of error frames occurs at
+ * the following times:
+ *
+ *  o Immediately before activation of a new Error-Block E
+ *  o Immediately before the end of a Finally-Block
+ *
+ * The former is to accommodate this scenario:
+ *
+ *    int e()
+ *    {
+ *        ERROR_IF(1, { errno = EPERM; });
+ *
+ *    Ert_Finally:
+ *        ERT_FINALLY({});
+ *        return 0;
+ *    }
+ *
+ *    int f()
+ *    {
+ *        ERROR_IF(e() && EACCES == errno);
+ *        ERROR_IF(1);  // Error triggered here
+ *        // Unwinding should not include e()
+ *
+ *    Ert_Finally:
+ *        ERT_FINALLY({});
+ *        return 0;
+ *    }
+ *
+ * The latter is to accommodate this scenario:
+ *
+ *    int e()
+ *    {
+ *        ERROR_IF(1, { errno = EPERM; }); // Error frame pushed here
+ *
+ *    Ert_Finally:
+ *        ERT_FINALLY({});
+ *        return 0;
+ *    }
+ *
+ *    int f()
+ *    {
+ *        ERROR_IF(e() && EACCES == errno);
+ *        // Error not triggered due because EPERM == errno
+ *
+ *    Ert_Finally:
+ *        ERT_FINALLY({});
+ *        return 0;
+ *    }
+ *
+ *    int g()
+ *    {
+ *        return -1;
+ *    }
+ *
+ *    int h()
+ *    {
+ *        ERROR_IF(f() || g()); // Error triggered here by g()
+ *        // Unwinding should not include f()
+ *
+ *    Ert_Finally:
+ *        ERT_FINALLY({});
+ *        return 0;
+ *    }
+ */
 
 /* -------------------------------------------------------------------------- */
 static unsigned moduleInit_;
@@ -63,12 +214,14 @@ struct Ert_ErrorFrameChunk
     struct Ert_ErrorFrame  mFrame_[];
 };
 
-static struct
+static struct Ert_ErrorFrameStackPool
 {
     /* Carefully crafted so that new threads will see an initialised
      * instance that can be used immediately. In particular, note that
-     * threads cannot be created from signal context, so ErrorFrameStackThread
-     * must be zero. */
+     * threads cannot be created from signal context, so
+     * Ert_ErrorFrameStackThread must be zero. */
+
+    struct Ert_ErrorFrameChunk *mAlloc[0 == Ert_ErrorFrameStackThread];
 
     struct
     {
@@ -157,7 +310,7 @@ ERT_EARLY_INITIALISER(
 
 /* -------------------------------------------------------------------------- */
 static struct Ert_ErrorFrameChunk *
-createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
+createErrorFrameChunk_(void)
 {
     struct Ert_ErrorFrameChunk *self = 0;
 
@@ -202,11 +355,12 @@ createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
     self->mBegin = &self->mFrame_[0];
     self->mEnd   = &self->mFrame_[numFrames];
 
-    if (aParent)
-    {
-        self->mChunkList    = aParent->mChunkList;
-        aParent->mChunkList = self;
-    }
+    if (errorStack_.mAlloc[0])
+        errorStack_.mAlloc[0]->mChunkList = self;
+    else
+        setErrorKey_(self);
+
+    errorStack_.mAlloc[0] = self;
 
     return self;
 }
@@ -214,23 +368,19 @@ createErrorFrameChunk_(struct Ert_ErrorFrameChunk *aParent)
 static void
 initErrorFrame_(void)
 {
-    ert_ensure(0 == Ert_ErrorFrameStackThread);
+    ert_Error_assert_(0 == Ert_ErrorFrameStackThread);
 
     if ( ! errorStack_.mStack)
     {
-        struct Ert_ErrorFrameChunk *parentChunk = 0;
-
         for (unsigned ix = ERT_NUMBEROF(errorStack_.mStack_); ix--; )
         {
             errorStack_.mStack = &errorStack_.mStack_[ix];
 
             TAILQ_INIT(&errorStack_.mStack->mHead);
 
-            struct Ert_ErrorFrameChunk *chunk =
-                createErrorFrameChunk_(parentChunk);
+            struct Ert_ErrorFrameChunk *chunk = createErrorFrameChunk_();
 
-            if ( ! parentChunk)
-                parentChunk = chunk;
+            TAILQ_INSERT_TAIL(&errorStack_.mStack->mHead, chunk, mStackList);
 
             errorStack_.mStack->mLevel = (struct Ert_ErrorFrameIter)
             {
@@ -241,17 +391,11 @@ initErrorFrame_(void)
 
             struct Ert_ErrorFrameIter *iter = &errorStack_.mStack->mLevel;
 
-            TAILQ_INSERT_TAIL(&errorStack_.mStack->mHead, chunk, mStackList);
-
             iter->mChunk = chunk;
             iter->mFrame = chunk->mBegin;
 
             errorStack_.mStack->mSequence = *iter;
         }
-
-        ert_ensure(parentChunk);
-
-        setErrorKey_(parentChunk);
     }
 }
 
@@ -265,8 +409,7 @@ ert_addErrorFrame(const struct Ert_ErrorFrame *aFrame, int aErrno)
 
     if (iter->mFrame == iter->mChunk->mEnd)
     {
-        struct Ert_ErrorFrameChunk *chunk =
-            createErrorFrameChunk_(iter->mChunk);
+        struct Ert_ErrorFrameChunk *chunk = createErrorFrameChunk_();
 
         TAILQ_INSERT_TAIL(&errorStack_.mStack->mHead, chunk, mStackList);
 
@@ -372,7 +515,7 @@ ert_ownErrorFrame(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
                            Ert_ErrorFrameChunkList,
                            mStackList);
 
-            ert_ensure(prevChunk);
+            ert_Error_assert_(prevChunk);
 
             begin = prevChunk->mBegin;
             end   = prevChunk->mEnd;
@@ -424,7 +567,7 @@ ert_pushErrorUnwindFrame_(void)
 void
 ert_popErrorUnwindFrame_(struct Ert_ErrorUnwindFrame_ *self)
 {
-    ert_ensure(self->mActive);
+    ert_Error_assert_(self->mActive);
 
     --self->mActive;
 }
@@ -484,7 +627,7 @@ findErrTextLength_(int aErrCode)
         }
 
         textSize = 2 * textCapacity;
-        ert_ensure(textCapacity < textSize);
+        ert_Error_assert_(textCapacity < textSize);
 
         textCapacity = textSize;
     }
@@ -632,7 +775,7 @@ print_(
      * writeFd(). Use of dprintf() is restricted to error cases, and in
      * these cases output can be truncated do to EINTR. */
 
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         struct Ert_Pid pid = ert_ownProcessId();
         struct Ert_Tid tid = ert_ownThreadId();
@@ -806,7 +949,7 @@ printf_(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         va_list args;
 
@@ -872,7 +1015,7 @@ ert_errorEnsure(
     unsigned    aLine,
     const char *aPredicate)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         static const char msgFmt[] = "Assertion failure - %s";
 
@@ -915,7 +1058,7 @@ ert_errorDebug(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         va_list args;
 
@@ -937,7 +1080,7 @@ ert_errorWarn(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         struct Ert_ErrorFrameSequence frameSequence =
             ert_pushErrorFrameSequence();
@@ -965,7 +1108,7 @@ ert_errorMessage(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         va_list args;
 
@@ -987,7 +1130,7 @@ ert_errorTerminate(
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, ...)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         struct Ert_ErrorFrameSequence frameSequence =
             ert_pushErrorFrameSequence();
@@ -1009,6 +1152,64 @@ ert_errorTerminate(
 
         ert_abortProcess();
     });
+}
+
+/* -------------------------------------------------------------------------- */
+static void
+write_raw_(int aFd, const char *aBuf, size_t aBufLen)
+{
+    size_t      bufLen = aBufLen;
+    const char *bufPtr = aBuf;
+
+    while (bufLen)
+    {
+        ssize_t wroteLen = write_raw(aFd, bufPtr, bufLen);
+
+        if (-1 == wroteLen)
+        {
+            if (EINTR == errno)
+                continue;
+            break;
+        }
+
+        bufLen -= wroteLen;
+        bufPtr += wroteLen;
+    }
+}
+
+void
+ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine)
+{
+    char  line[sizeof(aLine) * CHAR_BIT + 1];
+    char *linePtr = &line[ERT_NUMBEROF(line)];
+
+    *--linePtr = 0;
+    do
+    {
+        *--linePtr = "0123456789"[aLine % 10];
+    } while (aLine /= 10);
+
+    const char *msg[] =
+    {
+        aFile,
+        ":",
+        linePtr,
+        " - ",
+        aPredicate,
+        "\n",
+    };
+
+    /* Emit the diagnostic message, but do so without using any
+     * functions that might call ert/error.h recursively to
+     * avoid the possibility of infinite recusion. */
+
+    for (size_t ix = 0; ix < ERT_NUMBEROF(msg); ++ix)
+    {
+        if (msg[ix])
+            write_raw_(STDERR_FILENO, msg[ix], strlen(msg[ix]));
+    }
+
+    ert_abortProcess();
 }
 
 /* -------------------------------------------------------------------------- */
