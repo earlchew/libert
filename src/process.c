@@ -229,7 +229,7 @@ runSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
 static void
 dispatchSigAction_(int aSigNum, siginfo_t *aSigInfo, void *aSigContext)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         runSigAction_(aSigNum, aSigInfo, aSigContext);
     });
@@ -282,7 +282,7 @@ runSigHandler_(int aSigNum)
 static void
 dispatchSigHandler_(int aSigNum)
 {
-    ERT_FINALLY
+    ERT_SCOPED_ERRNO
     ({
         runSigHandler_(aSigNum);
     });
@@ -2237,29 +2237,32 @@ forkProcessChild_PostChild_(
 
 Ert_Finally:
 
-    if (rc)
-    {
-        /* This is the error path running in the child. After attempting
-         * to send the error indication, simply terminate the child.
-         * The parent should either receive the failure indication, or
-         * detect that the child has terminated before sending the
-         * error indication. */
-
-        struct ForkProcessResult_ forkResult =
+    ERT_FINALLY
+    ({
+        if (rc)
         {
-            .mReturnCode = rc,
-            .mErrCode    = errno,
-        };
+            /* This is the error path running in the child. After attempting
+             * to send the error indication, simply terminate the child.
+             * The parent should either receive the failure indication, or
+             * detect that the child has terminated before sending the
+             * error indication. */
 
-        while (
-            sendForkProcessChannelResult_(self, &forkResult) ||
-            recvForkProcessChannelAcknowledgement_(self))
-        {
-            break;
+            struct ForkProcessResult_ forkResult =
+            {
+                .mReturnCode = rc,
+                .mErrCode    = errno,
+            };
+
+            while (
+                sendForkProcessChannelResult_(self, &forkResult) ||
+                recvForkProcessChannelAcknowledgement_(self))
+            {
+                break;
+            }
+
+            ert_exitProcess(EXIT_FAILURE);
         }
-
-        ert_exitProcess(EXIT_FAILURE);
-    }
+    });
 }
 
 struct Ert_Pid
