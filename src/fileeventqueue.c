@@ -29,8 +29,10 @@
 
 #include "ert/fileeventqueue.h"
 #include "ert/error.h"
-#include "malloc_.h"
 #include "ert/timescale.h"
+#include "ert/timekeeping.h"
+
+#include "malloc_.h"
 
 #include <limits.h>
 #include <sys/epoll.h>
@@ -46,8 +48,9 @@ static uint32_t pollTriggers_[Ert_FileEventQueuePollTriggers] =
 
 /* -------------------------------------------------------------------------- */
 static void
-ert_markFileEventQueueActivityPending_(struct Ert_FileEventQueueActivity *self,
-                                   struct epoll_event            *aPollEvent)
+ert_markFileEventQueueActivityPending_(
+    struct Ert_FileEventQueueActivity *self,
+   struct epoll_event                 *aPollEvent)
 {
     ert_ensure(self->mArmed);
     ert_ensure( ! self->mPending);
@@ -117,9 +120,9 @@ Ert_Finally:
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
 ert_controlFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
-                               struct Ert_FileEventQueueActivity *aEvent,
-                               uint32_t                       aEvents,
-                               int                            aCtlOp)
+                                   struct Ert_FileEventQueueActivity *aEvent,
+                                   uint32_t                           aEvents,
+                                   int                                aCtlOp)
 {
     int rc = -1;
 
@@ -144,7 +147,7 @@ Ert_Finally:
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
 ert_attachFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
-                              struct Ert_FileEventQueueActivity *aEvent)
+                                  struct Ert_FileEventQueueActivity *aEvent)
 {
     return ert_controlFileEventQueueActivity_(self, aEvent, 0, EPOLL_CTL_ADD);
 }
@@ -179,7 +182,7 @@ ert_closeFileEventQueue(struct Ert_FileEventQueue *self)
 /* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
 ert_lodgeFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
-                             struct Ert_FileEventQueueActivity *aEvent)
+                                 struct Ert_FileEventQueueActivity *aEvent)
 {
     int rc = -1;
 
@@ -203,8 +206,8 @@ Ert_Finally:
 /* -------------------------------------------------------------------------- */
 static void
 ert_purgeFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
-                             struct Ert_FileEventQueueActivity *aEvent,
-                             struct epoll_event            *aPollEvent)
+                                 struct Ert_FileEventQueueActivity *aEvent,
+                                 struct epoll_event                *aPollEvent)
 {
     ert_ensure(self->mNumArmed);
 
@@ -227,7 +230,7 @@ ert_purgeFileEventQueueActivity_(struct Ert_FileEventQueue         *self,
 /* -------------------------------------------------------------------------- */
 int
 ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
-                           const struct Ert_Duration *aTimeout)
+                               const struct Ert_Duration *aTimeout)
 {
     int rc = -1;
 
@@ -235,28 +238,52 @@ ert_pollFileEventQueueActivity(struct Ert_FileEventQueue *self,
     {
         int timeout_ms = -1;
 
-        if (aTimeout)
-        {
-            struct Ert_MilliSeconds ert_timeoutDuration = ERT_MSECS(aTimeout->duration);
-
-            timeout_ms = ert_timeoutDuration.ms;
-
-            if (0 > timeout_ms || ert_timeoutDuration.ms != timeout_ms)
-                timeout_ms = INT_MAX;
-        }
+        struct Ert_EventClockTime since = ERT_EVENTCLOCKTIME_INIT;
+        struct Ert_Duration       remaining;
 
         int polledEvents;
-        ERT_ERROR_IF(
-            (polledEvents = epoll_wait(
-               self->mFile->mFd, self->mQueue, self->mQueueSize, timeout_ms),
-             -1 == polledEvents && EINTR != errno));
 
-        if (0 > polledEvents)
-            polledEvents = 0;
+        while (1)
+        {
+            if (aTimeout)
+            {
+                if (ert_deadlineTimeExpired(&since, *aTimeout, &remaining, 0))
+                    timeout_ms = 0;
+                else
+                {
+                    struct Ert_MilliSeconds timeoutDuration =
+                        ERT_MSECS(remaining.duration);
+
+                    timeout_ms = timeoutDuration.ms;
+
+                    if (0 > timeout_ms || timeoutDuration.ms != timeout_ms)
+                        timeout_ms = INT_MAX;
+                }
+            }
+
+            ERT_ERROR_IF(
+                (polledEvents = epoll_wait(
+                   self->mFile->mFd,
+                   self->mQueue, self->mQueueSize, timeout_ms),
+                 -1 == polledEvents && EINTR != errno));
+
+            if (0 <= polledEvents)
+                break;
+
+            /* Indefinite waits will always terminate if the wait was
+             * interrupted by EINTR. */
+
+            if (0 > timeout_ms)
+            {
+                polledEvents = 0;
+                break;
+            }
+        }
 
         for (int ix = 0; ix < polledEvents; ++ix)
         {
-            struct Ert_FileEventQueueActivity *event = self->mQueue[ix].data.ptr;
+            struct Ert_FileEventQueueActivity *event =
+                self->mQueue[ix].data.ptr;
 
             ert_markFileEventQueueActivityPending_(event, &self->mQueue[ix]);
         }
