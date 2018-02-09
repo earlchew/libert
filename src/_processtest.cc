@@ -938,7 +938,18 @@ TEST_F(ProcessTest, ProcessFork)
     rawForkThread = ert_closeThread(rawForkThread);
 
     int status;
-    EXPECT_EQ(-1, wait(&status));
+    int rc;
+    while (1)
+    {
+        rc = wait(&status);
+
+        if (rc && EINTR == errno)
+            continue;
+
+        break;
+    }
+
+    EXPECT_EQ(-1, rc);
     EXPECT_EQ(ECHILD, errno);
 
     forkArg.mFdSet = ert_closeFdSet(forkArg.mFdSet);
@@ -1050,4 +1061,4 @@ TEST_F(ProcessTest, ProcessForkRecursiveChild)
     EXPECT_EQ(0, (ert_extractProcessExitStatus(status, childPid).mStatus));
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

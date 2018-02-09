@@ -445,4 +445,4 @@ TEST_F(DeadlineTest, NonZeroTimeoutAlwaysReady)
     deadline = ert_closeDeadline(deadline);
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

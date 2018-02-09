@@ -33,6 +33,38 @@
 
 #include "gtest/gtest.h"
 
+static int
+pollEventPipe(
+    struct Ert_EventPipe *aPipe, struct Ert_EventClockTime *aPollTime)
+{
+    int rc;
+
+    while (1)
+    {
+        rc = ert_pollEventPipe(aPipe, aPollTime);
+        if (-1 != rc || EINTR == errno)
+            break;
+    }
+
+    return rc;
+}
+
+static int
+resetEventPipe(struct Ert_EventPipe *aPipe)
+{
+    int rc = -1;
+
+    while (1)
+    {
+        rc = ert_resetEventPipe(aPipe);
+
+        if (-1 != rc || EINTR != errno)
+            break;
+    }
+
+    return rc;
+}
+
 TEST(EventLatchTest, SetReset)
 {
     struct Ert_EventLatch  eventLatch_;
@@ -150,34 +182,34 @@ TEST(EventLatchTest, PipeBindUnbind)
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_bindEventLatchPipe(eventLatch, eventPipe,
                                  Ert_EventLatchMethodNil()));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_unbindEventLatchPipe(eventLatch));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_setEventLatch(eventLatch));
     EXPECT_EQ(Ert_EventLatchSettingOn,
               ert_bindEventLatchPipe(eventLatch, eventPipe,
                                  Ert_EventLatchMethodNil()));
-    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(1, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
     EXPECT_EQ(Ert_EventLatchSettingOn,
               ert_unbindEventLatchPipe(eventLatch));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     EXPECT_EQ(Ert_EventLatchSettingOn,
               ert_disableEventLatch(eventLatch));
     EXPECT_EQ(Ert_EventLatchSettingDisabled,
               ert_bindEventLatchPipe(eventLatch, eventPipe,
                                  Ert_EventLatchMethodNil()));
-    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(1, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
     EXPECT_EQ(Ert_EventLatchSettingDisabled,
               ert_unbindEventLatchPipe(eventLatch));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     eventPipe = ert_closeEventPipe(eventPipe);
     eventLatch = ert_closeEventLatch(eventLatch);
@@ -204,20 +236,20 @@ TEST(EventLatchTest, PipeBinding)
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_ownEventLatchSetting(eventLatch));
 
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_setEventLatch(eventLatch));
     EXPECT_EQ(Ert_EventLatchSettingOn,
               ert_ownEventLatchSetting(eventLatch));
-    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(1, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
     EXPECT_EQ(Ert_EventLatchSettingOn,
               ert_resetEventLatch(eventLatch));
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_resetEventLatch(eventLatch));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_setEventLatch(eventLatch));
     EXPECT_EQ(Ert_EventLatchSettingOn,
@@ -226,11 +258,11 @@ TEST(EventLatchTest, PipeBinding)
               ert_resetEventLatch(eventLatch));
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_resetEventLatch(eventLatch));
-    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(1, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_resetEventLatch(eventLatch));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     eventLatch = ert_closeEventLatch(eventLatch);
     eventPipe = ert_closeEventPipe(eventPipe);
@@ -276,15 +308,15 @@ TEST(EventLatchTest, PipePolling)
     struct Ert_EventClockTime  pollTime_ = ert_eventclockTime();
     struct Ert_EventClockTime *pollTime = &pollTime_;
 
-    EXPECT_EQ(0, ert_pollEventPipe(eventPipe, pollTime));
+    EXPECT_EQ(0, pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(0, PipePolling::Count);
 
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_setEventLatch(eventLatch));
-    EXPECT_EQ(1, ert_pollEventPipe(eventPipe, pollTime));
+    EXPECT_EQ(1, pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(1, PipePolling::Count);
 
-    EXPECT_EQ(0, ert_pollEventPipe(eventPipe, pollTime));
+    EXPECT_EQ(0, pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(1, PipePolling::Count);
 
     /* Set the latch, then reset before polling the pipe */
@@ -293,25 +325,25 @@ TEST(EventLatchTest, PipePolling)
               ert_setEventLatch(eventLatch));
     EXPECT_EQ(Ert_EventLatchSettingOn,
               ert_resetEventLatch(eventLatch));
-    EXPECT_EQ(0, ert_pollEventPipe(eventPipe, pollTime));
+    EXPECT_EQ(0, pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(1, PipePolling::Count);
 
     /* Ensure the latch is not set, then disable before polling the pipe */
 
-    EXPECT_EQ(0, ert_pollEventPipe(eventPipe, pollTime));
+    EXPECT_EQ(0, pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(1, PipePolling::Count);
     EXPECT_EQ(Ert_EventLatchSettingOff,
               ert_disableEventLatch(eventLatch));
-    EXPECT_EQ(1, ert_pollEventPipe(eventPipe, pollTime));
+    EXPECT_EQ(1, pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(2, PipePolling::Count);
 
     /* With the latch still disabled, try another poll */
 
-    EXPECT_EQ(0, ert_pollEventPipe(eventPipe, pollTime));
+    EXPECT_EQ(0, pollEventPipe(eventPipe, pollTime));
     EXPECT_EQ(2, PipePolling::Count);
 
     eventLatch = ert_closeEventLatch(eventLatch);
     eventPipe = ert_closeEventPipe(eventPipe);
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

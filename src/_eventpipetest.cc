@@ -32,6 +32,38 @@
 
 #include "gtest/gtest.h"
 
+static int
+setEventPipe(struct Ert_EventPipe *aPipe)
+{
+    int rc = -1;
+
+    while (1)
+    {
+        rc = ert_setEventPipe(aPipe);
+
+        if (-1 != rc || EINTR != errno)
+            break;
+    }
+
+    return rc;
+}
+
+static int
+resetEventPipe(struct Ert_EventPipe *aPipe)
+{
+    int rc = -1;
+
+    while (1)
+    {
+        rc = ert_resetEventPipe(aPipe);
+
+        if (-1 != rc || EINTR != errno)
+            break;
+    }
+
+    return rc;
+}
+
 TEST(EventPipeTest, ResetOnce)
 {
     struct Ert_EventPipe  eventPipe_;
@@ -40,7 +72,7 @@ TEST(EventPipeTest, ResetOnce)
     EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     EXPECT_EQ(
         0,
@@ -57,7 +89,7 @@ TEST(EventPipeTest, SetOnce)
     EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
+    EXPECT_EQ(1, setEventPipe(eventPipe));
 
     EXPECT_EQ(
         1,
@@ -81,8 +113,8 @@ TEST(EventPipeTest, SetTwice)
     EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
-    EXPECT_EQ(0, ert_setEventPipe(eventPipe));
+    EXPECT_EQ(1, setEventPipe(eventPipe));
+    EXPECT_EQ(0, setEventPipe(eventPipe));
 
     EXPECT_EQ(
         1,
@@ -106,14 +138,14 @@ TEST(EventPipeTest, SetOnceResetOnce)
     EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
-    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(1, setEventPipe(eventPipe));
+    EXPECT_EQ(1, resetEventPipe(eventPipe));
 
     EXPECT_EQ(
         0,
         ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -126,15 +158,15 @@ TEST(EventPipeTest, SetOnceResetTwice)
     EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
-    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(1, setEventPipe(eventPipe));
+    EXPECT_EQ(1, resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     EXPECT_EQ(
         0,
         ert_waitFileReadReady(eventPipe->mPipe->mRdFile, &Ert_ZeroDuration));
 
-    EXPECT_EQ(0, ert_resetEventPipe(eventPipe));
+    EXPECT_EQ(0, resetEventPipe(eventPipe));
 
     eventPipe = ert_closeEventPipe(eventPipe);
 }
@@ -147,9 +179,9 @@ TEST(EventPipeTest, SetOnceResetOnceSetOnce)
     EXPECT_EQ(0, ert_createEventPipe(&eventPipe_, 0));
     eventPipe = &eventPipe_;
 
-    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
-    EXPECT_EQ(1, ert_resetEventPipe(eventPipe));
-    EXPECT_EQ(1, ert_setEventPipe(eventPipe));
+    EXPECT_EQ(1, setEventPipe(eventPipe));
+    EXPECT_EQ(1, resetEventPipe(eventPipe));
+    EXPECT_EQ(1, setEventPipe(eventPipe));
 
     EXPECT_EQ(
         1,
@@ -165,4 +197,4 @@ TEST(EventPipeTest, SetOnceResetOnceSetOnce)
     eventPipe = ert_closeEventPipe(eventPipe);
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

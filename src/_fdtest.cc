@@ -30,6 +30,8 @@
 #include "ert/fd.h"
 #include "ert/pipe.h"
 #include "ert/fdset.h"
+#include "ert/pid.h"
+#include "ert/process.h"
 
 #include "gtest/gtest.h"
 
@@ -232,14 +234,14 @@ TEST(FdTest, CloseExceptWhiteList)
     }
 
     int status;
-    EXPECT_EQ(childpid, waitpid(childpid, &status, 0));
+    EXPECT_EQ(0, ert_reapProcessChild(Ert_Pid(childpid), &status));
     EXPECT_TRUE(WIFEXITED(status));
     EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
 
     fdset = ert_closeFdSet(fdset);
 
-    close(pipefd[0]);
-    close(pipefd[1]);
+    while (ert_closeFd(pipefd[0])) break;
+    while (ert_closeFd(pipefd[1])) break;
 }
 
 TEST(FdTest, CloseOnlyBlackList)
@@ -339,18 +341,18 @@ TEST(FdTest, CloseOnlyBlackList)
     }
 
     int status;
-    EXPECT_EQ(childpid, waitpid(childpid, &status, 0));
+    EXPECT_EQ(0, ert_reapProcessChild(Ert_Pid(childpid), &status));
     EXPECT_TRUE(WIFEXITED(status));
     EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
 
     fdset = ert_closeFdSet(fdset);
 
-    close(pipefd[0]);
-    close(pipefd[1]);
+    while (ert_closeFd(pipefd[0])) break;
+    while (ert_closeFd(pipefd[1])) break;
 }
 
 static int
-checkChildCloseOnExec(int aFd, FILE *aErrFp)
+checkChildCloseOnExec(int aFd, int aErrFd)
 {
     int rc = -1;
 
@@ -358,7 +360,7 @@ checkChildCloseOnExec(int aFd, FILE *aErrFp)
     {
         if (1 != ert_ownFdCloseOnExec(aFd))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
 
@@ -374,38 +376,38 @@ checkChildCloseOnExec(int aFd, FILE *aErrFp)
                 int fd = ert_duplicateFd(aFd, -1);
                 if (-1 == fd)
                 {
-                    fprintf(aErrFp, "%u\n", __LINE__);
+                    dprintf(aErrFd, "@@@ %u\n", __LINE__);
                     break;
                 }
 
-                int nullfd = open("/dev/null", O_RDWR);
+                int nullfd = ert_openFd("/dev/null", O_RDWR, 0);
                 if (-1 == nullfd)
                 {
-                    fprintf(aErrFp, "%u\n", __LINE__);
+                    dprintf(aErrFd, "@@@ %u\n", __LINE__);
                     break;
                 }
 
-                if (-1 == dup2(fileno(aErrFp), STDERR_FILENO))
+                if (-1 == dup2(aErrFd, STDERR_FILENO))
                 {
-                    fprintf(aErrFp, "%u\n", __LINE__);
+                    dprintf(aErrFd, "@@@ %u\n", __LINE__);
                     break;
                 }
 
                 if (-1 == dup2(nullfd, STDIN_FILENO))
                 {
-                    fprintf(aErrFp, "%u\n", __LINE__);
+                    dprintf(aErrFd, "@@@ %u\n", __LINE__);
                     break;
                 }
 
                 if (-1 == dup2(nullfd, STDOUT_FILENO))
                 {
-                    fprintf(aErrFp, "%u\n", __LINE__);
+                    dprintf(aErrFd, "@@@ %u\n", __LINE__);
                     break;
                 }
 
                 if (-1 == ert_duplicateFd(fd, 3))
                 {
-                    fprintf(stderr, "%u\n", __LINE__);
+                    dprintf(STDERR_FILENO, "@@@ %u\n", __LINE__);
                     break;
                 }
 
@@ -425,19 +427,19 @@ checkChildCloseOnExec(int aFd, FILE *aErrFp)
         }
 
         int status;
-        if (childpid != waitpid(childpid, &status, 0))
+        if (ert_reapProcessChild(Ert_Pid(childpid), &status))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
         if ( ! WIFEXITED(status))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
         if (EXIT_SUCCESS != WEXITSTATUS(status))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
 
@@ -449,7 +451,7 @@ checkChildCloseOnExec(int aFd, FILE *aErrFp)
 }
 
 static int
-fillStdFds_(FILE *aErrFp)
+fillStdFds_(int aErrFd)
 {
     int rc = -1;
 
@@ -459,31 +461,31 @@ fillStdFds_(FILE *aErrFp)
 
         if (pipe(pipefd))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
 
         if (-1 == dup2(pipefd[0], STDIN_FILENO))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
 
         if (STDIN_FILENO == pipefd[0])
-            close(pipefd[0]);
+            while (ert_closeFd(pipefd[0])) break;
 
         if (-1 == dup2(pipefd[1], STDOUT_FILENO))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
 
         if (STDOUT_FILENO == pipefd[1])
-            close(pipefd[1]);
+            while (ert_closeFd(pipefd[1])) break;
 
         if (-1 == dup2(STDOUT_FILENO, STDERR_FILENO))
         {
-            fprintf(aErrFp, "%u\n", __LINE__);
+            dprintf(aErrFd, "@@@ %u\n", __LINE__);
             break;
         }
 
@@ -516,20 +518,13 @@ TEST(FdTest, OpenStdFds)
             int errfd = dup(STDERR_FILENO);
             if (-1 == errfd)
             {
-                fprintf(stderr, "%u\n", __LINE__);
-                break;
-            }
-
-            FILE *errfp = fdopen(errfd, "w");
-            if ( ! errfp)
-            {
-                fprintf(stderr, "%u\n", __LINE__);
+                dprintf(STDERR_FILENO, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if (SIG_ERR == signal(SIGPIPE, SIG_IGN))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
@@ -537,27 +532,27 @@ TEST(FdTest, OpenStdFds)
             // opened, that openStdFds() does not overlay these existing
             // file descriptors.
 
-            if (fillStdFds_(errfp))
+            if (fillStdFds_(errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if (ert_ownFdCloseOnExec(STDIN_FILENO))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if (ert_ownFdCloseOnExec(STDOUT_FILENO))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if (ert_ownFdCloseOnExec(STDERR_FILENO))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
@@ -567,128 +562,130 @@ TEST(FdTest, OpenStdFds)
             // and the overlaid stdout and stdout respond with EPIPE
             // on write.
 
-            close(STDIN_FILENO);
-            close(STDOUT_FILENO);
-            close(STDERR_FILENO);
+            while (ert_closeFd(STDIN_FILENO)) break;
+            while (ert_closeFd(STDOUT_FILENO)) break;
+            while (ert_closeFd(STDERR_FILENO)) break;
 
             if (ert_openStdFds())
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            if (checkChildCloseOnExec(STDIN_FILENO, errfp))
+            if (checkChildCloseOnExec(STDIN_FILENO, errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            if (checkChildCloseOnExec(STDOUT_FILENO, errfp))
+            if (checkChildCloseOnExec(STDOUT_FILENO, errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            if (checkChildCloseOnExec(STDERR_FILENO, errfp))
+            if (checkChildCloseOnExec(STDERR_FILENO, errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            if ( ! ert_ownFdValid(STDIN_FILENO) || read(STDIN_FILENO, buf, 1))
+            if ( ! ert_ownFdValid(STDIN_FILENO) ||
+                   ert_readFd(STDIN_FILENO, buf, 1, 0))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if ( ! ert_ownFdValid(STDOUT_FILENO) ||
-                 -1 != write(STDOUT_FILENO, buf, 1) || EPIPE != errno)
+                 -1 != ert_writeFd(STDOUT_FILENO, buf, 1, 0) || EPIPE != errno)
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if ( ! ert_ownFdValid(STDERR_FILENO) ||
-                 -1 != write(STDERR_FILENO, buf, 1) || EPIPE != errno)
+                 -1 != ert_writeFd(STDERR_FILENO, buf, 1, 0) || EPIPE != errno)
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             // Test that if only stdin is closed, it will be the only
             // one that is overlaid.
 
-            if (fillStdFds_(errfp))
+            if (fillStdFds_(errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            close(STDIN_FILENO);
+            while (ert_closeFd(STDIN_FILENO)) break;
 
             if (ert_openStdFds())
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            if (checkChildCloseOnExec(STDIN_FILENO, errfp))
+            if (checkChildCloseOnExec(STDIN_FILENO, errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            if ( ! ert_ownFdValid(STDIN_FILENO) || read(STDIN_FILENO, buf, 1))
+            if ( ! ert_ownFdValid(STDIN_FILENO) ||
+                   ert_readFd(STDIN_FILENO, buf, 1, 0))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             // Test that if only stdout is closed, it will be the only
             // one that is overlaid.
 
-            if (fillStdFds_(errfp))
+            if (fillStdFds_(errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            close(STDOUT_FILENO);
+            while (ert_closeFd(STDOUT_FILENO)) break;
 
             if (ert_openStdFds())
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if ( ! ert_ownFdValid(STDOUT_FILENO) ||
-                 -1 != write(STDOUT_FILENO, buf, 1) || EPIPE != errno)
+                 -1 != ert_writeFd(STDOUT_FILENO, buf, 1, 0) || EPIPE != errno)
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             // Test that if only stderr is closed, it will be the only
             // one that is overlaid.
 
-            if (fillStdFds_(errfp))
+            if (fillStdFds_(errfd))
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
-            close(STDERR_FILENO);
+            while (ert_closeFd(STDERR_FILENO)) break;
 
             if (ert_openStdFds())
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
             if ( ! ert_ownFdValid(STDERR_FILENO) ||
-                 -1 != write(STDERR_FILENO, buf, 1) || EPIPE != errno)
+                 -1 != ert_writeFd(STDERR_FILENO, buf, 1, 0) || EPIPE != errno)
             {
-                fprintf(errfp, "%u\n", __LINE__);
+                dprintf(errfd, "@@@ %u\n", __LINE__);
                 break;
             }
 
@@ -707,9 +704,9 @@ TEST(FdTest, OpenStdFds)
     }
 
     int status;
-    EXPECT_EQ(childpid, waitpid(childpid, &status, 0));
+    EXPECT_EQ(0, ert_reapProcessChild(Ert_Pid(childpid), &status));
     EXPECT_TRUE(WIFEXITED(status));
     EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

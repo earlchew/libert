@@ -558,4 +558,4 @@ TEST(TimeKeepingTest, BootClockTime)
     EXPECT_GE(after.duration.ns,  bootclocktime.bootclock.ns);
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

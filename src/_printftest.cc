@@ -125,4 +125,4 @@ TEST_F(PrintfTest, PrintfMethod)
     free(bufPtr);
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

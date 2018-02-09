@@ -196,7 +196,7 @@ TEST_F(ThreadTest, ThreadSharedMutex)
         }
 
         int status;
-        EXPECT_EQ(childpid, waitpid(childpid, &status, 0));
+        EXPECT_EQ(0, ert_reapProcessChild(Ert_Pid(childpid), &status));
         EXPECT_TRUE(WIFEXITED(status));
         EXPECT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
 
@@ -223,4 +223,4 @@ TEST_F(ThreadTest, ThreadSharedMutex)
     EXPECT_EQ(0, munmap(state, sizeof(*state)));
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

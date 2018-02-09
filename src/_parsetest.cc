@@ -223,4 +223,4 @@ TEST(ParseTest, ArgListCSV)
     argList = ert_closeParseArgList(argList);
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

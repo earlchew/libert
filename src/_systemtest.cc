@@ -42,4 +42,4 @@ TEST(SystemTest, Incarnation)
     EXPECT_FALSE(strchr(incarnation, '\n'));
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

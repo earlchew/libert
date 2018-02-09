@@ -245,6 +245,8 @@ testDeeplyNested(int aLevel)
 
 Ert_Finally:
 
+    ERT_FINALLY({});
+
     return rc;
 }
 
@@ -257,4 +259,4 @@ TEST_F(ErrorTest, DeeplyNested)
     ert_logErrorFrameSequence();
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

@@ -113,7 +113,8 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
                   mTestSocket->mSocketPair->mParentSocket, 0));
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, 0));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(1, eventCount_);
 
     /* Ensure that simply polling again will not result in additional
@@ -129,7 +130,8 @@ TEST_F(FileEventQueueTest, ArmReadyPollClose)
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, 0));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(1, eventCount_);
 
     eventCount_ = 0;
@@ -283,7 +285,7 @@ TEST_F(FileEventQueueTest, ReadyArmClose)
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, 0));
+    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(1, eventCount_);
 
     EXPECT_EQ(0, armTestFileQueueActivity(mEventActivity));
@@ -310,7 +312,8 @@ TEST_F(FileEventQueueTest, Close)
     mEventActivity = ert_closeFileEventQueueActivity(mEventActivity);
 
     eventCount_ = 0;
-    EXPECT_EQ(0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
+    EXPECT_EQ(
+        0, ert_pollFileEventQueueActivity(mEventQueue, &Ert_ZeroDuration));
     EXPECT_EQ(0, eventCount_);
 }
 
@@ -337,4 +340,4 @@ TEST_F(FileEventQueueTest, ReadyClose)
     EXPECT_EQ(0, eventCount_);
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

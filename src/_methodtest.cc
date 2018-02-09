@@ -144,4 +144,4 @@ TEST(MethodTest, CallConstMethod)
     EXPECT_EQ(5, callConstTestMethod(constTestMethod, constValuePtr));
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"

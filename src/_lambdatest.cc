@@ -48,4 +48,4 @@ TEST(LambdaTest, Construction)
                 { return 1 + aValue; })));
 }
 
-#include "../googletest/src/gtest_main.cc"
+#include "_test_.h"
