@@ -688,20 +688,20 @@ Ert_Finally:
 /* -------------------------------------------------------------------------- */
 static void
 dprint_(
-    int                    aLockErr,
-    int                    aErrCode,
-    const char            *aErrText,
-    struct Ert_Pid         aPid,
-    struct Ert_Tid         aTid,
+    int                        aLockErr,
+    int                        aErrCode,
+    const char                *aErrText,
+    struct Ert_Pid             aPid,
+    struct Ert_Tid             aTid,
     const struct Ert_Duration *aElapsed,
-    uint64_t               aElapsed_h,
-    uint64_t               aElapsed_m,
-    uint64_t               aElapsed_s,
-    uint64_t               aElapsed_ms,
-    const char            *aFunction,
-    const char            *aFile,
-    unsigned               aLine,
-    const char            *aFmt, va_list aArgs)
+    uint64_t                   aElapsed_h,
+    uint64_t                   aElapsed_m,
+    uint64_t                   aElapsed_s,
+    uint64_t                   aElapsed_ms,
+    const char                *aFunction,
+    const char                *aFile,
+    unsigned                   aLine,
+    const char                *aFmt, va_list aArgs)
 {
 
     if ( ! aFile)
@@ -1291,7 +1291,6 @@ Ert_Error_exit(struct Ert_ErrorModule *self)
 
     return 0;
 }
-
 
 /* -------------------------------------------------------------------------- */
 int
