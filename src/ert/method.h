@@ -45,7 +45,7 @@ ERT_BEGIN_C_SCOPE;
       mMethod(0)                                        \
     { }                                                 \
                                                         \
-    explicit Struct_(Const_ void        *aObject,       \
+    explicit Struct_(Const_ void            *aObject,   \
                      ERT_CONCAT(Struct_, T_) aMethod)   \
     : mObject(aObject),                                 \
       mMethod(aMethod)                                  \
@@ -115,8 +115,8 @@ typedef ERT_METHOD_RETURN (*ERT_CONCAT(ERT_METHOD_NAME_, T_))(
     ERT_METHOD_CONST void *self ERT_EXPAND(ERT_ARGS ERT_METHOD_ARG_LIST));
 
 static __inline__ struct ERT_METHOD_NAME_
-ERT_CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
-                             ERT_CONCAT(ERT_METHOD_NAME_, T_) aMethod);
+ERT_CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void           *aObject,
+                                 ERT_CONCAT(ERT_METHOD_NAME_, T_) aMethod);
 
 struct ERT_METHOD_NAME_
 {
@@ -127,8 +127,8 @@ struct ERT_METHOD_NAME_
 };
 
 static __inline__ struct ERT_METHOD_NAME_
-ERT_CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void       *aObject,
-                             ERT_CONCAT(ERT_METHOD_NAME_, T_) aMethod)
+ERT_CONCAT(ERT_METHOD_NAME_, _) (ERT_METHOD_CONST void           *aObject,
+                                 ERT_CONCAT(ERT_METHOD_NAME_, T_) aMethod)
 {
     ERT_METHOD_ENSURE_(aMethod || ! aObject);
 
