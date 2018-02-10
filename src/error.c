@@ -425,8 +425,56 @@ initErrorFrame_(void)
 }
 
 /* -------------------------------------------------------------------------- */
+static int
+ert_freezeErrorFrame_(int aFd, const struct Ert_ErrorFrame *aFrame)
+{
+    int rc = -1;
+
+    ssize_t wroteLen = -1;
+    ERT_ERROR_IF(
+        (wroteLen = ert_writeFd(aFd, (const void *) aFrame, sizeof(*aFrame), 0),
+         -1 == wroteLen || sizeof(*aFrame) != wroteLen),
+        {
+            if (-1 != wroteLen)
+                errno = EIO;
+        });
+
+    rc = 0;
+
+Ert_Finally:
+
+    ERT_FINALLY({});
+
+    return rc;
+}
+
+/* -------------------------------------------------------------------------- */
+static int
+ert_thawErrorFrame_(int aFd, struct Ert_ErrorFrame *aFrame)
+{
+    int rc = -1;
+
+    ssize_t readLen = -1;
+    ERT_ERROR_IF(
+        (readLen = ert_readFd(aFd, (void *) aFrame, sizeof(*aFrame), 0),
+         -1 == readLen || sizeof(*aFrame) != readLen),
+        {
+            if (-1 != readLen)
+                errno = EIO;
+        });
+
+    rc = 0;
+
+Ert_Finally:
+
+    ERT_FINALLY({});
+
+    return rc;
+}
+
+/* -------------------------------------------------------------------------- */
 void
-ert_addErrorFrame_(const struct Ert_ErrorFrame *aFrame, int aErrno)
+ert_addErrorFrame_(const struct Ert_ErrorFrame *self, int aErrno)
 {
     initErrorFrame_();
 
@@ -442,7 +490,7 @@ ert_addErrorFrame_(const struct Ert_ErrorFrame *aFrame, int aErrno)
         iter->mFrame = chunk->mBegin;
     }
 
-    iter->mFrame[0]        = *aFrame;
+    iter->mFrame[0]        = *self;
     iter->mFrame[0].mErrno = aErrno;
 
     ++iter->mIndex;
@@ -495,6 +543,17 @@ ert_switchErrorFrameStack(enum Ert_ErrorFrameStackKind aStack)
     errorStack_.mStack = &errorStack_.mStack_[aStack];
 
     return stackKind;
+}
+
+/* -------------------------------------------------------------------------- */
+static unsigned
+ert_ownErrorFrameSequenceLength_(void)
+{
+    initErrorFrame_();
+
+    return
+        errorStack_.mStack->mLevel.mIndex -
+        errorStack_.mStack->mSequence.mIndex;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -588,6 +647,134 @@ Ert_Finally:
     ERT_FINALLY({
         ert_popErrorFrameSequence(frameSequence);
     });
+
+    return rc;
+}
+
+/* -------------------------------------------------------------------------- */
+int
+ert_freezeErrorFrameSequence(int aFd)
+{
+    int rc = -1;
+
+    initErrorFrame_();
+
+    struct SequenceIterator
+    {
+        int      mFd;
+        unsigned mLength;
+    } seqIter = {
+        .mFd     = aFd,
+        .mLength = 0,
+    };
+
+    unsigned seqLength = ert_ownErrorFrameSequenceLength_();
+
+    ssize_t wroteLen = -1;
+    ERT_ERROR_IF(
+        (wroteLen = ert_writeFd(
+            aFd, (const void *) &seqLength, sizeof(seqLength), 0),
+         -1 == wroteLen || sizeof(seqLength) != wroteLen),
+        {
+            if (-1 != wroteLen)
+                errno = EIO;
+        });
+
+    struct ErrorFrameVisitorMethod visitor = ErrorFrameVisitorMethod(
+        &seqIter,
+        ERT_LAMBDA(
+            int, (struct SequenceIterator     *self_,
+                  const struct Ert_ErrorFrame *aFramePtr),
+            {
+                ++self_->mLength;
+                return ert_freezeErrorFrame_(self_->mFd, aFramePtr);
+            }));
+
+    ERT_ERROR_IF(
+        visitErrorFrameSequence_(visitor));
+
+    ert_ensure(seqLength == seqIter.mLength);
+
+    rc = 0;
+
+Ert_Finally:
+
+    ERT_FINALLY({});
+
+    return rc;
+}
+
+/* -------------------------------------------------------------------------- */
+static int
+ert_thawErrorFrameSequence_(int aFd, unsigned aSeqLength)
+{
+    int rc = -1;
+
+    ert_ensure(aSeqLength);
+
+    struct Ert_ErrorFrame errorFrames[aSeqLength];
+
+    for (unsigned sx = 0; sx < aSeqLength; ++sx)
+        ERT_ERROR_IF(
+            ert_thawErrorFrame_(aFd, &errorFrames[sx]));
+
+    rc = 0;
+
+Ert_Finally:
+
+    ERT_FINALLY({});
+
+    /* This method will always yield an error. In the normal case, the
+     * method will yield the thawed error, and in the abnormal case
+     * it will yield the error that caused the thawing to fail. */
+
+    if ( ! rc)
+    {
+        for (unsigned sx = 0; sx < aSeqLength; ++sx)
+            ert_addErrorFrame_(
+                &errorFrames[sx], errorFrames[sx].mErrno);
+
+        errno = errorFrames[aSeqLength-1].mErrno;
+
+        rc = -1;
+    }
+
+    return rc;
+}
+
+int
+ert_thawErrorFrameSequence(int aFd)
+{
+    int rc = -1;
+
+    unsigned seqLength = 0;
+
+    ssize_t readLen = -1;
+    ERT_ERROR_IF(
+        (readLen = ert_readFd(
+            aFd, (void *) &seqLength, sizeof(seqLength), 0),
+         -1 == readLen || sizeof(seqLength) != readLen),
+        {
+            if (-1 != readLen)
+                errno = EIO;
+        });
+
+    if (seqLength)
+    {
+        ERT_ERROR_IF(
+            ert_thawErrorFrameSequence_(aFd, seqLength));
+
+        /* Thawing the error frame sequence will either yield the thawed
+         * error, or the error that caused the thawing to fail. */
+
+        ert_ensure(0);
+    }
+
+    rc = 0;
+
+Ert_Finally:
+
+    ERT_FINALLY({});
 
     return rc;
 }

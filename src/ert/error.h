@@ -280,6 +280,12 @@ ert_addErrorFrame_(const struct Ert_ErrorFrame *aFrame, int aErrno);
 void
 ert_restartErrorFrameSequence_(void);
 
+int
+ert_freezeErrorFrameSequence(int aFd);
+
+int
+ert_thawErrorFrameSequence(int aFd);
+
 unsigned
 ert_ownErrorFrameLevel_(void);
 
