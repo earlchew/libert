@@ -223,8 +223,6 @@
 /* -------------------------------------------------------------------------- */
 static unsigned moduleInit_;
 
-static struct Ert_ErrorUnwindFrame_ __thread errorUnwind_;
-
 typedef TAILQ_HEAD(
    Ert_ErrorFrameChunkList, Ert_ErrorFrameChunk) Ert_ErrorFrameChunkListT;
 
@@ -627,35 +625,6 @@ ert_logErrorFrameSequence()
 
     while (visitErrorFrameSequence_(visitor))
         break;
-}
-
-/* -------------------------------------------------------------------------- */
-struct Ert_ErrorUnwindFrame_ *
-ert_pushErrorUnwindFrame_(void)
-{
-    struct Ert_ErrorUnwindFrame_ *self = &errorUnwind_;
-
-    ++self->mActive;
-
-    return self;
-}
-
-/* -------------------------------------------------------------------------- */
-void
-ert_popErrorUnwindFrame_(struct Ert_ErrorUnwindFrame_ *self)
-{
-    ert_Error_assert_(self->mActive);
-
-    --self->mActive;
-}
-
-/* -------------------------------------------------------------------------- */
-struct Ert_ErrorUnwindFrame_ *
-ert_ownErrorUnwindActiveFrame_(void)
-{
-    struct Ert_ErrorUnwindFrame_ *self = &errorUnwind_;
-
-    return self->mActive ? self : 0;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1170,12 +1139,6 @@ ert_errorWarn(
 
         ert_popErrorFrameSequence(frameSequence);
     });
-
-    struct Ert_ErrorUnwindFrame_ *unwindFrame =
-        ert_ownErrorUnwindActiveFrame_();
-
-    if (unwindFrame)
-        longjmp(unwindFrame->mJmpBuf, 1);
 }
 
 /* -------------------------------------------------------------------------- */

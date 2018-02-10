@@ -36,7 +36,6 @@
 #include "ert/macros.h"
 
 #include <errno.h>
-#include <setjmp.h>
 
 ERT_BEGIN_C_SCOPE;
 
@@ -154,29 +153,16 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
         {                                                       \
             ert_logErrorFrameSequence();                        \
                                                                 \
-            /* Unwind the error frame and issue the messages    \
-             * before emitting the final message. The last      \
-             * message will either not return, or unwind the    \
-             * call stack using longjmp(). */                   \
+            ERT_AUTO(Action_, &Actor_);                         \
                                                                 \
-            struct Ert_ErrorUnwindFrame_ *unwindFrame_ =        \
-                ert_pushErrorUnwindFrame_();                    \
+            __VA_ARGS__                                         \
                                                                 \
-            if ( ! setjmp(unwindFrame_->mJmpBuf))               \
-            {                                                   \
-                ERT_AUTO(Action_, &Actor_);                     \
-                                                                \
-                __VA_ARGS__                                     \
-                                                                \
-                do                                              \
-                    (Action_)(                                  \
-                        errno,                                  \
-                        __func__, __FILE__, __LINE__,           \
-                        "%s", (Message_));                      \
-                while (0);                                      \
-            }                                                   \
-                                                                \
-            ert_popErrorUnwindFrame_(unwindFrame_);             \
+            do                                                  \
+                (Action_)(                                      \
+                    errno,                                      \
+                    __func__, __FILE__, __LINE__,               \
+                    "%s", (Message_));                          \
+            while (0);                                          \
         }                                                       \
                                                                 \
         ert_popErrorFrameSequence(frameSequence_);              \
@@ -254,23 +240,6 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
                                                \
         errno = ert_errno_;                    \
     } while (0)
-
-/* -------------------------------------------------------------------------- */
-struct Ert_ErrorUnwindFrame_
-{
-    unsigned mActive;
-    jmp_buf  mJmpBuf;
-};
-
-struct Ert_ErrorUnwindFrame_ *
-ert_pushErrorUnwindFrame_(void);
-
-struct Ert_ErrorUnwindFrame_ *
-ert_ownErrorUnwindActiveFrame_(void);
-
-void
-ert_popErrorUnwindFrame_(
-    struct Ert_ErrorUnwindFrame_ *self);
 
 /* -------------------------------------------------------------------------- */
 struct Ert_ErrorFrame
