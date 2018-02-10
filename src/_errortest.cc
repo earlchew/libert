@@ -175,27 +175,27 @@ TEST_F(ErrorTest, FinallyIf)
     int sigErrCode;
 
     EXPECT_EQ(0, testFinallyIfOk());
-    EXPECT_EQ(0u, ert_ownErrorFrameLevel());
-    ert_restartErrorFrameSequence();
+    EXPECT_EQ(0u, ert_ownErrorFrameLevel_());
+    ert_restartErrorFrameSequence_();
 
     EXPECT_EQ(-1, testFinallyIfFail_1());
     errCode = errno;
-    EXPECT_EQ(1u, ert_ownErrorFrameLevel());
-    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1));
+    EXPECT_EQ(1u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1));
     ert_logErrorFrameSequence();
     Ert_Error_warn_(errCode, "One level error frame test");
-    ert_restartErrorFrameSequence();
+    ert_restartErrorFrameSequence_();
 
     EXPECT_EQ(-1, testFinallyIfFail_2());
     errCode = errno;
-    EXPECT_EQ(2u, ert_ownErrorFrameLevel());
-    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(-2, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1)->mErrno);
-    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 2));
+    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
     ert_logErrorFrameSequence();
     Ert_Error_warn_(errCode, "Two level error frame test");
-    ert_restartErrorFrameSequence();
+    ert_restartErrorFrameSequence_();
 
     EXPECT_EQ(-1, testFinallyIfFail_2());
     errCode = errno;
@@ -206,23 +206,23 @@ TEST_F(ErrorTest, FinallyIf)
 
     EXPECT_EQ(-1, testFinallyIfFail_1());
     sigErrCode = errno;
-    EXPECT_EQ(1u, ert_ownErrorFrameLevel());
-    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1));
+    EXPECT_EQ(1u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1));
     ert_logErrorFrameSequence();
     Ert_Error_warn_(sigErrCode, "Signal stack one level error frame test");
-    ert_restartErrorFrameSequence();
+    ert_restartErrorFrameSequence_();
 
     stackKind = ert_switchErrorFrameStack(stackKind);
     EXPECT_EQ(Ert_ErrorFrameStackSignal, stackKind);
 
-    EXPECT_EQ(2u, ert_ownErrorFrameLevel());
-    EXPECT_EQ(-1, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 0)->mErrno);
-    EXPECT_EQ(-2, ert_ownErrorFrame(Ert_ErrorFrameStackThread, 1)->mErrno);
-    EXPECT_EQ(0,  ert_ownErrorFrame(Ert_ErrorFrameStackThread, 2));
+    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
     ert_logErrorFrameSequence();
     Ert_Error_warn_(errCode, "Two level error frame test");
-    ert_restartErrorFrameSequence();
+    ert_restartErrorFrameSequence_();
 }
 
 static int
@@ -254,7 +254,7 @@ TEST_F(ErrorTest, DeeplyNested)
 {
     long pageSize = sysconf(_SC_PAGESIZE);
 
-    ert_restartErrorFrameSequence();
+    ert_restartErrorFrameSequence_();
     testDeeplyNested(pageSize);
     ert_logErrorFrameSequence();
 }

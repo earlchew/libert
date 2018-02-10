@@ -93,14 +93,14 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
         /* Activation of a new error frame implies       \
          * a new stack unwinding sequence. */            \
                                                          \
-        ert_restartErrorFrameSequence();                 \
+        ert_restartErrorFrameSequence_();                \
                                                          \
         if (ert_testFinally(&frame_) ||                  \
             Sense_ (Predicate_))                         \
         {                                                \
             __VA_ARGS__                                  \
                                                          \
-            ert_addErrorFrame(&frame_, errno);           \
+            ert_addErrorFrame_(&frame_, errno);          \
             goto Ert_Error_;                             \
         }                                                \
                                                          \
@@ -115,7 +115,7 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
          * activation and deactivation, etc, until       \
          * the finally block is activated. */            \
                                                          \
-        /* ert_restartErrorFrameSequence(); */           \
+        /* ert_restartErrorFrameSequence_(); */          \
     }                                                    \
     while (0)
 
@@ -189,7 +189,7 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
          * block activation and deactivation    \
          * pairs. */                            \
                                                 \
-        ert_restartErrorFrameSequence();        \
+        ert_restartErrorFrameSequence_();       \
                                                 \
         goto Ert_Error_;                        \
                                                 \
@@ -275,13 +275,19 @@ enum Ert_ErrorFrameStackKind
 };
 
 void
-ert_addErrorFrame(const struct Ert_ErrorFrame *aFrame, int aErrno);
+ert_addErrorFrame_(const struct Ert_ErrorFrame *aFrame, int aErrno);
 
 void
-ert_restartErrorFrameSequence_(const char *aFile, unsigned aLine);
+ert_restartErrorFrameSequence_(void);
+
+unsigned
+ert_ownErrorFrameLevel_(void);
+
+const struct Ert_ErrorFrame *
+ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel);
 
 void
-ert_restartErrorFrameSequence(void);
+ert_logErrorFrameSequence(void);
 
 struct Ert_ErrorFrameSequence
 ert_pushErrorFrameSequence(void);
@@ -291,15 +297,6 @@ ert_popErrorFrameSequence(struct Ert_ErrorFrameSequence aSequence);
 
 enum Ert_ErrorFrameStackKind
 ert_switchErrorFrameStack(enum Ert_ErrorFrameStackKind aStack);
-
-unsigned
-ert_ownErrorFrameLevel(void);
-
-const struct Ert_ErrorFrame *
-ert_ownErrorFrame(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel);
-
-void
-ert_logErrorFrameSequence(void);
 
 /* -------------------------------------------------------------------------- */
 #ifndef __cplusplus

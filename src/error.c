@@ -426,7 +426,7 @@ initErrorFrame_(void)
 
 /* -------------------------------------------------------------------------- */
 void
-ert_addErrorFrame(const struct Ert_ErrorFrame *aFrame, int aErrno)
+ert_addErrorFrame_(const struct Ert_ErrorFrame *aFrame, int aErrno)
 {
     initErrorFrame_();
 
@@ -451,7 +451,7 @@ ert_addErrorFrame(const struct Ert_ErrorFrame *aFrame, int aErrno)
 
 /* -------------------------------------------------------------------------- */
 void
-ert_restartErrorFrameSequence(void)
+ert_restartErrorFrameSequence_(void)
 {
     initErrorFrame_();
 
@@ -478,7 +478,7 @@ ert_pushErrorFrameSequence(void)
 void
 ert_popErrorFrameSequence(struct Ert_ErrorFrameSequence aSequence)
 {
-    ert_restartErrorFrameSequence();
+    ert_restartErrorFrameSequence_();
 
     errorStack_.mStack->mSequence = aSequence.mIter;
 }
@@ -499,7 +499,7 @@ ert_switchErrorFrameStack(enum Ert_ErrorFrameStackKind aStack)
 
 /* -------------------------------------------------------------------------- */
 unsigned
-ert_ownErrorFrameLevel(void)
+ert_ownErrorFrameLevel_(void)
 {
     initErrorFrame_();
 
@@ -508,7 +508,7 @@ ert_ownErrorFrameLevel(void)
 
 /* -------------------------------------------------------------------------- */
 const struct Ert_ErrorFrame *
-ert_ownErrorFrame(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
+ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
 {
     initErrorFrame_();
 
@@ -594,7 +594,7 @@ Ert_Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_logErrorFrameSequence()
+ert_logErrorFrameSequence(void)
 {
     initErrorFrame_();
 
