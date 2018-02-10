@@ -131,8 +131,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         ert_finally_warn_if(rc,
-                        nilClass, print,
-                        "Error context at testFinallyIfFail_1");
+                            nilClass, print,
+                            "Error context at testFinallyIfFail_1");
 
         ERT_ABORT_UNLESS(
             testFinallyIfFail_0());
@@ -159,8 +159,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         ert_finally_warn_if(rc,
-                        nilClass, print,
-                        "Error context at testFinallyIfFail_2");
+                            nilClass, print,
+                            "Error context at testFinallyIfFail_2");
 
         ERT_ABORT_UNLESS(
             testFinallyIfFail_1());
