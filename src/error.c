@@ -45,6 +45,33 @@
 #include <valgrind/valgrind.h>
 
 /* -------------------------------------------------------------------------- */
+#define ERT_METHOD_DEFINITION
+#define ERT_METHOD_RETURN_ErrorFrameVisitorMethod    int
+#define ERT_METHOD_CONST_ErrorFrameVisitorMethod
+#define ERT_METHOD_ARG_LIST_ErrorFrameVisitorMethod  \
+        (const struct Ert_ErrorFrame *aFrame)
+#define ERT_METHOD_CALL_LIST_ErrorFrameVisitorMethod (aFrame)
+
+#define ERT_METHOD_TYPE_PREFIX
+#define ERT_METHOD_FUNCTION_PREFIX
+
+#define ERT_METHOD_NAME      ErrorFrameVisitorMethod
+#define ERT_METHOD_RETURN    ERT_METHOD_RETURN_ErrorFrameVisitorMethod
+#define ERT_METHOD_CONST     ERT_METHOD_CONST_ErrorFrameVisitorMethod
+#define ERT_METHOD_ARG_LIST  ERT_METHOD_ARG_LIST_ErrorFrameVisitorMethod
+#define ERT_METHOD_CALL_LIST ERT_METHOD_CALL_LIST_ErrorFrameVisitorMethod
+#include "ert/method.h"
+
+#define ErrorFrameVisitorMethod(Object_, Method_)     \
+    ERT_METHOD_TRAMPOLINE(                            \
+        Object_, Method_,                             \
+        ErrorFrameVisitorMethod_,                     \
+        ERT_METHOD_RETURN_ErrorFrameVisitorMethod,    \
+        ERT_METHOD_CONST_ErrorFrameVisitorMethod,     \
+        ERT_METHOD_ARG_LIST_ErrorFrameVisitorMethod,  \
+        ERT_METHOD_CALL_LIST_ErrorFrameVisitorMethod)
+
+/* -------------------------------------------------------------------------- */
 /* Unwinding Error Frame
  *
  * Error frames are used to provide context when a program terminates.
@@ -527,29 +554,79 @@ ert_ownErrorFrame(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
 }
 
 /* -------------------------------------------------------------------------- */
+static int
+visitErrorFrameSequence_(struct ErrorFrameVisitorMethod aVisitor)
+{
+    int rc = -1;
+
+    struct Ert_ErrorFrameIter iter = errorStack_.mStack->mSequence;
+    struct Ert_ErrorFrameIter end  = errorStack_.mStack->mLevel;
+
+    /* Avoid perturbing the current error frame sequence while visiting
+     * all the frames in the sequence. */
+
+    struct Ert_ErrorFrameSequence frameSequence =
+        ert_pushErrorFrameSequence();
+
+    while (iter.mIndex != end.mIndex)
+    {
+        if (iter.mFrame == iter.mChunk->mEnd)
+        {
+            iter.mChunk = TAILQ_NEXT(iter.mChunk, mStackList);
+            iter.mFrame = iter.mChunk->mBegin;
+        }
+
+        ERT_ERROR_IF(
+            callErrorFrameVisitorMethod(aVisitor, iter.mFrame));
+
+        ++iter.mIndex;
+        ++iter.mFrame;
+    }
+
+    rc = 0;
+
+Ert_Finally:
+
+    ERT_FINALLY({
+        ert_popErrorFrameSequence(frameSequence);
+    });
+
+    return rc;
+}
+
+/* -------------------------------------------------------------------------- */
 void
-ert_logErrorFrameSequence(void)
+ert_logErrorFrameSequence()
 {
     initErrorFrame_();
 
-    unsigned seqLen =
-        errorStack_.mStack->mLevel.mIndex -
-        errorStack_.mStack->mSequence.mIndex;
-
-    for (unsigned ix = 0; ix < seqLen; ++ix)
+    struct SequenceIndex
     {
-        struct Ert_ErrorFrame *frame =
-            errorStack_.mStack->mSequence.mFrame + ix;
+        unsigned mIndex;
+    } seqIndex = { };
 
-        ert_errorWarn(
-            frame->mErrno,
-            frame->mName,
-            frame->mFile,
-            frame->mLine,
-            "Error frame %u - %s",
-            seqLen - ix - 1,
-            frame->mText);
-    }
+    struct ErrorFrameVisitorMethod visitor = ErrorFrameVisitorMethod(
+        &seqIndex,
+        ERT_LAMBDA(
+            int, (struct SequenceIndex        *self_,
+                  const struct Ert_ErrorFrame *aFramePtr),
+            {
+                ert_errorWarn(
+                    aFramePtr->mErrno,
+                    aFramePtr->mName,
+                    aFramePtr->mFile,
+                    aFramePtr->mLine,
+                    "Error frame %u - %s",
+                    self_->mIndex,
+                    aFramePtr->mText);
+
+                ++self_->mIndex;
+
+                return 0;
+            }));
+
+    while (visitErrorFrameSequence_(visitor))
+        break;
 }
 
 /* -------------------------------------------------------------------------- */

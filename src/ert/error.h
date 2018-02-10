@@ -370,7 +370,7 @@ ert_errorDebug(
 
 void
 ert_errorEnsure(const char *aFunction, const char *aFile, unsigned aLine,
-            const char *aPredicate)
+                const char *aPredicate)
     __attribute__ ((__noreturn__));
 
 /* -------------------------------------------------------------------------- */
