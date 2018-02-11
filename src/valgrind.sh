@@ -118,12 +118,14 @@ trap "terminate SIGINT"  SIGINT
 trap "terminate SIGQUIT" SIGQUIT
 
 exec > >(tee "$1.log") 2>&1 # Note: Set $! here, but will be redefined later
+set -- "$!" "$@"
 
-rm -rf -- "$1.strace"
-mkdir -- "$1.strace"
+rm -rf -- "$2.strace"
+mkdir -- "$2.strace"
 
 set -m
 (
+    shift
     set -x
     valgrind "$@" -- # strace -ff -t -o "$1.strace/log"
 ) &
@@ -137,4 +139,8 @@ if [ 0 -eq "$RC" ] ; then
 else
     say "FAIL"
 fi
+
+exec >&- 2>&-
+wait "$1" || :
+
 exit "$RC"
