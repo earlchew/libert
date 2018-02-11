@@ -512,13 +512,17 @@ ert_pushErrorFrameSequence(void)
 {
     initErrorFrame_();
 
-    struct Ert_ErrorFrameIter iter = errorStack_.mStack->mSequence;
+    struct Ert_ErrorFrameRange range =
+    {
+        .mBegin = errorStack_.mStack->mSequence,
+        .mEnd   = errorStack_.mStack->mLevel,
+    };
 
     errorStack_.mStack->mSequence = errorStack_.mStack->mLevel;
 
     return (struct Ert_ErrorFrameSequence)
     {
-        .mIter = iter,
+        .mRange = range,
     };
 }
 
@@ -528,7 +532,7 @@ ert_popErrorFrameSequence(struct Ert_ErrorFrameSequence aSequence)
 {
     ert_restartErrorFrameSequence_();
 
-    errorStack_.mStack->mSequence = aSequence.mIter;
+    errorStack_.mStack->mSequence = aSequence.mRange.mBegin;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -547,13 +551,11 @@ ert_switchErrorFrameStack(enum Ert_ErrorFrameStackKind aStack)
 
 /* -------------------------------------------------------------------------- */
 static unsigned
-ert_ownErrorFrameSequenceLength_(void)
+ert_ownErrorFrameSequenceLength_(const struct Ert_ErrorFrameSequence *self)
 {
     initErrorFrame_();
 
-    return
-        errorStack_.mStack->mLevel.mIndex -
-        errorStack_.mStack->mSequence.mIndex;
+    return self->mRange.mEnd.mIndex - self->mRange.mBegin.mIndex;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -612,18 +614,17 @@ ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
 
 /* -------------------------------------------------------------------------- */
 static int
-visitErrorFrameSequence_(struct ErrorFrameVisitorMethod aVisitor)
+visitErrorFrameSequence_(
+    const struct Ert_ErrorFrameSequence *self,
+    struct ErrorFrameVisitorMethod       aVisitor)
 {
     int rc = -1;
 
-    struct Ert_ErrorFrameIter iter = errorStack_.mStack->mSequence;
-    struct Ert_ErrorFrameIter end  = errorStack_.mStack->mLevel;
+    struct Ert_ErrorFrameIter iter = self->mRange.mBegin;
+    struct Ert_ErrorFrameIter end  = self->mRange.mEnd;
 
     /* Avoid perturbing the current error frame sequence while visiting
      * all the frames in the sequence. */
-
-    struct Ert_ErrorFrameSequence frameSequence =
-        ert_pushErrorFrameSequence();
 
     while (iter.mIndex != end.mIndex)
     {
@@ -644,16 +645,15 @@ visitErrorFrameSequence_(struct ErrorFrameVisitorMethod aVisitor)
 
 Ert_Finally:
 
-    ERT_FINALLY({
-        ert_popErrorFrameSequence(frameSequence);
-    });
+    ERT_FINALLY({});
 
     return rc;
 }
 
 /* -------------------------------------------------------------------------- */
 int
-ert_freezeErrorFrameSequence(int aFd)
+ert_freezeErrorFrameSequence(
+    int aFd, const struct Ert_ErrorFrameSequence *aSequence)
 {
     int rc = -1;
 
@@ -668,7 +668,7 @@ ert_freezeErrorFrameSequence(int aFd)
         .mLength = 0,
     };
 
-    unsigned seqLength = ert_ownErrorFrameSequenceLength_();
+    unsigned seqLength = ert_ownErrorFrameSequenceLength_(aSequence);
 
     ssize_t wroteLen = -1;
     ERT_ERROR_IF(
@@ -691,7 +691,7 @@ ert_freezeErrorFrameSequence(int aFd)
             }));
 
     ERT_ERROR_IF(
-        visitErrorFrameSequence_(visitor));
+        visitErrorFrameSequence_(aSequence, visitor));
 
     ert_ensure(seqLength == seqIter.mLength);
 
@@ -701,7 +701,7 @@ Ert_Finally:
 
     ERT_FINALLY({});
 
-    return rc;
+    return rc ? rc : seqLength;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -730,13 +730,13 @@ Ert_Finally:
 
     if ( ! rc)
     {
+        ert_restartErrorFrameSequence_();
+
         for (unsigned sx = 0; sx < aSeqLength; ++sx)
             ert_addErrorFrame_(
                 &errorFrames[sx], errorFrames[sx].mErrno);
 
         errno = errorFrames[aSeqLength-1].mErrno;
-
-        rc = -1;
     }
 
     return rc;
@@ -764,10 +764,10 @@ ert_thawErrorFrameSequence(int aFd)
         ERT_ERROR_IF(
             ert_thawErrorFrameSequence_(aFd, seqLength));
 
-        /* Thawing the error frame sequence will either yield the thawed
-         * error, or the error that caused the thawing to fail. */
+        /* If thawing succeeds, return an error code to the caller to
+         * represent the thawed error frame sequence. */
 
-        ert_ensure(0);
+        goto Ert_Error_;
     }
 
     rc = 0;
@@ -810,8 +810,12 @@ ert_logErrorFrameSequence(void)
                 return 0;
             }));
 
-    while (visitErrorFrameSequence_(visitor))
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
+
+    while (visitErrorFrameSequence_(&frameSequence, visitor))
         break;
+
+    ert_popErrorFrameSequence(frameSequence);
 }
 
 /* -------------------------------------------------------------------------- */

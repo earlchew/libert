@@ -262,9 +262,15 @@ struct Ert_ErrorFrameIter
     struct Ert_ErrorFrameChunk *mChunk;
 };
 
+struct Ert_ErrorFrameRange
+{
+    struct Ert_ErrorFrameIter mBegin;
+    struct Ert_ErrorFrameIter mEnd;
+};
+
 struct Ert_ErrorFrameSequence
 {
-    struct Ert_ErrorFrameIter mIter;
+    struct Ert_ErrorFrameRange mRange;
 };
 
 enum Ert_ErrorFrameStackKind
@@ -280,10 +286,11 @@ ert_addErrorFrame_(const struct Ert_ErrorFrame *aFrame, int aErrno);
 void
 ert_restartErrorFrameSequence_(void);
 
-int
-ert_freezeErrorFrameSequence(int aFd);
+ERT_CHECKED int
+ert_freezeErrorFrameSequence(
+    int aFd, const struct Ert_ErrorFrameSequence *aSequence);
 
-int
+ERT_CHECKED int
 ert_thawErrorFrameSequence(int aFd);
 
 unsigned

@@ -28,8 +28,8 @@
 */
 
 #include "ert/error.h"
-
 #include "ert/printf.h"
+#include "ert/file.h"
 
 #include <unistd.h>
 
@@ -257,6 +257,51 @@ TEST_F(ErrorTest, DeeplyNested)
     ert_restartErrorFrameSequence_();
     testDeeplyNested(pageSize);
     ert_logErrorFrameSequence();
+}
+
+TEST_F(ErrorTest, FreezeThaw)
+{
+    int errCode;
+
+    struct Ert_File  tempFile_;
+    struct Ert_File *tempFile = 0;
+
+    ASSERT_EQ(
+        0, ert_temporaryFile(&tempFile_, 0));
+    tempFile = &tempFile_;
+
+    EXPECT_EQ(-1, testFinallyIfFail_2());
+    errCode = errno;
+    EXPECT_EQ(-2, errCode);
+    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
+    ert_logErrorFrameSequence();
+
+    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
+
+    EXPECT_EQ(
+        2, ert_freezeErrorFrameSequence(tempFile->mFd, &frameSequence));
+
+    ert_popErrorFrameSequence(frameSequence);
+
+    EXPECT_EQ(
+        0, ert_lseekFile(tempFile, 0, Ert_WhenceTypeStart));
+
+    EXPECT_EQ(
+        -1, ert_thawErrorFrameSequence(tempFile->mFd));
+
+    errCode = errno;
+    EXPECT_EQ(-2, errCode);
+    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
+    EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
+
+    tempFile = ert_closeFile(tempFile);
 }
 
 #include "_test_.h"
