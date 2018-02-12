@@ -32,6 +32,7 @@
 #include "ert/thread.h"
 #include "ert/process.h"
 #include "ert/queue.h"
+#include "ert/void.h"
 
 #include "eintr_.h"
 
@@ -49,8 +50,8 @@
 #define ERT_METHOD_RETURN_ErrorFrameVisitorMethod    int
 #define ERT_METHOD_CONST_ErrorFrameVisitorMethod
 #define ERT_METHOD_ARG_LIST_ErrorFrameVisitorMethod  \
-        (const struct Ert_ErrorFrame *aFrame)
-#define ERT_METHOD_CALL_LIST_ErrorFrameVisitorMethod (aFrame)
+        (unsigned aOffset, const struct Ert_ErrorFrame *aFrame)
+#define ERT_METHOD_CALL_LIST_ErrorFrameVisitorMethod (aOffset, aFrame)
 
 #define ERT_METHOD_TYPE_PREFIX
 #define ERT_METHOD_FUNCTION_PREFIX
@@ -250,12 +251,14 @@ static struct Ert_ErrorFrameStackPool
 
     struct
     {
-        struct Ert_ErrorFrameIter mLevel;
-        struct Ert_ErrorFrameIter mSequence;
+        struct Ert_ErrorFrameSequenceTail mTail;
+        struct Ert_ErrorFrameSequenceHead mHead;
 
-        Ert_ErrorFrameChunkListT mHead;
+        Ert_ErrorFrameChunkListT mChunkList;
 
     } mStack_[Ert_ErrorFrameStackKinds], *mStack;
+
+    unsigned mSeqIndex;
 
 } __thread errorStack_;
 
@@ -397,29 +400,30 @@ initErrorFrame_(void)
 
     if ( ! errorStack_.mStack)
     {
+        errorStack_.mSeqIndex = 0;
+
         for (unsigned ix = ERT_NUMBEROF(errorStack_.mStack_); ix--; )
         {
             errorStack_.mStack = &errorStack_.mStack_[ix];
 
-            TAILQ_INIT(&errorStack_.mStack->mHead);
+            TAILQ_INIT(&errorStack_.mStack->mChunkList);
 
             struct Ert_ErrorFrameChunk *chunk = createErrorFrameChunk_();
 
-            TAILQ_INSERT_TAIL(&errorStack_.mStack->mHead, chunk, mStackList);
+            TAILQ_INSERT_TAIL(
+                &errorStack_.mStack->mChunkList, chunk, mStackList);
 
-            errorStack_.mStack->mLevel = (struct Ert_ErrorFrameIter)
+            errorStack_.mStack->mHead = (struct Ert_ErrorFrameSequenceHead)
             {
-                .mIndex = 0,
-                .mFrame = 0,
-                .mChunk = 0,
+                .mIter     = { .mFrame = chunk->mBegin, .mChunk = chunk, },
+                .mSeqIndex = errorStack_.mSeqIndex++,
             };
 
-            struct Ert_ErrorFrameIter *iter = &errorStack_.mStack->mLevel;
-
-            iter->mChunk = chunk;
-            iter->mFrame = chunk->mBegin;
-
-            errorStack_.mStack->mSequence = *iter;
+            errorStack_.mStack->mTail = (struct Ert_ErrorFrameSequenceTail)
+            {
+                .mIter   = errorStack_.mStack->mHead.mIter,
+                .mOffset = 0,
+            };
         }
     }
 }
@@ -478,13 +482,14 @@ ert_addErrorFrame_(const struct Ert_ErrorFrame *self, int aErrno)
 {
     initErrorFrame_();
 
-    struct Ert_ErrorFrameIter *iter = &errorStack_.mStack->mLevel;
+    struct Ert_ErrorFrameSequenceTail *tail = &errorStack_.mStack->mTail;
+    struct Ert_ErrorFrameIter         *iter = &tail->mIter;
 
     if (iter->mFrame == iter->mChunk->mEnd)
     {
         struct Ert_ErrorFrameChunk *chunk = createErrorFrameChunk_();
 
-        TAILQ_INSERT_TAIL(&errorStack_.mStack->mHead, chunk, mStackList);
+        TAILQ_INSERT_TAIL(&errorStack_.mStack->mChunkList, chunk, mStackList);
 
         iter->mChunk = chunk;
         iter->mFrame = chunk->mBegin;
@@ -492,8 +497,9 @@ ert_addErrorFrame_(const struct Ert_ErrorFrame *self, int aErrno)
 
     iter->mFrame[0]        = *self;
     iter->mFrame[0].mErrno = aErrno;
+    iter->mFrame[0].mSeqId = ert_ownErrorFrameSequenceId();
 
-    ++iter->mIndex;
+    ++tail->mOffset;
     ++iter->mFrame;
 }
 
@@ -503,7 +509,12 @@ ert_restartErrorFrameSequence_(void)
 {
     initErrorFrame_();
 
-    errorStack_.mStack->mLevel = errorStack_.mStack->mSequence;
+    if (errorStack_.mStack->mTail.mOffset)
+    {
+        errorStack_.mStack->mTail.mOffset   = 0;
+        errorStack_.mStack->mHead.mSeqIndex = errorStack_.mSeqIndex++;
+        errorStack_.mStack->mTail.mIter     = errorStack_.mStack->mHead.mIter;
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -512,18 +523,23 @@ ert_pushErrorFrameSequence(void)
 {
     initErrorFrame_();
 
-    struct Ert_ErrorFrameRange range =
+    struct Ert_ErrorFrameSequence frameSequence =
     {
-        .mBegin = errorStack_.mStack->mSequence,
-        .mEnd   = errorStack_.mStack->mLevel,
+        .mRange =
+        {
+            .mBegin = errorStack_.mStack->mHead.mIter,
+            .mEnd   = errorStack_.mStack->mTail.mIter,
+        },
+        .mSeqIndex = errorStack_.mStack->mHead.mSeqIndex,
+        .mOffset   = errorStack_.mStack->mTail.mOffset,
     };
 
-    errorStack_.mStack->mSequence = errorStack_.mStack->mLevel;
+    errorStack_.mStack->mHead.mIter = errorStack_.mStack->mTail.mIter;
 
-    return (struct Ert_ErrorFrameSequence)
-    {
-        .mRange = range,
-    };
+    errorStack_.mStack->mHead.mSeqIndex = errorStack_.mSeqIndex++;
+    errorStack_.mStack->mTail.mOffset   = 0;
+
+    return frameSequence;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -532,7 +548,14 @@ ert_popErrorFrameSequence(struct Ert_ErrorFrameSequence aSequence)
 {
     ert_restartErrorFrameSequence_();
 
-    errorStack_.mStack->mSequence = aSequence.mRange.mBegin;
+    if (errorStack_.mSeqIndex == errorStack_.mStack->mHead.mSeqIndex + 1)
+        errorStack_.mSeqIndex = errorStack_.mStack->mHead.mSeqIndex;
+
+    errorStack_.mStack->mHead.mSeqIndex = aSequence.mSeqIndex;
+    errorStack_.mStack->mHead.mIter     = aSequence.mRange.mBegin;
+
+    errorStack_.mStack->mTail.mOffset   = aSequence.mOffset;
+    errorStack_.mStack->mTail.mIter     = aSequence.mRange.mEnd;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -550,54 +573,65 @@ ert_switchErrorFrameStack(enum Ert_ErrorFrameStackKind aStack)
 }
 
 /* -------------------------------------------------------------------------- */
-static unsigned
-ert_ownErrorFrameSequenceLength_(const struct Ert_ErrorFrameSequence *self)
+struct Ert_ErrorFrameSequenceId
+ert_ownErrorFrameSequenceId(void)
 {
     initErrorFrame_();
 
-    return self->mRange.mEnd.mIndex - self->mRange.mBegin.mIndex;
+    return (struct Ert_ErrorFrameSequenceId)
+    {
+        .mTid      = ert_ownThreadId(),
+        .mSeqIndex = errorStack_.mStack->mHead.mSeqIndex,
+    };
+}
+
+/* -------------------------------------------------------------------------- */
+static unsigned
+ert_ownErrorFrameSequenceLength_(const struct Ert_ErrorFrameSequence *self)
+{
+    return self->mOffset;
 }
 
 /* -------------------------------------------------------------------------- */
 unsigned
-ert_ownErrorFrameLevel_(void)
+ert_ownErrorFrameOffset_(void)
 {
     initErrorFrame_();
 
-    return errorStack_.mStack->mLevel.mIndex;
+    return errorStack_.mStack->mTail.mOffset;
 }
 
 /* -------------------------------------------------------------------------- */
 const struct Ert_ErrorFrame *
-ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
+ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aOffset)
 {
     initErrorFrame_();
 
     struct Ert_ErrorFrame *frame = 0;
 
-    if (aLevel < errorStack_.mStack->mLevel.mIndex)
+    if (aOffset < errorStack_.mStack->mTail.mOffset)
     {
         struct Ert_ErrorFrame *begin =
-            errorStack_.mStack->mLevel.mChunk->mBegin;
+            errorStack_.mStack->mTail.mIter.mChunk->mBegin;
 
         struct Ert_ErrorFrame *end =
-            errorStack_.mStack->mLevel.mFrame;
+            errorStack_.mStack->mTail.mIter.mFrame;
 
-        unsigned top = errorStack_.mStack->mLevel.mIndex;
+        unsigned top = errorStack_.mStack->mTail.mOffset;
 
         while (1)
         {
-            unsigned size   = end - begin;
-            unsigned bottom = top - size;
+            unsigned size = end - begin;
+            unsigned tail = top - aOffset;
 
-            if (aLevel >= bottom)
+            if (size >= tail)
             {
-                frame = begin + (aLevel - bottom);
+                frame = end - tail;
                 break;
             }
 
             struct Ert_ErrorFrameChunk *prevChunk =
-                TAILQ_PREV(errorStack_.mStack->mLevel.mChunk,
+                TAILQ_PREV(errorStack_.mStack->mTail.mIter.mChunk,
                            Ert_ErrorFrameChunkList,
                            mStackList);
 
@@ -605,7 +639,7 @@ ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel)
 
             begin = prevChunk->mBegin;
             end   = prevChunk->mEnd;
-            top   = bottom;
+            top   = top - size;
         }
     }
 
@@ -621,12 +655,11 @@ visitErrorFrameSequence_(
     int rc = -1;
 
     struct Ert_ErrorFrameIter iter = self->mRange.mBegin;
-    struct Ert_ErrorFrameIter end  = self->mRange.mEnd;
 
     /* Avoid perturbing the current error frame sequence while visiting
      * all the frames in the sequence. */
 
-    while (iter.mIndex != end.mIndex)
+    for (unsigned offset = 0; offset < self->mOffset; ++offset)
     {
         if (iter.mFrame == iter.mChunk->mEnd)
         {
@@ -635,9 +668,8 @@ visitErrorFrameSequence_(
         }
 
         ERT_ERROR_IF(
-            callErrorFrameVisitorMethod(aVisitor, iter.mFrame));
+            callErrorFrameVisitorMethod(aVisitor, offset, iter.mFrame));
 
-        ++iter.mIndex;
         ++iter.mFrame;
     }
 
@@ -683,8 +715,9 @@ ert_freezeErrorFrameSequence(
     struct ErrorFrameVisitorMethod visitor = ErrorFrameVisitorMethod(
         &seqIter,
         ERT_LAMBDA(
-            int, (struct SequenceIterator     *self_,
-                  const struct Ert_ErrorFrame *aFramePtr),
+            int, (struct SequenceIterator             *self_,
+                  unsigned                             aOffset_,
+                  const struct Ert_ErrorFrame         *aFramePtr),
             {
                 ++self_->mLength;
                 return ert_freezeErrorFrame_(self_->mFd, aFramePtr);
@@ -785,15 +818,11 @@ ert_logErrorFrameSequence(void)
 {
     initErrorFrame_();
 
-    struct SequenceIndex
-    {
-        unsigned mIndex;
-    } seqIndex = { };
-
     struct ErrorFrameVisitorMethod visitor = ErrorFrameVisitorMethod(
-        &seqIndex,
+        ert_Void(),
         ERT_LAMBDA(
-            int, (struct SequenceIndex        *self_,
+            int, (struct Ert_Void             *self_,
+                  unsigned                     aFrameOffset,
                   const struct Ert_ErrorFrame *aFramePtr),
             {
                 ert_errorWarn(
@@ -801,11 +830,10 @@ ert_logErrorFrameSequence(void)
                     aFramePtr->mName,
                     aFramePtr->mFile,
                     aFramePtr->mLine,
-                    "Error frame %u - %s",
-                    self_->mIndex,
+                    "%" PRIs_Ert_ErrorFrameSequenceId " Error frame %u - %s",
+                    FMTs_Ert_ErrorFrameSequenceId(aFramePtr->mSeqId),
+                    aFrameOffset,
                     aFramePtr->mText);
-
-                ++self_->mIndex;
 
                 return 0;
             }));

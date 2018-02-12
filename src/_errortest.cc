@@ -175,12 +175,12 @@ TEST_F(ErrorTest, FinallyIf)
     int sigErrCode;
 
     EXPECT_EQ(0, testFinallyIfOk());
-    EXPECT_EQ(0u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(0u, ert_ownErrorFrameOffset_());
     ert_restartErrorFrameSequence_();
 
     EXPECT_EQ(-1, testFinallyIfFail_1());
     errCode = errno;
-    EXPECT_EQ(1u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(1u, ert_ownErrorFrameOffset_());
     EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
     EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1));
     ert_logErrorFrameSequence();
@@ -189,7 +189,7 @@ TEST_F(ErrorTest, FinallyIf)
 
     EXPECT_EQ(-1, testFinallyIfFail_2());
     errCode = errno;
-    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(2u, ert_ownErrorFrameOffset_());
     EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
     EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
     EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
@@ -206,7 +206,7 @@ TEST_F(ErrorTest, FinallyIf)
 
     EXPECT_EQ(-1, testFinallyIfFail_1());
     sigErrCode = errno;
-    EXPECT_EQ(1u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(1u, ert_ownErrorFrameOffset_());
     EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
     EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1));
     ert_logErrorFrameSequence();
@@ -216,7 +216,7 @@ TEST_F(ErrorTest, FinallyIf)
     stackKind = ert_switchErrorFrameStack(stackKind);
     EXPECT_EQ(Ert_ErrorFrameStackSignal, stackKind);
 
-    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(2u, ert_ownErrorFrameOffset_());
     EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
     EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
     EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
@@ -250,6 +250,23 @@ Ert_Finally:
     return rc;
 }
 
+TEST_F(ErrorTest, OffsetCounting)
+{
+    EXPECT_EQ(-1, testFinallyIfFail_1());
+    EXPECT_EQ(1u, ert_ownErrorFrameOffset_());
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
+
+    EXPECT_EQ(0u, ert_ownErrorFrameOffset_());
+
+    EXPECT_EQ(-1, testFinallyIfFail_2());
+    EXPECT_EQ(2u, ert_ownErrorFrameOffset_());
+
+    ert_popErrorFrameSequence(frameSequence);
+
+    EXPECT_EQ(1u, ert_ownErrorFrameOffset_());
+}
+
 TEST_F(ErrorTest, DeeplyNested)
 {
     long pageSize = sysconf(_SC_PAGESIZE);
@@ -273,13 +290,13 @@ TEST_F(ErrorTest, FreezeThaw)
     EXPECT_EQ(-1, testFinallyIfFail_2());
     errCode = errno;
     EXPECT_EQ(-2, errCode);
-    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(2u, ert_ownErrorFrameOffset_());
     EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
     EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
     EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
     ert_logErrorFrameSequence();
 
-    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(2u, ert_ownErrorFrameOffset_());
 
     struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
 
@@ -296,7 +313,7 @@ TEST_F(ErrorTest, FreezeThaw)
 
     errCode = errno;
     EXPECT_EQ(-2, errCode);
-    EXPECT_EQ(2u, ert_ownErrorFrameLevel_());
+    EXPECT_EQ(2u, ert_ownErrorFrameOffset_());
     EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
     EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
     EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));

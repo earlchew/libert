@@ -212,10 +212,14 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
     {                                                                         \
         if ( Sense_ (Predicate_))                                             \
         {                                                                     \
+            struct Ert_ErrorFrameSequenceId ert_seqId_ =                      \
+                ert_ownErrorFrameSequenceId();                                \
+                                                                              \
             Ert_Error_warn_(0,                                                \
-                 "%" PRIs_Ert_Method                                          \
+                 "%" PRIs_Ert_ErrorFrameSequenceId " %" PRIs_Ert_Method       \
                  ERT_IFEMPTY("", " ", ERT_CAR(__VA_ARGS__))                   \
                  ERT_CAR(__VA_ARGS__),                                        \
+                 FMTs_Ert_ErrorFrameSequenceId(ert_seqId_),                   \
                  FMTs_Ert_Method(Self_, PrintfMethod_)                        \
                  ERT_CDR(__VA_ARGS__));                                       \
         }                                                                     \
@@ -242,6 +246,17 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
     } while (0)
 
 /* -------------------------------------------------------------------------- */
+#define PRIs_Ert_ErrorFrameSequenceId \
+    "c%" PRId_Ert_Tid ".%04x"
+#define FMTs_Ert_ErrorFrameSequenceId(SeqId) \
+    '@', FMTd_Ert_Tid((SeqId).mTid), (SeqId).mSeqIndex
+
+struct Ert_ErrorFrameSequenceId
+{
+    struct Ert_Tid mTid;
+    unsigned       mSeqIndex;
+};
+
 struct Ert_ErrorFrame
 {
     const char *mFile;
@@ -249,6 +264,8 @@ struct Ert_ErrorFrame
     const char *mName;
     const char *mText;
     int         mErrno;
+
+    struct Ert_ErrorFrameSequenceId mSeqId;
 };
 
 #define ERT_ERRORFRAME_INIT(aText) { __FILE__, __LINE__, __func__, aText }
@@ -257,7 +274,6 @@ struct Ert_ErrorFrameChunk;
 
 struct Ert_ErrorFrameIter
 {
-    unsigned                    mIndex;
     struct Ert_ErrorFrame      *mFrame;
     struct Ert_ErrorFrameChunk *mChunk;
 };
@@ -268,9 +284,23 @@ struct Ert_ErrorFrameRange
     struct Ert_ErrorFrameIter mEnd;
 };
 
+struct Ert_ErrorFrameSequenceHead
+{
+    struct Ert_ErrorFrameIter mIter;
+    unsigned                  mSeqIndex;
+};
+
+struct Ert_ErrorFrameSequenceTail
+{
+    struct Ert_ErrorFrameIter mIter;
+    unsigned                  mOffset;
+};
+
 struct Ert_ErrorFrameSequence
 {
     struct Ert_ErrorFrameRange mRange;
+    unsigned                   mSeqIndex;
+    unsigned                   mOffset;
 };
 
 enum Ert_ErrorFrameStackKind
@@ -294,10 +324,13 @@ ERT_CHECKED int
 ert_thawErrorFrameSequence(int aFd);
 
 unsigned
-ert_ownErrorFrameLevel_(void);
+ert_ownErrorFrameOffset_(void);
+
+struct Ert_ErrorFrameSequenceId
+ert_ownErrorFrameSequenceId(void);
 
 const struct Ert_ErrorFrame *
-ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aLevel);
+ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aOffset);
 
 void
 ert_logErrorFrameSequence(void);
