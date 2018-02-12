@@ -1,5 +1,5 @@
-nobase_libert_a_HEADERS_CKSUM_1_ = 406649543 519
-nobase_libert_a_HEADERS_CKSUM_2_ = $(shell ( : ; find 'ert' -maxdepth 1 -name '*.h' -printf '%p\n' ) | sort | cksum)
+nobase_libert_a_HEADERS_CKSUM_1_ = 949137148 530
+nobase_libert_a_HEADERS_CKSUM_2_ = $(shell ( : ; find 'ert' -maxdepth 1 -name '*.h' -printf '%p\n' ) | sed -e 's,^\./,,' | sort | cksum)
 nobase_libert_a_HEADERS = \
  ert/bellsocketpair.h \
  ert/compiler.h \
@@ -38,4 +38,5 @@ nobase_libert_a_HEADERS = \
  ert/tree.h \
  ert/type.h \
  ert/uid.h \
- ert/unixsocket.h
+ ert/unixsocket.h \
+ ert/void.h
