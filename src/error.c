@@ -436,7 +436,8 @@ ert_freezeErrorFrame_(int aFd, const struct Ert_ErrorFrame *aFrame)
 
     ssize_t wroteLen = -1;
     ERT_ERROR_IF(
-        (wroteLen = ert_writeFd(aFd, (const void *) aFrame, sizeof(*aFrame), 0),
+        (wroteLen = ert_writeFdRaw(
+            aFd, (const void *) aFrame, sizeof(*aFrame), 0),
          -1 == wroteLen || sizeof(*aFrame) != wroteLen),
         {
             if (-1 != wroteLen)
@@ -460,7 +461,8 @@ ert_thawErrorFrame_(int aFd, struct Ert_ErrorFrame *aFrame)
 
     ssize_t readLen = -1;
     ERT_ERROR_IF(
-        (readLen = ert_readFd(aFd, (void *) aFrame, sizeof(*aFrame), 0),
+        (readLen = ert_readFdRaw(
+            aFd, (void *) aFrame, sizeof(*aFrame), 0),
          -1 == readLen || sizeof(*aFrame) != readLen),
         {
             if (-1 != readLen)
@@ -738,7 +740,7 @@ Ert_Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-static int
+static ERT_CHECKED int
 ert_thawErrorFrameSequence_(int aFd, unsigned aSeqLength)
 {
     int rc = -1;
@@ -757,9 +759,10 @@ Ert_Finally:
 
     ERT_FINALLY({});
 
-    /* This method will always yield an error. In the normal case, the
-     * method will yield the thawed error, and in the abnormal case
-     * it will yield the error that caused the thawing to fail. */
+    /* If this method returns successfully, the thawed error will
+     * be placed on the error frame stack. Otherwise the method
+     * result code will indicate an error, and the error frame stack
+     * will yield the error that caused the thawing to fail. */
 
     if ( ! rc)
     {
