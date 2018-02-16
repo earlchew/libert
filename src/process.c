@@ -1713,12 +1713,6 @@ Ert_Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-struct ForkProcessResult_
-{
-    int mReturnCode;
-    int mErrCode;
-};
-
 struct ForkProcessChannel_
 {
     struct ForkProcessChannel_  *mPrev;
@@ -1884,17 +1878,29 @@ Ert_Finally:
 
 static ERT_CHECKED int
 sendForkProcessChannelResult_(
-    struct ForkProcessChannel_      *self,
-    const struct ForkProcessResult_ *aResult)
+    struct ForkProcessChannel_          *self,
+    const struct Ert_ErrorFrameSequence *aFrameSequence)
 {
     int rc = -1;
 
-    ERT_ERROR_IF(
-        sizeof(*aResult) != ert_writeFile(
-            self->mResultPipe->mWrFile, (char *) aResult, sizeof(*aResult), 0));
+    /* Ring the result first since writing the result will block if the
+     * pipe is full, and the parent will not read the pipe until the
+     * child rings. */
 
     ERT_ERROR_IF(
         ert_ringBellSocketPairChild(self->mResultSocket));
+
+    char resultCode = aFrameSequence ? 1 : 0;
+
+    ERT_ERROR_IF(
+        sizeof(resultCode) != ert_writeFile(
+            self->mResultPipe->mWrFile,
+            (char *) &resultCode, sizeof(resultCode), 0));
+
+    if (aFrameSequence)
+        ERT_ERROR_IF(
+            ert_freezeErrorFrameSequence(
+                self->mResultPipe->mWrFile->mFd, aFrameSequence));
 
     rc = 0;
 
@@ -1907,17 +1913,33 @@ Ert_Finally:
 
 static ERT_CHECKED int
 recvForkProcessChannelResult_(
-    struct ForkProcessChannel_ *self,
-    struct ForkProcessResult_  *aResult)
+    struct ForkProcessChannel_ *self)
 {
     int rc = -1;
 
     ERT_ERROR_IF(
         ert_waitBellSocketPairParent(self->mResultSocket, 0));
 
+    char resultCode;
+
     ERT_ERROR_IF(
-        sizeof(*aResult) != ert_readFile(
-            self->mResultPipe->mRdFile, (char *) aResult, sizeof(*aResult), 0));
+        sizeof(resultCode) != ert_readFile(
+            self->mResultPipe->mRdFile, &resultCode, sizeof(resultCode), 0));
+
+    if (resultCode)
+    {
+        ERT_ERROR_IF(
+            ert_thawErrorFrameSequence(self->mResultPipe->mRdFile->mFd));
+
+        /* Take care if resultCode indicates that there should be an
+         * error frame sequence, but no thawed error frame is available. */
+
+        ERT_ERROR_IF(
+            resultCode,
+            {
+                errno = EIO;
+            });
+    }
 
     rc = 0;
 
@@ -2075,16 +2097,8 @@ forkProcessChild_PostParent_(
     }
 
     {
-        struct ForkProcessResult_ forkResult;
-
         ERT_ERROR_IF(
-            recvForkProcessChannelResult_(self, &forkResult));
-
-        ERT_ERROR_IF(
-            forkResult.mReturnCode,
-            {
-                errno = forkResult.mErrCode;
-            });
+            recvForkProcessChannelResult_(self));
 
         ERT_ERROR_IF(
             ! ert_ownPostForkParentProcessMethodNil(aPostForkParentMethod) &&
@@ -2206,17 +2220,7 @@ forkProcessChild_PostChild_(
         ert_callPostForkChildProcessMethod(aPostForkChildMethod));
 
     {
-        /* Send the child fork process method result to the parent so
-         * that it can return an error code to the caller, then wait
-         * for the parent to acknowledge. */
-
-        struct ForkProcessResult_ forkResult =
-        {
-            .mReturnCode = 0,
-            .mErrCode    = 0,
-        };
-
-        if (sendForkProcessChannelResult_(self, &forkResult) ||
+        if (sendForkProcessChannelResult_(self, 0) ||
             recvForkProcessChannelAcknowledgement_(self))
         {
             /* Terminate the child if the result could not be sent. The
@@ -2247,18 +2251,17 @@ Ert_Finally:
              * detect that the child has terminated before sending the
              * error indication. */
 
-            struct ForkProcessResult_ forkResult =
-            {
-                .mReturnCode = rc,
-                .mErrCode    = errno,
-            };
+            struct Ert_ErrorFrameSequence frameSequence =
+                ert_pushErrorFrameSequence();
 
             while (
-                sendForkProcessChannelResult_(self, &forkResult) ||
+                sendForkProcessChannelResult_(self, &frameSequence) ||
                 recvForkProcessChannelAcknowledgement_(self))
             {
                 break;
             }
+
+            ert_popErrorFrameSequence(frameSequence);
 
             ert_exitProcess(EXIT_FAILURE);
         }
