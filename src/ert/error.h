@@ -100,7 +100,7 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
         {                                                \
             __VA_ARGS__                                  \
                                                          \
-            ert_addErrorFrame_(&frame_, errno);          \
+            ert_addErrorFrame_(&frame_, errno, 0);       \
             goto Ert_Error_;                             \
         }                                                \
                                                          \
@@ -311,7 +311,10 @@ enum Ert_ErrorFrameStackKind
 };
 
 void
-ert_addErrorFrame_(const struct Ert_ErrorFrame *aFrame, int aErrno);
+ert_addErrorFrame_(
+    const struct Ert_ErrorFrame           *aFrame,
+    int                                    aErrno,
+    const struct Ert_ErrorFrameSequenceId *aSeqId);
 
 void
 ert_restartErrorFrameSequence_(void);

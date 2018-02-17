@@ -30,6 +30,8 @@
 #include "ert/error.h"
 #include "ert/printf.h"
 #include "ert/file.h"
+#include "ert/void.h"
+#include "ert/process.h"
 
 #include <unistd.h>
 
@@ -39,19 +41,26 @@ class ErrorTest : public ::testing::Test
 {
     void SetUp()
     {
-        ASSERT_EQ(0, Ert_Error_init(&mModule_));
-        mModule = &mModule_;
+        ASSERT_EQ(0, Ert_Error_init(&mErrorModule_));
+        mErrorModule = &mErrorModule_;
+
+        ASSERT_EQ(0, Ert_Process_init(&mProcessModule_, __FILE__));
+        mProcessModule = &mProcessModule_;
     }
 
     void TearDown()
     {
-        mModule = Ert_Error_exit(mModule);
+        mProcessModule = Ert_Process_exit(mProcessModule);
+        mErrorModule   = Ert_Error_exit(mErrorModule);
     }
 
 private:
 
-    struct Ert_ErrorModule  mModule_;
-    struct Ert_ErrorModule *mModule;
+    struct Ert_ErrorModule  mErrorModule_;
+    struct Ert_ErrorModule *mErrorModule;
+
+    struct Ert_ProcessModule  mProcessModule_;
+    struct Ert_ProcessModule *mProcessModule;
 };
 
 TEST_F(ErrorTest, ErrnoText)
@@ -319,6 +328,64 @@ TEST_F(ErrorTest, FreezeThaw)
     EXPECT_EQ(0,  ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
 
     tempFile = ert_closeFile(tempFile);
+}
+
+TEST_F(ErrorTest, ChildError)
+{
+    /* Failure in child postfork */
+
+    errno = 0;
+
+    struct Ert_Pid childPid =
+        ert_forkProcessChild(
+            Ert_ForkProcessInheritProcessGroup,
+            Ert_Pgid(0),
+            Ert_PreForkProcessMethod(
+                ert_Void(),
+                ERT_LAMBDA(
+                    int, (
+                        struct Ert_Void                 *self_,
+                        const struct Ert_PreForkProcess *aFork),
+                    {
+                        return 0;
+                    })),
+            Ert_PostForkChildProcessMethod(
+                ert_Void(),
+                ERT_LAMBDA(
+                    int, (struct Ert_Void *self_),
+                    {
+                        return testFinallyIfFail_2();
+                    })),
+            Ert_PostForkParentProcessMethod(
+                ert_Void(),
+                ERT_LAMBDA(
+                    int, (struct Ert_Void *self_,
+                          struct Ert_Pid   aChildPid),
+                    {
+                        abort();
+
+                        errno = EINVAL;
+                        return -1;
+                    })),
+            Ert_ForkProcessMethod(
+                ert_Void(),
+                ERT_LAMBDA(
+                    int, (struct Ert_Void *self_),
+                    {
+                        abort();
+
+                        errno = EINVAL;
+                        return -1;
+                    })));
+
+    int errCode = errno;
+    EXPECT_EQ(-1, childPid.mPid);
+    EXPECT_EQ(-2, errCode);
+    EXPECT_LT(2u, ert_ownErrorFrameOffset_());
+    EXPECT_EQ(-1, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 0)->mErrno);
+    EXPECT_EQ(-2, ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 1)->mErrno);
+    EXPECT_TRUE(ert_ownErrorFrame_(Ert_ErrorFrameStackThread, 2));
+    ert_logErrorFrameSequence();
 }
 
 #include "_test_.h"

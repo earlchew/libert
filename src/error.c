@@ -480,7 +480,10 @@ Ert_Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_addErrorFrame_(const struct Ert_ErrorFrame *self, int aErrno)
+ert_addErrorFrame_(
+    const struct Ert_ErrorFrame           *self,
+    int                                    aErrno,
+    const struct Ert_ErrorFrameSequenceId *aSeqId )
 {
     initErrorFrame_();
 
@@ -499,7 +502,8 @@ ert_addErrorFrame_(const struct Ert_ErrorFrame *self, int aErrno)
 
     iter->mFrame[0]        = *self;
     iter->mFrame[0].mErrno = aErrno;
-    iter->mFrame[0].mSeqId = ert_ownErrorFrameSequenceId();
+    iter->mFrame[0].mSeqId = (
+        aSeqId ? *aSeqId : ert_ownErrorFrameSequenceId());
 
     ++tail->mOffset;
     ++iter->mFrame;
@@ -770,7 +774,9 @@ Ert_Finally:
 
         for (unsigned sx = 0; sx < aSeqLength; ++sx)
             ert_addErrorFrame_(
-                &errorFrames[sx], errorFrames[sx].mErrno);
+                &errorFrames[sx],
+                errorFrames[sx].mErrno,
+                &errorFrames[sx].mSeqId);
 
         errno = errorFrames[aSeqLength-1].mErrno;
     }
