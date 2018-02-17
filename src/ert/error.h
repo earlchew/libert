@@ -151,7 +151,7 @@ ert_errorAssert_(const char *aPredicate, const char *aFile, unsigned aLine);
                                                                 \
         if (Sense_ (Predicate_))                                \
         {                                                       \
-            ert_logErrorFrameSequence();                        \
+            ert_logErrorFrameSequence(0);                       \
                                                                 \
             ERT_AUTO(Action_, &Actor_);                         \
                                                                 \
@@ -310,6 +310,15 @@ enum Ert_ErrorFrameStackKind
     Ert_ErrorFrameStackKinds,
 };
 
+/* -------------------------------------------------------------------------- */
+struct Ert_ErrorFileDescriptor
+{
+    int mFd;
+};
+
+#define ERT_ERRORFILEDESCRIPTOR_INIT(aFd) { (aFd) }
+
+/* -------------------------------------------------------------------------- */
 void
 ert_addErrorFrame_(
     const struct Ert_ErrorFrame           *aFrame,
@@ -336,7 +345,8 @@ const struct Ert_ErrorFrame *
 ert_ownErrorFrame_(enum Ert_ErrorFrameStackKind aStack, unsigned aOffset);
 
 void
-ert_logErrorFrameSequence(void);
+ert_logErrorFrameSequence(
+    const struct Ert_ErrorFileDescriptor *aFileDescriptor);
 
 struct Ert_ErrorFrameSequence
 ert_pushErrorFrameSequence(void);

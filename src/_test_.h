@@ -35,6 +35,8 @@
 
 #include "gtest/gtest.h"
 
+#include <cstdio>
+
 class TestEventListener : public testing::EmptyTestEventListener
 {
     virtual void OnTestPartResult(
@@ -42,8 +44,11 @@ class TestEventListener : public testing::EmptyTestEventListener
     {
         if ( ! aTestPartResult.passed())
         {
+            struct Ert_ErrorFileDescriptor stdOut =
+                ERT_ERRORFILEDESCRIPTOR_INIT(fileno(stdout));
+
             std::cout << "\n++ Error frame sequence start" << std::endl;
-            ert_logErrorFrameSequence();
+            ert_logErrorFrameSequence(&stdOut);
             std::cout << "-- Error frame sequence end\n" << std::endl;
         }
     }

@@ -823,7 +823,8 @@ Ert_Finally:
 
 /* -------------------------------------------------------------------------- */
 void
-ert_logErrorFrameSequence(void)
+ert_logErrorFrameSequence(
+    const struct Ert_ErrorFileDescriptor *aFileDescriptor)
 {
     initErrorFrame_();
 
