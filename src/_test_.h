@@ -41,7 +41,11 @@ class TestEventListener : public testing::EmptyTestEventListener
         const testing::TestPartResult &aTestPartResult)
     {
         if ( ! aTestPartResult.passed())
+        {
+            std::cout << "\n++ Error frame sequence start" << std::endl;
             ert_logErrorFrameSequence();
+            std::cout << "-- Error frame sequence end\n" << std::endl;
+        }
     }
 };
 
