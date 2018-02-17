@@ -822,41 +822,6 @@ Ert_Finally:
 }
 
 /* -------------------------------------------------------------------------- */
-void
-ert_logErrorFrameSequence(
-    const struct Ert_ErrorFileDescriptor *aFileDescriptor)
-{
-    initErrorFrame_();
-
-    struct ErrorFrameVisitorMethod visitor = ErrorFrameVisitorMethod(
-        ert_Void(),
-        ERT_LAMBDA(
-            int, (struct Ert_Void             *self_,
-                  unsigned                     aFrameOffset,
-                  const struct Ert_ErrorFrame *aFramePtr),
-            {
-                ert_errorWarn(
-                    aFramePtr->mErrno,
-                    aFramePtr->mName,
-                    aFramePtr->mFile,
-                    aFramePtr->mLine,
-                    "%" PRIs_Ert_ErrorFrameSequenceId " Error frame %u - %s",
-                    FMTs_Ert_ErrorFrameSequenceId(aFramePtr->mSeqId),
-                    aFrameOffset,
-                    aFramePtr->mText);
-
-                return 0;
-            }));
-
-    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
-
-    while (visitErrorFrameSequence_(&frameSequence, visitor))
-        break;
-
-    ert_popErrorFrameSequence(frameSequence);
-}
-
-/* -------------------------------------------------------------------------- */
 static ERT_CHECKED int
 tryErrTextLength_(int aErrCode, size_t *aSize)
 {
@@ -917,6 +882,7 @@ Ert_Finally:
 /* -------------------------------------------------------------------------- */
 static void
 dprint_(
+    int                        aFd,
     int                        aLockErr,
     int                        aErrCode,
     const char                *aErrText,
@@ -934,14 +900,14 @@ dprint_(
 {
 
     if ( ! aFile)
-        dprintf(STDERR_FILENO, "%s: ", ert_ownProcessName());
+        dprintf(aFd, "%s: ", ert_ownProcessName());
     else
     {
         if (aPid.mPid == aTid.mTid)
         {
             if (aElapsed->duration.ns)
                 dprintf(
-                    STDERR_FILENO,
+                    aFd,
                     "%s: [%04" PRIu64 ":%02" PRIu64
                     ":%02" PRIu64
                     ".%03" PRIu64 " %" PRId_Ert_Pid " %s %s:%u] ",
@@ -950,7 +916,7 @@ dprint_(
                     FMTd_Ert_Pid(aPid), aFunction, aFile, aLine);
             else
                 dprintf(
-                    STDERR_FILENO,
+                    aFd,
                     "%s: [%" PRId_Ert_Pid " %s %s:%u] ",
                     ert_ownProcessName(),
                     FMTd_Ert_Pid(aPid), aFunction, aFile, aLine);
@@ -959,7 +925,7 @@ dprint_(
         {
             if (aElapsed->duration.ns)
                 dprintf(
-                    STDERR_FILENO,
+                    aFd,
                     "%s: [%04" PRIu64 ":%02" PRIu64
                     ":%02" PRIu64
                     ".%03" PRIu64
@@ -971,7 +937,7 @@ dprint_(
                     aFunction, aFile, aLine);
             else
                 dprintf(
-                    STDERR_FILENO,
+                    aFd,
                     "%s: [%" PRId_Ert_Pid ":%" PRId_Ert_Tid " %s %s:%u] ",
                     ert_ownProcessName(),
                     FMTd_Ert_Pid(aPid), FMTd_Ert_Tid(aTid),
@@ -979,20 +945,21 @@ dprint_(
         }
 
         if (EWOULDBLOCK != aLockErr)
-            dprintf(STDERR_FILENO, "- lock error %d - ", aLockErr);
+            dprintf(aFd, "- lock error %d - ", aLockErr);
     }
 
-    ert_vdprintf(STDERR_FILENO, aFmt, aArgs);
+    ert_vdprintf(aFd, aFmt, aArgs);
     if ( ! aErrCode)
-        dprintf(STDERR_FILENO, "\n");
+        dprintf(aFd, "\n");
     else if (aErrText)
-        dprintf(STDERR_FILENO, " - errno %d [%s]\n", aErrCode, aErrText);
+        dprintf(aFd, " - errno %d [%s]\n", aErrCode, aErrText);
     else
-        dprintf(STDERR_FILENO, " - errno %d\n", aErrCode);
+        dprintf(aFd, " - errno %d\n", aErrCode);
 }
 
 static void
 dprintf_(
+    int                        aFd,
     int                        aErrCode,
     const char                *aErrText,
     struct Ert_Pid             aPid,
@@ -1010,7 +977,8 @@ dprintf_(
     va_list args;
 
     va_start(args, aFmt);
-    dprint_(EWOULDBLOCK,
+    dprint_(aFd,
+            EWOULDBLOCK,
             aErrCode, aErrText,
             aPid, aTid,
             aElapsed, aElapsed_h, aElapsed_m, aElapsed_s, aElapsed_ms,
@@ -1027,6 +995,7 @@ static struct {
 
 static void
 print_(
+    const struct Ert_ErrorFileDescriptor *aFileDescriptor,
     int aErrCode,
     const char *aFunction, const char *aFile, unsigned aLine,
     const char *aFmt, va_list aArgs)
@@ -1052,6 +1021,8 @@ print_(
 
     ERT_SCOPED_ERRNO
     ({
+        int errfd = aFileDescriptor ? aFileDescriptor->mFd : STDERR_FILENO;
+
         struct Ert_Pid pid = ert_ownProcessId();
         struct Ert_Tid tid = ert_ownThreadId();
 
@@ -1120,7 +1091,8 @@ print_(
              * The symptom is that the child process will terminate with
              * SIGSEGV in fresetlockfiles(). */
 
-            dprint_(lockerr,
+            dprint_(errfd,
+                    lockerr,
                     aErrCode, errText,
                     pid, tid,
                     &elapsed, elapsed_h, elapsed_m, elapsed_s, elapsed_ms,
@@ -1195,7 +1167,7 @@ print_(
              * message lines, and also EINTR messages with later timestamps
              * printed before messages with earlier timestamps. */
 
-            if (printBuf_.mSize != ert_writeFdRaw(STDERR_FILENO,
+            if (printBuf_.mSize != ert_writeFdRaw(errfd,
                                                   printBuf_.mBuf,
                                                   printBuf_.mSize, 0))
                 ert_abortProcess();
@@ -1206,6 +1178,7 @@ print_(
             if (ert_releaseProcessAppLock())
             {
                 dprintf_(
+                    errfd,
                     errno, 0,
                     pid, tid,
                     &elapsed, elapsed_h, elapsed_m, elapsed_s, elapsed_ms,
@@ -1229,7 +1202,7 @@ printf_(
         va_list args;
 
         va_start(args, aFmt);
-        print_(0, aFunction, aFile, aLine, aFmt, args);
+        print_(0, 0, aFunction, aFile, aLine, aFmt, args);
         va_end(args);
     });
 }
@@ -1341,7 +1314,7 @@ ert_errorDebug(
             ert_pushErrorFrameSequence();
 
         va_start(args, aFmt);
-        print_(0, aFunction, aFile, aLine, aFmt, args);
+        print_(0, 0, aFunction, aFile, aLine, aFmt, args);
         va_end(args);
 
         ert_popErrorFrameSequence(frameSequence);
@@ -1349,6 +1322,43 @@ ert_errorDebug(
 }
 
 /* -------------------------------------------------------------------------- */
+static void
+ert_errorWarn_v_(
+    const struct Ert_ErrorFileDescriptor *aFileDescriptor,
+    int aErrCode,
+    const char *aFunction, const char *aFile, unsigned aLine,
+    const char *aFmt, va_list aArgs)
+{
+    ERT_SCOPED_ERRNO
+    ({
+        struct Ert_ErrorFrameSequence frameSequence =
+            ert_pushErrorFrameSequence();
+
+        print_(aFileDescriptor, aErrCode, aFunction, aFile, aLine, aFmt, aArgs);
+
+        ert_popErrorFrameSequence(frameSequence);
+    });
+}
+
+static void
+ert_errorWarn_(
+    const struct Ert_ErrorFileDescriptor *aFileDescriptor,
+    int aErrCode,
+    const char *aFunction, const char *aFile, unsigned aLine,
+    const char *aFmt, ...)
+{
+    ERT_SCOPED_ERRNO
+    ({
+        va_list args;
+
+        va_start(args, aFmt);
+        ert_errorWarn_v_(
+            aFileDescriptor,
+            aErrCode, aFunction, aFile, aLine, aFmt, args);
+        va_end(args);
+    });
+}
+
 void
 ert_errorWarn(
     int aErrCode,
@@ -1357,16 +1367,11 @@ ert_errorWarn(
 {
     ERT_SCOPED_ERRNO
     ({
-        struct Ert_ErrorFrameSequence frameSequence =
-            ert_pushErrorFrameSequence();
-
         va_list args;
 
         va_start(args, aFmt);
-        print_(aErrCode, aFunction, aFile, aLine, aFmt, args);
+        ert_errorWarn_v_(0, aErrCode, aFunction, aFile, aLine, aFmt, args);
         va_end(args);
-
-        ert_popErrorFrameSequence(frameSequence);
     });
 }
 
@@ -1385,7 +1390,7 @@ ert_errorMessage(
             ert_pushErrorFrameSequence();
 
         va_start(args, aFmt);
-        print_(aErrCode, 0, 0, 0, aFmt, args);
+        print_(0, aErrCode, 0, 0, 0, aFmt, args);
         va_end(args);
 
         ert_popErrorFrameSequence(frameSequence);
@@ -1409,18 +1414,62 @@ ert_errorTerminate(
         if (gErtOptions_.mDebug)
         {
             va_start(args, aFmt);
-            print_(aErrCode, aFunction, aFile, aLine, aFmt, args);
+            print_(0, aErrCode, aFunction, aFile, aLine, aFmt, args);
             va_end(args);
         }
 
         ert_popErrorFrameSequence(frameSequence);
 
         va_start(args, aFmt);
-        print_(aErrCode, 0, 0, 0, aFmt, args);
+        print_(0, aErrCode, 0, 0, 0, aFmt, args);
         va_end(args);
 
         ert_abortProcess();
     });
+}
+
+/* -------------------------------------------------------------------------- */
+void
+ert_logErrorFrameSequence(
+    const struct Ert_ErrorFileDescriptor *aFileDescriptor)
+{
+    initErrorFrame_();
+
+    struct LogErrorFrameSequence
+    {
+        const struct Ert_ErrorFileDescriptor *mFileDescriptor;
+    } logErrorFrameSequence =
+    {
+        .mFileDescriptor = aFileDescriptor,
+    };
+
+    struct ErrorFrameVisitorMethod visitor = ErrorFrameVisitorMethod(
+        &logErrorFrameSequence,
+        ERT_LAMBDA(
+            int, (struct LogErrorFrameSequence *self,
+                  unsigned                      aFrameOffset,
+                  const struct Ert_ErrorFrame  *aFramePtr),
+            {
+                ert_errorWarn_(
+                    self->mFileDescriptor,
+                    aFramePtr->mErrno,
+                    aFramePtr->mName,
+                    aFramePtr->mFile,
+                    aFramePtr->mLine,
+                    "%" PRIs_Ert_ErrorFrameSequenceId " Error frame %u - %s",
+                    FMTs_Ert_ErrorFrameSequenceId(aFramePtr->mSeqId),
+                    aFrameOffset,
+                    aFramePtr->mText);
+
+                return 0;
+            }));
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
+
+    while (visitErrorFrameSequence_(&frameSequence, visitor))
+        break;
+
+    ert_popErrorFrameSequence(frameSequence);
 }
 
 /* -------------------------------------------------------------------------- */
