@@ -2354,14 +2354,21 @@ ert_forkProcessChild(
                             processLock_.mLock->mFile) && ENOENT != errno);
     }
 
-    /* Note that the fork() will complete and launch the child process
-     * before the child pid is recorded in the local variable. This
-     * is an important consideration for propagating signals to
-     * the child process. */
-
     ERT_TEST_RACE
     ({
-        childPid = Ert_Pid(fork());
+        volatile struct Ert_Pid childPid_ = Ert_Pid(fork());
+
+        /* Note that no matter how this expression is structured, the
+         * fork() will complete and launch the child process
+         * before the child pid is recorded in the local variable.
+         *
+         * This operation cannot be atomic, so make this explicit
+         * by clearly separating the two steps.
+         *
+         * This is an important consideration for propagating signals to
+         * the child process. */
+
+        childPid = childPid_;
     });
 
     switch (childPid.mPid)
