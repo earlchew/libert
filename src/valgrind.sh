@@ -117,15 +117,17 @@ trap "terminate SIGTERM" SIGTERM
 trap "terminate SIGINT"  SIGINT
 trap "terminate SIGQUIT" SIGQUIT
 
-exec > >(tee "$1.log") 2>&1 # Note: Set $! here, but will be redefined later
-set -- "$!" "$@"
+# Process substitution would be simpler, but does not work:
+#   https://unix.stackexchange.com/questions/403783
+#
+{ coproc tee "$1.log" >&4 4>&- ; } 4>&1
+eval 'exec >&'"${COPROC[1]} ${COPROC[1]}"'>&- 2>&1'
 
-rm -rf -- "$2.strace"
-mkdir -- "$2.strace"
+rm -rf -- "$1.strace"
+mkdir -- "$1.strace"
 
 set -m
 (
-    shift
     set -x
     valgrind "$@" -- # strace -ff -t -o "$1.strace/log"
 ) &
@@ -141,6 +143,6 @@ else
 fi
 
 exec >&- 2>&-
-wait "$1" || :
+wait "$COPROC_PID" || :
 
 exit "$RC"
