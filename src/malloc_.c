@@ -31,7 +31,6 @@
 #include "ert/thread.h"
 #include "ert/error.h"
 
-
 /* -------------------------------------------------------------------------- */
 /* Memory allocators
  *
@@ -43,13 +42,20 @@
  * so that signals cannot be delivered in the thread in which the
  * allocator is running. Calls to the allocator from signal handlers
  * running in other threads are synchronised by the mutex in the
- * allocator itself. */
+ * allocator itself.
+ *
+ * Allocators preserve the error frame sequence because allocators
+ * are called during teardown in the unit test framework (eg gtest),
+ * and its worth trying to preserve the error frame sequence so that
+ * it can be logged. */
 
 /* -------------------------------------------------------------------------- */
 void *
 malloc(size_t aSize)
 {
     void *block = 0;
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
 
     struct Ert_ThreadSigMask threadSigMask;
 
@@ -64,6 +70,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         sigMask = ert_popThreadSigMask(sigMask);
+
+        ert_popErrorFrameSequence(frameSequence);
     });
 
     return block;
@@ -74,6 +82,8 @@ void *
 valloc(size_t aSize)
 {
     void *block = 0;
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
 
     struct Ert_ThreadSigMask  threadSigMask_;
     struct Ert_ThreadSigMask *threadSigMask =
@@ -87,6 +97,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         threadSigMask = ert_popThreadSigMask(threadSigMask);
+
+        ert_popErrorFrameSequence(frameSequence);
     });
 
     return block;
@@ -97,6 +109,8 @@ void *
 pvalloc(size_t aSize)
 {
     void *block = 0;
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
 
     struct Ert_ThreadSigMask  threadSigMask_;
     struct Ert_ThreadSigMask *threadSigMask =
@@ -110,6 +124,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         threadSigMask = ert_popThreadSigMask(threadSigMask);
+
+        ert_popErrorFrameSequence(frameSequence);
     });
 
     return block;
@@ -119,6 +135,8 @@ Ert_Finally:
 void
 free(void *aBlock)
 {
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
+
     struct Ert_ThreadSigMask  threadSigMask_;
     struct Ert_ThreadSigMask *threadSigMask =
         ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
@@ -126,6 +144,8 @@ free(void *aBlock)
     __libc_free(aBlock);
 
     threadSigMask = ert_popThreadSigMask(threadSigMask);
+
+    ert_popErrorFrameSequence(frameSequence);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -141,6 +161,8 @@ memalign(size_t aAlign, size_t aSize)
 {
     void *block = 0;
 
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
+
     struct Ert_ThreadSigMask  threadSigMask_;
     struct Ert_ThreadSigMask *threadSigMask =
         ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
@@ -153,6 +175,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         threadSigMask = ert_popThreadSigMask(threadSigMask);
+
+        ert_popErrorFrameSequence(frameSequence);
     });
 
     return block;
@@ -171,6 +195,8 @@ realloc(void *aBlock, size_t aSize)
 {
     void *block = 0;
 
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
+
     struct Ert_ThreadSigMask  threadSigMask_;
     struct Ert_ThreadSigMask *threadSigMask =
         ert_pushThreadSigMask(&threadSigMask_, Ert_ThreadSigMaskBlock, 0);
@@ -183,6 +209,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         threadSigMask = ert_popThreadSigMask(threadSigMask);
+
+        ert_popErrorFrameSequence(frameSequence);
     });
 
     return block;
@@ -193,6 +221,8 @@ void *
 calloc(size_t aSize, size_t aElems)
 {
     void *block = 0;
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
 
     struct Ert_ThreadSigMask  threadSigMask_;
     struct Ert_ThreadSigMask *threadSigMask =
@@ -206,6 +236,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         threadSigMask = ert_popThreadSigMask(threadSigMask);
+
+        ert_popErrorFrameSequence(frameSequence);
     });
 
     return block;
@@ -216,6 +248,8 @@ int
 posix_memalign(void **aBlock, size_t aAlign, size_t aSize)
 {
     int rc;
+
+    struct Ert_ErrorFrameSequence frameSequence = ert_pushErrorFrameSequence();
 
     struct Ert_ThreadSigMask  threadSigMask_;
     struct Ert_ThreadSigMask *threadSigMask =
@@ -245,6 +279,8 @@ Ert_Finally:
     ERT_FINALLY
     ({
         threadSigMask = ert_popThreadSigMask(threadSigMask);
+
+        ert_popErrorFrameSequence(frameSequence);
     });
 
     return rc;
